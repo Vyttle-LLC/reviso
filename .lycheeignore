@@ -1,0 +1,7 @@
+# GitHub-relative shortcuts. These resolve on github.com but not on disk,
+# which is the point — they keep issue links working in forks.
+issues/new
+security/advisories/new
+
+# TODO(launch): remove once reviso.dev has DNS.
+^https://reviso\.dev

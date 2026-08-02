@@ -1,0 +1,15 @@
+{
+  // Prose is hard-wrapped by hand, not to a fixed column.
+  "config": {
+    "MD013": false,
+    // The README centres its lockup and badges with inline HTML, which
+    // Markdown has no equivalent for.
+    "MD033": false,
+    "MD041": false
+  },
+  "ignores": [
+    "node_modules/**",
+    // Contributor Covenant v2.1, vendored verbatim. Not ours to reformat.
+    "CODE_OF_CONDUCT.md"
+  ]
+}

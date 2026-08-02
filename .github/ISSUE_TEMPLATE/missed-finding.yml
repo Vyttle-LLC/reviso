@@ -1,0 +1,42 @@
+name: Missed finding
+description: A real problem Reviso didn't catch.
+title: "[MISS] "
+labels: ["missed-finding", "eval-candidate"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If `/review` caught this and Reviso didn't, that's a **P0** for us —
+        parity with `/review` is the bar the whole project is measured against.
+  - type: checkboxes
+    id: parity
+    attributes:
+      label: Parity
+      options:
+        - label: Claude Code's `/review` caught this and Reviso did not
+  - type: textarea
+    id: issue
+    attributes:
+      label: What Reviso should have caught
+      description: The problem, and what goes wrong if it ships.
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: The code
+      description: Smallest snippet that reproduces it. Redact freely.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: other
+    attributes:
+      label: What the other tool said, if applicable
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: Reviso version
+    validations:
+      required: true

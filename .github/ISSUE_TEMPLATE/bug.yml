@@ -1,0 +1,58 @@
+name: Bug
+description: Reviso crashed, hung, or behaved in a way it shouldn't.
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a finding that was wrong, use
+        **False positive**. For a bug Reviso failed to catch, use
+        **Missed finding**. This form is for the tool itself misbehaving.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps. Include any relevant output, redacted as needed.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      placeholder: "/reviso review --base develop"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Reviso version
+    validations:
+      required: true
+  - type: input
+    id: claude-version
+    attributes:
+      label: Claude Code version
+      description: "`claude --version`"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "macOS 15.2 / Ubuntu 24.04 / Windows 11 + WSL2"
+    validations:
+      required: true
