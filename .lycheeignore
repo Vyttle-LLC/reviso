@@ -6,7 +6,10 @@ security/advisories/new
 # TODO(launch): remove once reviso.dev has DNS.
 ^https://reviso\.dev
 
-# Times out from GitHub runners — fine from a laptop, and fine in a browser.
-# Netlify appears to throttle datacenter traffic, and a required check that
-# fails on our own marketing site's mood teaches people to ignore red.
+# Both of these answer fine from a laptop and reset or time out from a GitHub
+# runner — the usual datacenter-IP throttling. Excluded from the weekly
+# external sweep too, so it doesn't file an issue every Monday about a link
+# that isn't broken.
 ^https://vyttle\.com
+# Vendored verbatim in CODE_OF_CONDUCT.md; not our link to maintain.
+^https://www\.contributor-covenant\.org
