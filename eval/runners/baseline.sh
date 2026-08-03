@@ -3,6 +3,11 @@
 # corpus PR: 3 headless runs, majority = findings matched in ≥2 of 3.
 # <workdir> is a throwaway clone of the corpus repo (gh-authenticated).
 # Env: REVIEW_CMD (default "/review"), BASELINE_CLAUDE_FLAGS.
+#
+# Clean context: runs load project/local settings only (no user-level
+# CLAUDE.md, memory, or plugins), so the baseline is stock /review — not
+# /review shaped by whoever's personal config — and results reproduce
+# across machines.
 set -eu
 WD="${1:?usage: baseline.sh <workdir> <pr> <outdir>}"
 PR="${2:?usage: baseline.sh <workdir> <pr> <outdir>}"
@@ -14,6 +19,7 @@ mkdir -p "$OUT"
 for i in 1 2 3; do
   # Block PR mutation so the run prints instead of commenting.
   (cd "$WD" && claude -p "$REVIEW_CMD $PR" --output-format json \
+      --setting-sources project,local \
       --disallowedTools "Bash(gh pr comment:*)" \
       ${BASELINE_CLAUDE_FLAGS:-}) > "$OUT/baseline-raw-$i.json"
   jq -r '.result' "$OUT/baseline-raw-$i.json" > "$OUT/baseline-text-$i.md"

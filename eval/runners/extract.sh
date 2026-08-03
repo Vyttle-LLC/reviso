@@ -13,7 +13,7 @@ Review output follows:
 ----
 $(cat "$F")"
 
-RES=$(claude -p "$PROMPT" --output-format json ${EXTRACT_CLAUDE_FLAGS:-} | jq -r '.result')
+RES=$(claude -p "$PROMPT" --output-format json --setting-sources project,local ${EXTRACT_CLAUDE_FLAGS:-} | jq -r '.result')
 CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
 
 if ! printf '%s\n' "$CLEAN" | jq -e 'type == "array"' >/dev/null 2>&1; then

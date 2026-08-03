@@ -15,8 +15,11 @@ mkdir -p "$OUT"
 git -C "$WD" fetch -q origin "$BASE_SHA" "$HEAD_SHA" 2>/dev/null || true
 git -C "$WD" checkout -q --detach "$HEAD_SHA"
 
+# Clean context: project/local settings only — no user-level CLAUDE.md,
+# memory, or plugins. The candidate is this plugin, not this machine.
 (cd "$WD" && claude --plugin-dir "$PLUGIN_DIR" \
     -p "/reviso:review --base $BASE_SHA" --output-format json \
+    --setting-sources project,local \
     ${CANDIDATE_CLAUDE_FLAGS:-}) > "$OUT/candidate-raw.json"
 jq -r '.result' "$OUT/candidate-raw.json" > "$OUT/candidate-report.md"
 sh "$HERE/extract.sh" "$OUT/candidate-report.md" > "$OUT/candidate.json"

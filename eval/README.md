@@ -50,3 +50,11 @@ plugin loadable via `--plugin-dir`.
 Environment: `REVIEW_CMD` (default `/review`), `JUDGE_MODEL` (matcher model
 override), `REVISO_PLUGIN_DIR` (default: this repo), and
 `*_CLAUDE_FLAGS` pass-throughs per script — see script headers.
+
+**Clean context.** Every runner invokes `claude` with
+`--setting-sources project,local`: user-level CLAUDE.md, memory, and
+installed plugins are excluded, so the baseline is *stock* `/review`, the
+candidate is *this plugin*, and results reproduce on any machine. Project
+context (the target repo's own CLAUDE.md, lint configs) stays in — reading
+it is part of the review under test. Runs made without this isolation are
+smoke tests, not eval results.

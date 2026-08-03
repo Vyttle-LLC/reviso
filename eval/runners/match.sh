@@ -24,7 +24,7 @@ conservative: when unsure, do not match. Each finding matches at most one on
 the other side.
 Return ONLY a JSON array (no prose, no code fences): [{\"a_idx\": 0, \"b_idx\": 0}]. Empty array if nothing matches."
 
-RES=$(claude -p "$PROMPT" ${JUDGE_MODEL:+--model "$JUDGE_MODEL"} --output-format json ${MATCH_CLAUDE_FLAGS:-} | jq -r '.result')
+RES=$(claude -p "$PROMPT" ${JUDGE_MODEL:+--model "$JUDGE_MODEL"} --output-format json --setting-sources project,local ${MATCH_CLAUDE_FLAGS:-} | jq -r '.result')
 CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
 
 if ! printf '%s\n' "$CLEAN" | jq -e 'type == "array" and all(.[]; has("a_idx") and has("b_idx"))' >/dev/null 2>&1; then
