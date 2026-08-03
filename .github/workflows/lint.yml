@@ -20,5 +20,7 @@ jobs:
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2
         with:
           # Mail links are excluded by default in lychee v2 — the spec's
-          # --exclude-mail was removed upstream.
-          args: --no-progress '**/*.md'
+          # --exclude-mail was removed upstream. The longer timeout is for
+          # hosts that are slow to answer a runner; a link check that fails
+          # on someone else's bad afternoon teaches people to ignore it.
+          args: --no-progress --timeout 30 --max-retries 5 --retry-wait-time 3 '**/*.md'
