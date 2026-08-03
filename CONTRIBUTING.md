@@ -74,6 +74,29 @@ cd reviso
 - Prompt and lens changes **must** include eval results — see below.
 - We squash-merge. Your PR title becomes the commit message, so write it well.
 
+### Working on a stack
+
+Because we squash, the commit that lands on `main` is a new one with a new SHA.
+Your originals are not in `main`, so a branch stacked on a merged branch still
+carries them. Rebase with `--onto` and drop them explicitly:
+
+```bash
+# main ← A ← B ← C, and A has just merged. C is the tip of the stack.
+git rebase --onto main A C --update-refs
+```
+
+`--update-refs` moves `B` along the way, so the whole stack is one command.
+`git config --global rebase.updateRefs true` makes it the default.
+
+GitHub retargets the stacked PR's base for you when the parent merges. It does
+not touch the commits, which is the part above.
+
+The failure mode worth knowing: a plain `git rebase main` replays the
+already-merged commits against content that already contains them. The
+conflicts look ordinary, and resolving them reverts work that has already
+landed. If you hit conflicts in code you didn't write, stop and check you
+dropped the merged commits.
+
 ### Changing review behaviour
 
 Anything that touches prompts, lens definitions, the false-positive exclusion
