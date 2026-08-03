@@ -1,0 +1,59 @@
+name: False positive
+description: Reviso flagged something that wasn't a real problem.
+title: "[FP] "
+labels: ["false-positive", "eval-candidate"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you — this is the most valuable report you can file. False
+        positives are how review tools lose people's trust, so we treat these
+        as first-class bugs.
+  - type: textarea
+    id: finding
+    attributes:
+      label: What Reviso said
+      description: Paste the finding, including its severity and confidence score.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: The code it flagged
+      description: The smallest snippet that reproduces it. Redact freely.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it's not a problem
+      description: >
+        What did Reviso miss? A convention in the codebase, a guarantee
+        upstream, a deliberate choice, something a linter already covers?
+    validations:
+      required: true
+  - type: dropdown
+    id: lens
+    attributes:
+      label: Which lens produced it, if you know
+      options:
+        - Not sure
+        - Correctness
+        - Security
+        - Error handling
+        - API contract
+        - Tests
+        - Anti-slop
+  - type: input
+    id: command
+    attributes:
+      label: Command
+      placeholder: "/reviso review --base develop"
+  - type: input
+    id: version
+    attributes:
+      label: Reviso version
+    validations:
+      required: true

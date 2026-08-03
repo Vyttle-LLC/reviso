@@ -1,0 +1,10 @@
+# Actions are pinned to commit SHAs in workflows/. Without this, those pins
+# never move and the repo quietly ships stale actions.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
