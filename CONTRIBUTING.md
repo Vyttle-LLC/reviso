@@ -64,9 +64,15 @@ add it for you.
 
 ```bash
 git clone https://github.com/Vyttle-LLC/reviso.git
-cd reviso
-# TODO(plugin): dev setup lands with the plugin build
+claude --plugin-dir /path/to/reviso   # load your checkout into a session
 ```
+
+Then `/reviso:review` in any repo exercises your changes. The map: the
+orchestrator is `commands/review.md`, the finder/verifier subagents live in
+`agents/`, shared prompt material in `skills/reviso/references/`, the
+deterministic detectors in `skills/reviso/detectors/` (read `DISCOVERY.md`
+there before adding one), and the parity eval harness in
+[eval/](eval/README.md).
 
 ## Pull requests
 

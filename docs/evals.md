@@ -1,7 +1,8 @@
 # Eval results
 
-> **Stub.** Numbers land with the first release —
-> TODO(plugin): publish the corpus and the runs.
+> **Stub.** The harness is built — see [eval/](../eval/README.md) for how
+> baselines, candidates, and the judge work. Numbers land here with the
+> first published public-corpus runs.
 
 The parity bar: `/reviso review` should catch everything Claude Code's
 `/review` catches on the same changes. Anything it misses is a P0.
