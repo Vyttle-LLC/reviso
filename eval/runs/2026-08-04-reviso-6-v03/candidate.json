@@ -1,0 +1,23 @@
+[
+  {
+    "file": "commands/review.md",
+    "line": 4,
+    "title": "Report-only tool grants are wider than the spec allows — write-capable Bash surface",
+    "severity": "P1",
+    "description": "Command and subagents grant unscoped/overly-wide Bash access permitting write operations (git branch -D, git symbolic-ref HEAD), violating read-only spec. Should scope to specific read-only commands: git branch --show-current, git symbolic-ref refs/remotes/origin/HEAD, plus agent-specific forms (git blame, git log, git show, git diff for history/verifier; gh pr list, gh pr view, gh search for prior-reviews)."
+  },
+  {
+    "file": "eval/reference/code-review-recipe-2026-08-03.md",
+    "line": 86,
+    "title": "Vendored snapshot's private-repo link will trip the weekly external link sweep",
+    "severity": "P2",
+    "description": "Line 86 contains URL to private GitHub repo (github.com/anthropics/claude-cli-internal) returning 404 to unauthenticated requests, causing false-alarm failures in weekly link-check CI. Add to .lycheeignore or exclude eval/reference from lychee sweeps."
+  },
+  {
+    "file": "docs/evals.md",
+    "line": 7,
+    "title": "`docs/evals.md` still uses the old `/reviso review` spelling this diff renames",
+    "severity": "P2",
+    "description": "File uses old `/reviso review` spelling instead of new `/reviso:review` standardized in this branch. Users typing the old form will get unknown-command error. Change to `/reviso:review`."
+  }
+]

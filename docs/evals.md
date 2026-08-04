@@ -8,7 +8,16 @@
 
 | date | corpus case | version | parity | misses | cost vs `/review` | artifacts |
 | --- | --- | --- | --- | --- | --- | --- |
-| 2026-08-03 | `reviso-6` (this repo's own P0 PR) | v0 | **12%** (1/8) | 7 | **3.38×** (target ≤1.5×) | [runs/2026-08-03-reviso-6-v0](../eval/runs/2026-08-03-reviso-6-v0/) |
+| 2026-08-03 | `reviso-6` (this repo's own P0 PR) | v0 (6-finder pipeline) | **12%** (1/8) | 7 | **3.38×** (target ≤1.5×) | [runs/2026-08-03-reviso-6-v0](../eval/runs/2026-08-03-reviso-6-v0/) |
+| 2026-08-04 | `reviso-6` | v0.3 (single-pass, D10 split) | **25%** (2/8) | 6 | **1.42×** ✅ | [runs/2026-08-04-reviso-6-v03](../eval/runs/2026-08-04-reviso-6-v03/) |
+
+v0.3 notes: first run after the architecture split (single-pass `review`,
+pipeline moved to `audit`) — cost bar cleared on the first attempt, parity
+doubled, and both matches were findings every multi-agent version had
+missed. Its one extra finding was real (`/review` had it in 1 of 3 runs,
+below majority): the first verified win. Intermediate iterations v0.1–v0.2
+(pipeline tuning: 0–12% parity, 2.0–3.0×) are recorded in the change's
+design doc (D10) rather than as published runs.
 
 v0 notes: the one match was the highest-severity finding (write-capable tool
 grants — both tools agreed). Several misses are deliberate policy differences

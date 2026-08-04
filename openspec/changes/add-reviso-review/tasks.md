@@ -108,7 +108,7 @@ Groups map to the intended PR stack (one concern per PR, repo rule).
       format
 - [x] 8.2 Add `commands/audit.md` carrying the multi-agent pipeline
       (triage, 6 finders, verifier gate, reconcile) — the pre-PR deep pass
-- [ ] 8.3 Run v0.3 (single-pass) against the cached reviso-6 baseline;
+- [x] 8.3 Run v0.3 (single-pass) against the cached reviso-6 baseline;
       judge; publish the delta in docs/evals.md
 - [x] 8.4 Update specs (review-command, review-pipeline) to the split;
       README workflow (inner-loop review, pre-PR audit)
