@@ -76,3 +76,26 @@ Groups map to the intended PR stack (one concern per PR, repo rule).
       CONTRIBUTING dev setup, docs/evals.md corpus + runs
 - [x] 6.2 Note deferred items where users will look for them: `audit` (P1),
       humanization (P1), `.reviso/` memory (P2), `--staged` decision (OQ3)
+
+## 7. First-cycle findings (dogfood + baseline, 2026-08-03)
+
+- [ ] 7.1 Cost parity: get `/reviso:review` per-run cost to ≤1.5× a `/review`
+      run (measured 2026-08-03: ~$10 vs ~$3 equivalent). Levers: stop
+      pasting full-file contents to every finder (let them Read on demand),
+      inline the schema/FP text into agent prompts instead of per-agent
+      Reads, fold triage into the orchestrator turn, record cost per run in
+      eval artifacts
+- [ ] 7.2 Work the parity miss list from the reviso#6 baseline (real bugs
+      confirmed fixed same-day: write-capable allowed-tools patterns,
+      unscoped agent Bash, `.fit(` detector FP, `++ ` header misparse,
+      stale docs spelling, proposal/design dimension drift). Remaining
+      misses need finder/context tuning, then re-judge
+- [ ] 7.3 baseline.sh: fail loudly when `/review` refuses eligibility
+      (closed/draft PR) instead of producing an empty-looking run
+- [ ] 7.4 extract.sh: broaden the claims-issues cross-check beyond the
+      "found N issues" phrasing (refusals, alternate formats)
+- [ ] 7.5 Document the prompt-injection surface in SECURITY.md (finder
+      inputs: commit messages, blame, PR comments; eval scripts interpolate
+      untrusted review text into prompts)
+- [ ] 7.6 Add a committed fixture test for detect.awk (the scratchpad
+      fixture, made repeatable) so detector changes are CI-checked

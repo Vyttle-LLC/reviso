@@ -3,7 +3,11 @@
 # Detectors here must be FP-free by construction (see DISCOVERY.md);
 # anything requiring judgment belongs to the anti-slop finder instead.
 
-/^\+\+\+ / {
+# A "+++ " line is a file header only right after a "--- " line; otherwise
+# it is an added line whose content starts with "++ " (e.g. C-family code).
+{ after_minus = prev_minus; prev_minus = ($0 ~ /^--- /) }
+
+after_minus && /^\+\+\+ / {
   file = substr($0, 5)
   sub(/^b\//, "", file)
   is_md   = (file ~ /\.(md|markdown|mdx)$/)
@@ -34,7 +38,7 @@
   # testfocus: focus modifiers in test files.
   if (is_test) {
     if (c ~ /(^|[^A-Za-z0-9_.])(it|test|describe|context)\.only[ \t]*\(/ ||
-        c ~ /(^|[^A-Za-z0-9_])(fit|fdescribe)[ \t]*\(/) {
+        c ~ /(^|[^A-Za-z0-9_.])(fit|fdescribe)[ \t]*\(/) {
       printf "%s\t%d\ttestfocus\n", file, line
     }
   }

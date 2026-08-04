@@ -27,10 +27,11 @@ the implementation path (PRD §7 spike, 2026-07-24).
   mechanically checkable P0 slop (dead code, restating comments, AI-comment
   tells). FP-free by construction; exact scope is a discovery task.
 - Add the **review pipeline** (Stages 2–4 + report): triage/risk-score per
-  hunk, parallel dimension finders (correctness, security, error-handling,
-  API-contract, tests, anti-slop) forked from the official `code-review`
-  recipe, single-refute verify + confidence gate (<80 drop), consolidated
-  most-severe-first report. Precision over recall: silence over a maybe.
+  hunk, parallel dimension finders forked from the official `code-review`
+  recipe (conventions compliance, shallow-bug, git-history, prior-review
+  feedback, code-comment guidance) plus an anti-slop finder, single-refute
+  verify + confidence gate (<80 drop), consolidated most-severe-first
+  report. Precision over recall: silence over a maybe.
 - Add the **parity eval harness**: replay real PRs — `/review` on the PR
   (baseline = findings in ≥2 of 3 runs) vs `/reviso:review` on the same
   `base..HEAD` locally; LLM judge buckets findings matched / missed /

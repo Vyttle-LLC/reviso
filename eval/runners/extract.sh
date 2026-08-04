@@ -13,7 +13,8 @@ Review output follows:
 ----
 $(cat "$F")"
 
-RES=$(claude -p "$PROMPT" --output-format json --setting-sources project,local ${EXTRACT_CLAUDE_FLAGS:-} | jq -r '.result')
+# Pinned to haiku: extraction is mechanical parsing; cheap and reproducible.
+RES=$(claude -p "$PROMPT" --model "${EXTRACT_MODEL:-haiku}" --output-format json --setting-sources project,local ${EXTRACT_CLAUDE_FLAGS:-} | jq -r '.result')
 CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
 
 if ! printf '%s\n' "$CLEAN" | jq -e 'type == "array"' >/dev/null 2>&1; then

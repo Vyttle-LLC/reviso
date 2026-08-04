@@ -24,11 +24,21 @@ conservative: when unsure, do not match. Each finding matches at most one on
 the other side.
 Return ONLY a JSON array (no prose, no code fences): [{\"a_idx\": 0, \"b_idx\": 0}]. Empty array if nothing matches."
 
-RES=$(claude -p "$PROMPT" ${JUDGE_MODEL:+--model "$JUDGE_MODEL"} --output-format json --setting-sources project,local ${MATCH_CLAUDE_FLAGS:-} | jq -r '.result')
+# Pinned to sonnet by default: matching is judgment, but doesn't need the top
+# tier. Calibration (eval/calibration/) validates whatever model is set here.
+RES=$(claude -p "$PROMPT" --model "${JUDGE_MODEL:-sonnet}" --output-format json --setting-sources project,local ${MATCH_CLAUDE_FLAGS:-} | jq -r '.result')
 CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
 
-if ! printf '%s\n' "$CLEAN" | jq -e 'type == "array" and all(.[]; has("a_idx") and has("b_idx"))' >/dev/null 2>&1; then
-  echo "match.sh: model output is not a valid match array" >&2
+LA=$(jq 'length' "$A"); LB=$(jq 'length' "$B")
+if ! printf '%s\n' "$CLEAN" | jq -e --argjson la "$LA" --argjson lb "$LB" '
+    type == "array"
+    and all(.[]; has("a_idx") and has("b_idx")
+                 and .a_idx >= 0 and .a_idx < $la
+                 and .b_idx >= 0 and .b_idx < $lb)
+    and (map(.a_idx) | unique | length == length)
+    and (map(.b_idx) | unique | length == length)
+  ' >/dev/null 2>&1; then
+  echo "match.sh: model output is not a valid match array (shape, range, or duplicate index)" >&2
   printf '%s\n' "$RES" >&2
   exit 1
 fi

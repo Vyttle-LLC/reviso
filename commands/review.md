@@ -1,7 +1,7 @@
 ---
 description: Review base..HEAD + uncommitted changes locally, pre-PR — report-only
 argument-hint: "[--base <ref>] [--out <path>]"
-allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(git ls-files:*), Bash(git blame:*), Bash(git branch:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
+allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
 ---
 
 Review the current branch's changes as if they were a pull request, and report
@@ -24,7 +24,7 @@ and flags it must produce identical context — no judgment calls, no sampling.
 
 1. Resolve the base:
    - If `--base <ref>` was given, use it.
-   - Else `git symbolic-ref refs/remotes/origin/HEAD` → use that branch;
+   - Else `git rev-parse --abbrev-ref origin/HEAD` → use that branch;
      if unset, use `main` if it exists (`git rev-parse --verify main`), else `master`.
    - Compute the merge base: `git merge-base <base> HEAD` → `MB`.
 2. Collect the change:

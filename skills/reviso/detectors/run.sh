@@ -9,8 +9,10 @@
 set -eu
 
 BASE="${1:?usage: run.sh <base-ref>}"
+HERE=$(cd "$(dirname "$0")" && pwd)
+# Diff paths are repo-root-relative; run from the root so findings anchor right.
+cd "$(git rev-parse --show-toplevel)"
 MB=$(git merge-base "$BASE" HEAD)
-HERE=$(dirname "$0")
 
 {
   # Committed + staged + unstaged, as one diff against the merge base.
