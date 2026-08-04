@@ -20,9 +20,12 @@ for i in 1 2 3; do
   # Block PR mutation so the run prints instead of commenting.
   # Model pinned for reproducibility: the baseline is /review as a typical
   # subscriber runs it, not /review on whatever this machine's default is.
+  # Clean context drops any personal allowlists, so pre-approve the read-only
+  # gh/git set /review needs; posting (gh pr comment) stays blocked.
   (cd "$WD" && claude -p "$REVIEW_CMD $PR" --output-format json \
       --model "${BASELINE_MODEL:-opus}" \
       --setting-sources project,local \
+      --allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr checks:*),Bash(git diff:*),Bash(git status:*),Bash(git log:*),Bash(git show:*),Bash(git remote show:*),Bash(git fetch:*),Read,Grep,Glob" \
       --disallowedTools "Bash(gh pr comment:*)" \
       ${BASELINE_CLAUDE_FLAGS:-}) > "$OUT/baseline-raw-$i.json"
   jq -r '.result' "$OUT/baseline-raw-$i.json" > "$OUT/baseline-text-$i.md"
