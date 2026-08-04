@@ -18,7 +18,10 @@ mkdir -p "$OUT"
 
 for i in 1 2 3; do
   # Block PR mutation so the run prints instead of commenting.
+  # Model pinned for reproducibility: the baseline is /review as a typical
+  # subscriber runs it, not /review on whatever this machine's default is.
   (cd "$WD" && claude -p "$REVIEW_CMD $PR" --output-format json \
+      --model "${BASELINE_MODEL:-opus}" \
       --setting-sources project,local \
       --disallowedTools "Bash(gh pr comment:*)" \
       ${BASELINE_CLAUDE_FLAGS:-}) > "$OUT/baseline-raw-$i.json"

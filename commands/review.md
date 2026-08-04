@@ -1,6 +1,7 @@
 ---
 description: Review base..HEAD + uncommitted changes locally, pre-PR — report-only
 argument-hint: "[--base <ref>] [--out <path>]"
+model: sonnet
 allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
 ---
 
