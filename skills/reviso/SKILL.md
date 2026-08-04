@@ -5,9 +5,10 @@ description: Shared harness material for Reviso's review pipeline — the findin
 
 # Reviso harness
 
-Shared, single-source material for the review pipeline. The orchestrator is
-`commands/review.md`; the agents are in `agents/`. Everything here exists so
-the command and agents cite one copy instead of drifting apart.
+Shared, single-source material for both review tiers. `commands/review.md`
+is the single-pass inner-loop review; `commands/audit.md` orchestrates the
+multi-agent pipeline over the agents in `agents/`. Everything here exists so
+the commands and agents cite one copy instead of drifting apart.
 
 - `references/finding-schema.md` — the one finding format every stage speaks.
 - `references/confidence-rubric.md` — the 0–100 verification rubric

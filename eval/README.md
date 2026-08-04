@@ -55,6 +55,13 @@ Environment: `REVIEW_CMD` (default `/review`), `JUDGE_MODEL` (matcher model
 override), `REVISO_PLUGIN_DIR` (default: this repo), and
 `*_CLAUDE_FLAGS` pass-throughs per script — see script headers.
 
+**Models are tiers, not versions.** The plugin pins aliases (`opus`,
+`sonnet`, `haiku`) and the baseline defaults to the `opus` alias — both
+sides resolve to the current model of the tier, so comparisons stay
+same-tier as generations roll. Run artifacts record the *resolved* model
+IDs; only compare runs whose resolved pairs match, and treat any tier roll
+as a re-baseline event (re-run the corpus, diff, re-tune).
+
 **Clean context.** Every runner invokes `claude` with
 `--setting-sources project,local`: user-level CLAUDE.md, memory, and
 installed plugins are excluded, so the baseline is *stock* `/review`, the

@@ -154,6 +154,30 @@ becomes `/reviso:audit` v1** (pulled forward from P1; Opus finders and the
 multi-skeptic pass remain P1). Intended workflow: review in the inner
 loop; audit as the pre-PR gate. D6/D7 now describe the audit pipeline.
 
+### D11 — Tier-pinned models, version-recorded runs (2026-08-04)
+
+Models are pinned by **alias tier** (`opus`, `sonnet`, `haiku`), never by
+versioned ID. Aliases resolve to the current model of that tier on the
+user's CLI — so when a model generation retires, review/audit roll forward
+automatically, and in lockstep with `/review` (which inherits the session
+default, i.e. the same tier resolution). Equivalence with the baseline is
+structural, not maintained by hand.
+
+The drift that pinning can't prevent is absorbed by the eval:
+
+- **Runs record resolved model IDs** (from `modelUsage`) in their cost
+  artifacts. A parity/cost number is only comparable to runs with the same
+  resolved baseline/candidate pair; the run archive self-documents what
+  "opus" meant on that date.
+- **A tier roll is a re-baseline event**, same playbook as upstream
+  `/review` drift (D9): re-run the corpus before/after, diff, re-tune
+  prompts for the new model's behavioral shifts. CONTRIBUTING already
+  requires eval numbers on prompt changes; a model roll is treated
+  identically.
+- Versioned IDs are permitted only in eval flags for controlled
+  experiments (e.g. matching a historical baseline's model), never in
+  shipped plugin files.
+
 ### D9 — Vendor the recipe snapshot, pending license check
 
 `eval/reference/` holds a dated snapshot of the forked recipe as the drift

@@ -14,7 +14,7 @@ array if nothing found), and nothing else.
   "failure_scenario": "concrete: these inputs / this state → this wrong outcome",
   "suggested_fix": "the change (or rewrite) that resolves it",
   "evidence": "what in the code/history/conventions supports the claim, with file:line cites",
-  "confidence": 100
+  "confidence": 0
 }
 ```
 

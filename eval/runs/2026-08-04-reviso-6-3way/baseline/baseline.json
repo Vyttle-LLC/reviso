@@ -1,0 +1,58 @@
+[
+  {
+    "file": "commands/review.md",
+    "line": 5,
+    "title": "Report-only not structurally enforced: Bash patterns permit writes",
+    "severity": "P1",
+    "description": "allowed-tools pre-approves Bash(git diff:*) and Bash(rg:*), both of which can create/overwrite files. git diff --output=<file> redirects output to arbitrary paths; ripgrep --pre executes arbitrary programs. Contradicts spec.md:49-51, design.md:72, and command docs claiming all pre-approved tools are read-only."
+  },
+  {
+    "file": "eval/runners/candidate.sh",
+    "line": 28,
+    "title": "candidate.sh report-only assertion misses file modifications",
+    "severity": "P1",
+    "description": "git status --porcelain alone doesn't catch: committed changes (tree reads clean), git checkout/reset, writes to .gitignored paths, or writes outside $WD (~/.claude/, /tmp). Future runs that commit or write externally will pass the invariant check falsely."
+  },
+  {
+    "file": "finding-schema.md",
+    "line": 17,
+    "title": "Schema example contradicts rule for confidence field",
+    "severity": "P2",
+    "description": "Example object shows 'confidence': 100, but rule at line 36 states finders leave it at 0. Finders copying the example emit 100."
+  },
+  {
+    "file": "eval/runners/extract.sh",
+    "line": 28,
+    "title": "Baseline grep pattern too narrow, silently accepts output mismatches",
+    "severity": "P2",
+    "description": "Loud-failure cross-check greps only 'found [1-9][0-9]* issue'; patterns like '3 findings', 'Issues found: 3', or refusals pass silently as empty baseline. Systematically misses baseline extraction failures."
+  },
+  {
+    "file": "eval/runners/extract.sh",
+    "line": 14,
+    "title": "Prompt injection via untrusted review text in extract and match scripts",
+    "severity": "P2",
+    "description": "extract.sh:14 and match.sh:17-19 interpolate untrusted review text; reviso-finder-prior-reviews ingests PR comments. Bounded by read-only tooling but vulnerable if tool restrictions weakened (see finding 1)."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "One concern per PR rule violated: 57 files, ~6 groups in single PR",
+    "severity": "P2",
+    "description": "CLAUDE.md states 'one concern per PR' and tasks.md:3 references this rule. Baseline flagged the same issue. Warrants rule amendment or exception note."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "PR description: unit-tested with mocks claim unsupported",
+    "severity": "P2",
+    "description": "PR claims 'Majority + judge logic unit-tested with mocks' but no test files, fixtures, or mock harnesses appear in the 57 changed files."
+  },
+  {
+    "file": "eval/runs/2026-08-04-reviso-6-v03",
+    "line": null,
+    "title": "Run provenance not recorded: reuses v0 baseline without tracking",
+    "severity": null,
+    "description": "No baseline.json in run dir. judge.sh reused v0 baseline but nothing records baseline_ref field for self-description."
+  }
+]

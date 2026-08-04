@@ -58,7 +58,9 @@ jq -n \
 
 # Cost is a first-class metric: a candidate that matches findings at 3x the
 # price fails the everyday-use bar (target: candidate <= 1.5x baseline mean).
-jq -s '{runs: [.[].total_cost_usd], mean: (([.[].total_cost_usd] | add) / length)}' \
+# D11: record resolved model IDs alongside cost — a tier alias like "opus"
+# means different models on different dates; the artifact pins which.
+jq -s '{runs: [.[].total_cost_usd], mean: (([.[].total_cost_usd] | add) / length), models: ([.[].modelUsage // {} | keys] | add | unique)}' \
   "$OUT/baseline-raw-1.json" "$OUT/baseline-raw-2.json" "$OUT/baseline-raw-3.json" \
   > "$OUT/baseline-cost.json"
 

@@ -31,7 +31,9 @@ if [ -n "$(git -C "$WD" status --porcelain)" ]; then
   exit 1
 fi
 
-jq '{cost: .total_cost_usd, duration_ms: .duration_ms, num_turns: .num_turns}' \
+# D11: record resolved model IDs — comparisons are only valid between runs
+# whose resolved model pairs match.
+jq '{cost: .total_cost_usd, duration_ms: .duration_ms, num_turns: .num_turns, models: (.modelUsage // {} | keys)}' \
   "$OUT/candidate-raw.json" > "$OUT/candidate-cost.json"
 
 echo "candidate: $(jq 'length' "$OUT/candidate.json") findings, cost \$$(jq -r '.cost' "$OUT/candidate-cost.json") → $OUT/candidate.json" >&2

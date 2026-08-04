@@ -6,10 +6,10 @@
 
 The plugin SHALL provide two review commands (D10): `/reviso:review`, a
 single-pass review performed entirely by the command's own session (no
-subagents) on the session's model — architecturally 1:1 with Claude Code's
-`/review` for parity and cost comparison — and `/reviso:audit`, the
-multi-agent pipeline (triage, blind finders, per-finding verification)
-intended as the pre-PR deep pass.
+subagents), pinned to the `opus` tier alias (D11) — the tier `/review`
+typically runs on, keeping comparisons same-tier and cost predictable —
+and `/reviso:audit`, the multi-agent pipeline (triage, blind finders,
+per-finding verification) intended as the pre-PR deep pass.
 
 #### Scenario: Review spawns no agents
 

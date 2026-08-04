@@ -96,7 +96,10 @@ Groups map to the intended PR stack (one concern per PR, repo rule).
       "found N issues" phrasing (refusals, alternate formats)
 - [ ] 7.5 Document the prompt-injection surface in SECURITY.md (finder
       inputs: commit messages, blame, PR comments; eval scripts interpolate
-      untrusted review text into prompts)
+      untrusted review text into prompts) and the `--output` write-hole in
+      prefix-allowlisted git read commands (e.g. `git log --output=<file>`
+      passes a `Bash(git log:*)` allowlist — found by /review in the 3-way;
+      applies to /review's own allowlist too)
 - [ ] 7.6 Add a committed fixture test for detect.awk (the scratchpad
       fixture, made repeatable) so detector changes are CI-checked
 
