@@ -1,5 +1,10 @@
 # review-pipeline
 
+This capability specifies the multi-agent pipeline behind **`/reviso:audit`**
+(per D10; `/reviso:review` is the single-pass tier specified in
+review-command — it applies the same lenses, exclusion list, and <80
+self-gate inline, without subagents).
+
 ## ADDED Requirements
 
 ### Requirement: Triage tags hunks and skips non-reviewable content

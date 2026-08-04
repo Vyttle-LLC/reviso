@@ -135,6 +135,25 @@ published per docs/evals.md) and a private Vyttle tier referenced by path,
 never committed here. Runs land in `eval/runs/` as JSON so drift re-checks
 against future `/review` versions are just another run.
 
+### D10 — Architecture split: single-pass `review`, fan-out `audit` (2026-08-04)
+
+Eval evidence from the first three iterations forced a pivot. Baseline
+transcripts show today's `/review` is a **single-pass, single-model**
+review (no finder fan-out, no scorer agents — the vendored recipe is the
+*old* implementation): ~17k output tokens, ~$2.60, 8 majority findings on
+reviso#6. Our 6-finder pipeline spent ~190k tokens to surface 1–3 findings
+(v0 12%/3.38×, v0.1 0%/2.04×, v0.2 12%/3.02×) — five of six finders
+returned empty while burning thinking tokens. Quality-per-token comes from
+one capable model with full attention, not orchestration.
+
+Resolution (user decision): **`/reviso:review` becomes single-pass** —
+same architecture as the real `/review`, inheriting the session model
+(no pin) so parity comparisons are same-model 1:1 — with detectors and
+the FP-list/rubric self-gate folded inline. **The multi-agent pipeline
+becomes `/reviso:audit` v1** (pulled forward from P1; Opus finders and the
+multi-skeptic pass remain P1). Intended workflow: review in the inner
+loop; audit as the pre-PR gate. D6/D7 now describe the audit pipeline.
+
 ### D9 — Vendor the recipe snapshot, pending license check
 
 `eval/reference/` holds a dated snapshot of the forked recipe as the drift

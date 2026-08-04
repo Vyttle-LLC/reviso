@@ -99,3 +99,16 @@ Groups map to the intended PR stack (one concern per PR, repo rule).
       untrusted review text into prompts)
 - [ ] 7.6 Add a committed fixture test for detect.awk (the scratchpad
       fixture, made repeatable) so detector changes are CI-checked
+
+## 8. Architecture split (D10, decided 2026-08-04)
+
+- [x] 8.1 Rewrite `commands/review.md` as a single-pass review: session
+      model (no pin), Stage 0 assembly + detectors inline, all dimension
+      lenses in one pass, FP-list + rubric self-gate at <80, same report
+      format
+- [x] 8.2 Add `commands/audit.md` carrying the multi-agent pipeline
+      (triage, 6 finders, verifier gate, reconcile) — the pre-PR deep pass
+- [ ] 8.3 Run v0.3 (single-pass) against the cached reviso-6 baseline;
+      judge; publish the delta in docs/evals.md
+- [x] 8.4 Update specs (review-command, review-pipeline) to the split;
+      README workflow (inner-loop review, pre-PR audit)

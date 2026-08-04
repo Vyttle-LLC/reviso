@@ -1,24 +1,29 @@
 ---
-description: Review base..HEAD + uncommitted changes locally, pre-PR — report-only
+description: Fast single-pass review of base..HEAD + uncommitted changes — the inner-loop review; report-only
 argument-hint: "[--base <ref>] [--out <path>]"
-model: sonnet
-allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
+allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
 ---
 
-Review the current branch's changes as if they were a pull request, and report
-findings. **You are report-only: never create, edit, or delete any file in the
-user's repository.** Every tool pre-approved above is read-only; anything that
-could write is deliberately not pre-approved, so the user is prompted before it
-runs. The only write this command may ever request is the report file when the
-user explicitly passed `--out`.
+Review the current branch's changes as if they were a pull request, in a
+single pass — you do the entire review yourself, no subagents. This is the
+everyday inner-loop review: same architecture and comparable cost to Claude
+Code's `/review`, run it as often as you commit. The deep multi-agent pass
+is `/reviso:audit` — point users there before they open a PR.
 
-Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; default is the
-repository's default branch) and `--out <path>` (also write the report to that
-file; terminal-only otherwise). Ignore unknown flags with a one-line note.
+**You are report-only: never create, edit, or delete any file in the user's
+repository.** Every tool pre-approved above is read-only; anything that
+could write is deliberately not pre-approved, so the user is prompted before
+it runs. The only write this command may ever request is the report file
+when the user explicitly passed `--out`.
 
-Follow these steps precisely. Make a todo list first.
+Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; default is
+the repository's default branch) and `--out <path>` (also write the report
+to that file; terminal-only otherwise). Ignore unknown flags with a one-line
+note.
 
-## Stage 0 — Assemble the mock PR (deterministic; run these yourself, no agents)
+Make a todo list first, then work through these steps.
+
+## Step 1 — Assemble the mock PR (deterministic)
 
 Run this exact sequence of read-only git commands. Given identical git state
 and flags it must produce identical context — no judgment calls, no sampling.
@@ -37,23 +42,14 @@ and flags it must produce identical context — no judgment calls, no sampling.
    - If the combined change is empty: report "Nothing to review on
      `<branch>` vs `<base>`" and stop.
 3. Collect intent: `git log --format='%h %s%n%b' MB..HEAD` (all commit
-   messages on the branch, subjects and bodies).
-4. Record the changed-file list with per-file status. Do NOT read file
-   contents into your own context — finders read the files they need on
-   demand; buffering them here pays for every byte once per agent prompt.
-   For deleted files, note the deletion.
-5. Collect conventions:
-   - Root `CLAUDE.md` and `AGENTS.md` if they exist.
-   - Any `CLAUDE.md` / `AGENTS.md` in directories containing changed files
-     (walk each changed path upward to the repo root).
-   - Lint/format configs that govern changed paths (e.g. `.eslintrc*`,
-     `.markdownlint*`, `ruff.toml`, `.golangci.yml`) — paths only, read on demand.
-6. Infer the ticket: match the branch name and commit trailers against
+   messages on the branch — stated intent counts when judging findings).
+4. Collect conventions: root `CLAUDE.md` / `AGENTS.md`, any in directories
+   containing changed files, and lint configs governing changed paths.
+   Read the conventions files — they are part of the review.
+5. Infer the ticket: match the branch name and commit trailers against
    `[A-Z][A-Z0-9]+-[0-9]+`. Record it if found; absence is not an error.
-7. Record the header facts for the report: branch, base, MB (short), commit
-   count, changed-file count.
 
-## Stage 1 — Deterministic detectors (free; before any agent)
+## Step 2 — Deterministic detectors (free)
 
 Run the detector suite against the assembled diff:
 
@@ -61,60 +57,64 @@ Run the detector suite against the assembled diff:
 sh ${CLAUDE_PLUGIN_ROOT}/skills/reviso/detectors/run.sh <base-ref>
 ```
 
-(This script is read-only — it inspects git output and never writes. It is
-not pre-approved above, so the user may be prompted once; that is expected.)
-Collect its findings. They use the shared finding schema, are tagged
-`deterministic`, bypass Stage 4 verification, and report at confidence 100.
+(Read-only; not pre-approved above, so the user may be prompted once —
+expected.) Detector findings are tagged `deterministic`, skip Step 4
+scoring, and report at confidence 100.
 
-## Stage 2 — Triage
+## Step 3 — Review the change yourself
 
-Launch one `reviso-triage` agent (Haiku) with the diff and changed-file list.
-It returns, per hunk: risk tags (auth, money, concurrency, external-input,
-public-api, migration, deleted-tests) and a skip-tier marking for lockfiles,
-generated code, and pure-formatting hunks. Skip-tier hunks are excluded from
-Stage 3 and listed in the report's coverage summary.
+Work through the diff file by file, reading full files and history on
+demand. Skip content review cannot help (lockfiles, generated files,
+pure-formatting hunks) and note it for the coverage line. Apply every lens
+to each hunk as you go:
 
-## Stage 3 — Finders (parallel, blind)
+- **Bugs** — a shallow scan of the changes themselves for real bugs. Focus
+  on large bugs; skip nitpicks. Give extra attention to risky territory
+  (auth, money, concurrency, external input, public API, migrations,
+  deleted tests) and to **enforcement that doesn't match its claim**: when
+  code, a comment, or a prompt claims a guarantee ("validates X", "at most
+  once", "fails loudly", "read-only"), check it's actually enforced.
+- **Conventions** — compliance with the CLAUDE.md / AGENTS.md guidance you
+  read in Step 1 (skip instructions about process or tone that don't
+  describe code). Also: branch shape against stated workflow rules
+  (one-concern-per-PR, sign-off), and **doc staleness** — renames the diff
+  makes without updating docs and entry points that still say the old thing.
+- **History** — where a change looks suspicious, check `git blame` /
+  `git log`: does it silently revert a deliberate fix or break an invariant
+  an older commit established? Branch commit messages state intent — an
+  intended regression is not a finding.
+- **Code comments** — invariant notes and warnings near the changed lines
+  ("must hold the lock", "keep in sync with X"): does the change comply?
+- **Anti-slop** (convention-relative, the P0 set only): drift from how this
+  codebase already solves the problem; ~3× the lines the job needs;
+  reimplementing a utility that exists (cite it, or it's not a finding);
+  comments that restate code or read as AI bloat — include the tightened
+  rewrite in `suggested_fix`. A deliberate, established style here is
+  never slop.
 
-Launch all six finder agents in parallel — a single message with six Task
-calls — each blind to the others. Give each: the report header facts, the
-non-skipped diff hunks with their risk tags, the commit messages, the ticket
-(if any), the conventions file paths, and the changed-file list. Do not
-paste file contents or reference-file text into agent prompts — finders
-Read files and their shared references on demand; relaying bulk text
-through your own context is what blows it up. The finders:
+Record each candidate per the shared finding schema
+(`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`).
 
-1. `reviso-finder-conventions` — CLAUDE.md / AGENTS.md compliance
-2. `reviso-finder-bugs` — shallow scan of the changes for real bugs
-3. `reviso-finder-history` — bugs in light of git blame / history
-4. `reviso-finder-prior-reviews` — recurring feedback from prior PRs (if a
-   GitHub remote exists; otherwise it degrades to commit-message history)
-5. `reviso-finder-comments` — compliance with guidance in code comments
-6. `reviso-finder-slop` — the anti-slop lens (P0 slop set, convention-relative)
+## Step 4 — Self-verify (the trust gate)
 
-Each returns structured candidates per the shared finding schema
-(`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`); every
-candidate must carry a concrete failure scenario and a suggested fix.
+Read `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md` and
+`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/confidence-rubric.md` once.
+For every candidate from Step 3:
 
-## Stage 4 — Verify (the trust gate)
+1. Exclusion list first — a match scores 0–25.
+2. On lines the change modified? Pre-existing → 0.
+3. Re-examine the actual code: does the failure scenario hold against the
+   real guards, callers, and tests?
+4. Score 0–100 using the rubric exactly as written — no stricter, no
+   looser. **Silently drop everything below 80.** Never mention dropped
+   candidates.
 
-For every LLM candidate (not deterministic findings), launch a parallel
-`reviso-verifier` agent (Haiku). Give each: the candidate, the relevant
-diff hunks, and the conventions file paths. It re-examines the code,
-applies the rubric as written, and returns a score.
-**Silently drop every finding scoring below 80.** Never mention dropped
-findings. If nothing survives and Stage 1 found nothing, skip to the report.
+## Step 5 — Report
 
-## Stage 5 — Reconcile
-
-Dedupe: findings sharing an underlying root cause merge into one, keeping the
-strongest evidence and the highest severity. Consolidate: related minor
-findings in the same area become one comment, not several. Prefer silence
-over a maybe — an uncertain finding does not ship.
-
-## Stage 6 — Report
-
-Order findings most-severe-first (P0 > P1 > P2; ties by confidence). Format:
+Dedupe candidates sharing a root cause (one finding, strongest evidence,
+highest severity; list additional anchors inside that one finding).
+Consolidate related minor findings. Order most-severe-first
+(P0 > P1 > P2; ties by confidence). Format:
 
 ```text
 ## Reviso review — <branch> vs <base> (<n> commits, <m> files)
@@ -122,21 +122,21 @@ Order findings most-severe-first (P0 > P1 > P2; ties by confidence). Format:
 Found <k> issues:
 
 1. [P0][conf 95] <one-line title> — path/to/file.ts:42
-   Failure: <concrete scenario: inputs/state → wrong outcome>
+   Failure: <concrete scenario>
    Fix: <suggested fix or rewrite>
-   (<dimension>; deterministic findings say so here)
+   (<lens>; deterministic findings say so here)
 
 ...
 
-Checked: conventions, bugs, history, prior reviews, comments, slop, deterministic.
-Skipped: <skip-tier files, or "nothing">.
+Checked: bugs, conventions, history, comments, slop, deterministic.
+Skipped: <skipped files, or "nothing">.
 ```
 
-If no findings survived: report exactly the header line, then "No issues
-found.", then the Checked/Skipped lines — nothing else.
+If no findings survived: the header line, then "No issues found.", then the
+Checked/Skipped lines — nothing else.
 
 Sink: print to the terminal. If `--out <path>` was given, additionally write
 the same report to that path (this triggers a permission prompt — correct
-behavior; approve applies only to that file). Never write anywhere else.
+behavior; approval applies only to that file). Never write anywhere else.
 
 Keep the report brief. No emojis. Cite `file:line` for every finding.

@@ -2,12 +2,32 @@
 
 ## ADDED Requirements
 
-### Requirement: /reviso:review reviews base..HEAD plus uncommitted changes
+### Requirement: Two tiers — single-pass review, multi-agent audit
 
-The plugin SHALL provide a `/reviso:review` command that reviews the full
-`base..HEAD` diff plus uncommitted (working tree and index) changes. The
-default base SHALL be the repository's default branch (via `origin/HEAD`),
-overridable with `--base <branch-or-sha>`.
+The plugin SHALL provide two review commands (D10): `/reviso:review`, a
+single-pass review performed entirely by the command's own session (no
+subagents) on the session's model — architecturally 1:1 with Claude Code's
+`/review` for parity and cost comparison — and `/reviso:audit`, the
+multi-agent pipeline (triage, blind finders, per-finding verification)
+intended as the pre-PR deep pass.
+
+#### Scenario: Review spawns no agents
+
+- **WHEN** `/reviso:review` runs
+- **THEN** no subagent is launched; the session performs assembly,
+  detection, review, self-verification, and reporting itself
+
+#### Scenario: Audit runs the pipeline
+
+- **WHEN** `/reviso:audit` runs
+- **THEN** the staged multi-agent pipeline executes (see review-pipeline)
+
+### Requirement: Both commands review base..HEAD plus uncommitted changes
+
+Each command SHALL review the full `base..HEAD` diff plus uncommitted
+(working tree and index) changes. The default base SHALL be the
+repository's default branch (via `origin/HEAD`), overridable with
+`--base <branch-or-sha>`.
 
 #### Scenario: Default invocation on a feature branch
 
@@ -22,13 +42,13 @@ overridable with `--base <branch-or-sha>`.
 - **THEN** the diff is computed against `develop` instead of the default
   branch
 
-### Requirement: Report-only — the command never mutates the working tree
+### Requirement: Report-only — neither command mutates the working tree
 
-The command and every subagent it spawns SHALL be restricted to read-only
-tools. No file in the user's repository is created, edited, or deleted by a
-review. The command's `allowed-tools` frontmatter MUST NOT include Edit,
-Write, or NotebookEdit, and MUST NOT include Bash patterns that permit
-writes.
+Both commands and every subagent they spawn SHALL be restricted to
+read-only tools. No file in the user's repository is created, edited, or
+deleted by a review. Each command's `allowed-tools` frontmatter MUST NOT
+include Edit, Write, or NotebookEdit, and MUST NOT include Bash patterns
+that permit writes.
 
 #### Scenario: Review of a dirty working tree
 
