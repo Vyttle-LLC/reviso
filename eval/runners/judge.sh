@@ -31,7 +31,19 @@ jq -n \
   }
 ' > "$OUT/judge.json"
 
-jq -r '"parity: \(.metrics.parity_pct // "n/a (empty baseline)")%  matched: \(.metrics.matched_count)/\(.metrics.baseline_count)  misses(P0): \(.missed_P0_regressions | length)  claimed wins (unverified): \(.claimed_wins_unverified | length)"' "$OUT/judge.json" >&2
+# Fold in cost when the runners recorded it (files live beside the findings).
+BC="$(dirname "$BASELINE")/baseline-cost.json"
+CC="$(dirname "$CANDIDATE")/candidate-cost.json"
+if [ -f "$BC" ] && [ -f "$CC" ]; then
+  jq '.metrics += {
+      baseline_mean_cost_usd: $bc.mean,
+      candidate_cost_usd: $cc.cost,
+      cost_ratio: (if $bc.mean > 0 then (($cc.cost / $bc.mean * 100 | floor) / 100) else null end)
+    }' --argjson bc "$(cat "$BC")" --argjson cc "$(cat "$CC")" \
+    "$OUT/judge.json" > "$OUT/judge.tmp" && mv "$OUT/judge.tmp" "$OUT/judge.json"
+fi
+
+jq -r '"parity: \(.metrics.parity_pct // "n/a (empty baseline)")%  matched: \(.metrics.matched_count)/\(.metrics.baseline_count)  misses(P0): \(.missed_P0_regressions | length)  claimed wins (unverified): \(.claimed_wins_unverified | length)  cost: \(.metrics.cost_ratio // "n/a")x baseline (target <=1.5x)"' "$OUT/judge.json" >&2
 if jq -e '.missed_P0_regressions | length > 0' "$OUT/judge.json" >/dev/null; then
   echo "MISSES (each is a P0 regression):" >&2
   jq -r '.missed_P0_regressions[] | "  - \(.title) (\(.file // "?"):\(.line // 0))"' "$OUT/judge.json" >&2

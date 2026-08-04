@@ -31,4 +31,7 @@ if [ -n "$(git -C "$WD" status --porcelain)" ]; then
   exit 1
 fi
 
-echo "candidate: $(jq 'length' "$OUT/candidate.json") findings → $OUT/candidate.json" >&2
+jq '{cost: .total_cost_usd, duration_ms: .duration_ms, num_turns: .num_turns}' \
+  "$OUT/candidate-raw.json" > "$OUT/candidate-cost.json"
+
+echo "candidate: $(jq 'length' "$OUT/candidate.json") findings, cost \$$(jq -r '.cost' "$OUT/candidate-cost.json") → $OUT/candidate.json" >&2

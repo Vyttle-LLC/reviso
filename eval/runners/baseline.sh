@@ -53,4 +53,10 @@ jq -n \
                               and ((.key as $j | $b12 | index($j)) == null)) | .value ]
 ' > "$OUT/baseline.json"
 
-echo "baseline: $(jq 'length' "$OUT/baseline.json") majority findings ($(jq 'length' "$OUT/baseline-findings-1.json")/$(jq 'length' "$OUT/baseline-findings-2.json")/$(jq 'length' "$OUT/baseline-findings-3.json") per run) → $OUT/baseline.json" >&2
+# Cost is a first-class metric: a candidate that matches findings at 3x the
+# price fails the everyday-use bar (target: candidate <= 1.5x baseline mean).
+jq -s '{runs: [.[].total_cost_usd], mean: (([.[].total_cost_usd] | add) / length)}' \
+  "$OUT/baseline-raw-1.json" "$OUT/baseline-raw-2.json" "$OUT/baseline-raw-3.json" \
+  > "$OUT/baseline-cost.json"
+
+echo "baseline: $(jq 'length' "$OUT/baseline.json") majority findings ($(jq 'length' "$OUT/baseline-findings-1.json")/$(jq 'length' "$OUT/baseline-findings-2.json")/$(jq 'length' "$OUT/baseline-findings-3.json") per run), mean cost \$$(jq -r '.mean' "$OUT/baseline-cost.json") → $OUT/baseline.json" >&2

@@ -22,6 +22,10 @@ corpus entry {repo, pr, base_sha, head_sha}
   percentage.
 - **Claimed wins** (candidate-only findings) count as wins only after a
   verification pass confirms they're real; until then they're suspects.
+- **Cost is a first-class metric.** Runners record per-run cost; the judge
+  reports `cost_ratio` (candidate ÷ baseline mean) next to parity. Target:
+  **≤ 1.5×**. Matching `/review`'s findings at 3× its price fails the
+  everyday-use bar just as surely as missing findings does.
 - **Parse failures are loud.** A baseline run whose output can't be parsed
   fails the run; the baseline is never silently reduced.
 
