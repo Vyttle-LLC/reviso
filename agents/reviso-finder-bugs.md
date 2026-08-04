@@ -16,10 +16,15 @@ positives. Weigh the hunk risk tags (auth, money, concurrency,
 external-input, public-api, migration, deleted-tests): a plausible bug on a
 tagged hunk deserves the deeper look.
 
-Before returning anything, read and obey:
+One class deserves explicit attention: **enforcement that doesn't match its
+claim.** When changed code (or its comment, or the prompt/config it
+implements) claims a guarantee — "validates X", "at most once", "fails
+loudly", "read-only" — check the code actually enforces it. Validation that
+checks shape but not the property, or a grep that matches one phrasing of
+many, is a real bug even in scripts and prompts.
 
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+Your task prompt includes the shared finding schema and the false-positive
+exclusion list — obey both. Do not spend turns re-reading them from disk.
 
 Set `dimension` to `bugs`. Every candidate needs a concrete failure scenario
 (inputs/state → wrong outcome) and a suggested fix. If you cannot state the

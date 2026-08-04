@@ -22,9 +22,12 @@ Rules:
 
 - `line` anchors to a line the change touched. Findings on untouched lines
   are false positives by definition (see the exclusion list).
-- `failure_scenario` is mandatory and concrete. "Could cause issues" is not
-  a failure scenario; if you cannot state inputs → wrong outcome, do not
-  return the finding.
+- `failure_scenario` is mandatory and concrete, but its shape depends on
+  the dimension. For correctness/security: inputs/state → wrong outcome.
+  For conventions, docs, and slop: the concrete consequence — who is
+  misled, what process breaks, what the next reader pays. "Could cause
+  issues" is never acceptable; a stale doc that tells users a command that
+  doesn't exist is ("a user runs `/reviso review` and gets an error").
 - `suggested_fix` is shown in the report for the human to apply. Reviso
   never applies it.
 - Severity: **P0** breaks correctness/security in practice; **P1** a real
@@ -32,3 +35,6 @@ Rules:
   contained. There is no P3 — a nit that would rank below P2 is not returned.
 - `confidence` is set by the verifier (Stage 4); finders leave it at 0.
   Deterministic detectors set it to 100.
+- Brevity is part of the contract: `evidence` ≤ 2 sentences,
+  `failure_scenario` ≤ 2 sentences. A finder returns at most 8 candidates,
+  most severe first — if you have more, the ninth wasn't worth reporting.

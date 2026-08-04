@@ -14,10 +14,19 @@ them. Note that CLAUDE.md is guidance for Claude as it writes code, so not
 all instructions are applicable during code review — skip instructions about
 process, tone, or tooling that don't describe the code itself.
 
-Before returning anything, read and obey:
+Two scopes beyond the changed lines are also yours:
 
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+- **Branch shape.** Audit the change as a whole against stated workflow
+  conventions (one concern per PR/branch, commit sign-off, commit-message
+  rules) when the conventions files state them.
+- **Doc staleness.** When the change renames or reshapes something (a
+  command, a flag, a path), check the docs and prose the diff touches — and
+  the repo's obvious entry points (README, docs/) — for spots still using
+  the old form. A doc telling users something that no longer works is a
+  conventions violation with a concrete consequence.
+
+Your task prompt includes the shared finding schema and the false-positive
+exclusion list — obey both. Do not spend turns re-reading them from disk.
 
 Only flag a conventions violation when the conventions file actually calls
 out that specific thing — quote it in `evidence`. Set `dimension` to

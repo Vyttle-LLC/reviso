@@ -19,10 +19,8 @@ messages that record review-driven fixes ("address review", "fix per
 review", revert-then-fix chains) — and apply those lessons. Never fail the
 review over missing GitHub access.
 
-Before returning anything, read and obey:
-
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+Your task prompt includes the shared finding schema and the false-positive
+exclusion list — obey both. Do not spend turns re-reading them from disk.
 
 Set `dimension` to `prior-reviews`. Quote the prior feedback (PR number or
 commit) in `evidence`. Only flag feedback that concretely applies to lines

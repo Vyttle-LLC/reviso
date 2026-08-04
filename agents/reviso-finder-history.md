@@ -17,10 +17,8 @@ established, and patterns this codebase already abandoned for a stated
 reason. The commit messages of the current branch state intent — an
 apparent regression the branch explicitly intends is not a finding.
 
-Before returning anything, read and obey:
-
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+Your task prompt includes the shared finding schema and the false-positive
+exclusion list — obey both. Do not spend turns re-reading them from disk.
 
 Set `dimension` to `history`. Cite the historical commits in `evidence`
 (short SHA + subject). Every candidate needs a concrete failure scenario and

@@ -6,17 +6,19 @@
 
 Stage 0 SHALL assemble, using only deterministic read-only git operations:
 the complete `base..HEAD` diff plus uncommitted changes, all commit messages
-on the branch, the full content of every changed file, a ticket reference
-inferred from branch name or commit trailers when present, and repo
-conventions (root and path-relevant CLAUDE.md / AGENTS.md, lint
+on the branch, the changed-file list with full-file content available to
+finders on demand (the orchestrator does not buffer file contents — cost
+measurement showed buffering pays for every byte once per agent prompt), a
+ticket reference inferred from branch name or commit trailers when present,
+and repo conventions (root and path-relevant CLAUDE.md / AGENTS.md, lint
 configuration for changed paths).
 
 #### Scenario: Full context assembled
 
 - **WHEN** Stage 0 runs on a branch with three commits and one staged edit
 - **THEN** the assembled context contains the three commit messages, the
-  combined diff including the staged edit, and full file content for every
-  changed file
+  combined diff including the staged edit, and the changed-file list —
+  with finders able to Read any changed file in full on demand
 
 #### Scenario: Conventions included
 

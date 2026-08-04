@@ -79,10 +79,13 @@ mechanical.
 Stage 0 is a fixed sequence of read-only git commands, not LLM judgment:
 merge-base with `--base` (default: the repo's default branch via
 `origin/HEAD`), full `base..HEAD` diff plus working-tree/index changes,
-`git log base..HEAD` messages, full contents of changed files, ticket
-inference from branch name / commit trailers, conventions files (CLAUDE.md,
-AGENTS.md, lint configs on changed paths). Deterministic assembly makes eval
-runs reproducible and keeps token spend for the stages that need it.
+`git log base..HEAD` messages, the changed-file list, ticket inference from
+branch name / commit trailers, conventions files (CLAUDE.md, AGENTS.md,
+lint configs on changed paths). Deterministic assembly makes eval runs
+reproducible and keeps token spend for the stages that need it.
+*(Amended after v0 cost measurement: the orchestrator no longer buffers
+full file contents — finders Read files on demand. Buffering paid for every
+byte once per agent prompt and was the second-largest cost driver.)*
 
 ### D5 — Deterministic detectors: ship only what cannot false-positive
 
