@@ -37,7 +37,7 @@ Groups map to the intended PR stack (one concern per PR, repo rule).
 - [x] 3.5 Write the report stage: dedupe, consolidation, severity ranking,
       line-anchored format, terminal default / `--out` sink, clean-review
       message
-- [ ] 3.6 End-to-end dogfood on a real Vyttle branch; confirm report-only
+- [x] 3.6 End-to-end dogfood on a real Vyttle branch; confirm report-only
       invariant (working tree byte-identical after run)
 
 ## 4. Deterministic detectors (Stage 1)
