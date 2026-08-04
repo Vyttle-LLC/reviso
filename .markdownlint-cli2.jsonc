@@ -13,6 +13,9 @@
     "CODE_OF_CONDUCT.md",
     // Upstream recipe snapshots, vendored verbatim as drift baselines
     // (eval/reference/README.md: "Do not edit the snapshot").
-    "eval/reference/code-review-recipe-*.md"
+    "eval/reference/code-review-recipe-*.md",
+    // Archived eval-run artifacts: machine-captured review output,
+    // preserved verbatim — not prose to reformat.
+    "eval/runs/**/*.md"
   ]
 }
