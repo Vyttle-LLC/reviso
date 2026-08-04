@@ -87,7 +87,7 @@ Groups map to the intended PR stack (one concern per PR, repo rule).
       eval artifacts
 - [ ] 7.2 Work the parity miss list from the reviso#6 baseline (real bugs
       confirmed fixed same-day: write-capable allowed-tools patterns,
-      unscoped agent Bash, `.fit(` detector FP, `++ ` header misparse,
+      unscoped agent Bash, `.fit(` detector FP, plus-plus header misparse,
       stale docs spelling, proposal/design dimension drift). Remaining
       misses need finder/context tuning, then re-judge
 - [ ] 7.3 baseline.sh: fail loudly when `/review` refuses eligibility
