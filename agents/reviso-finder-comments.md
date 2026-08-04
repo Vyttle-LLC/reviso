@@ -15,8 +15,10 @@ X", "do not reorder"), and warnings near the changed lines. Check that the
 change complies with them. A comment the change itself updates or removes,
 consistent with the code change, is not a violation.
 
-Your task prompt includes the shared finding schema and the false-positive
-exclusion list — obey both. Do not spend turns re-reading them from disk.
+Before returning anything, read and obey:
+
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
 Set `dimension` to `comments`. Quote the violated comment in `evidence` with
 its `file:line`. Every candidate needs a concrete failure scenario and a

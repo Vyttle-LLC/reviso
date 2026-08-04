@@ -23,8 +23,10 @@ loudly", "read-only" — check the code actually enforces it. Validation that
 checks shape but not the property, or a grep that matches one phrasing of
 many, is a real bug even in scripts and prompts.
 
-Your task prompt includes the shared finding schema and the false-positive
-exclusion list — obey both. Do not spend turns re-reading them from disk.
+Before returning anything, read and obey:
+
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
 Set `dimension` to `bugs`. Every candidate needs a concrete failure scenario
 (inputs/state → wrong outcome) and a suggested fix. If you cannot state the

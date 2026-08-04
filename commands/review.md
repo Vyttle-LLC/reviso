@@ -50,11 +50,7 @@ and flags it must produce identical context — no judgment calls, no sampling.
      `.markdownlint*`, `ruff.toml`, `.golangci.yml`) — paths only, read on demand.
 6. Infer the ticket: match the branch name and commit trailers against
    `[A-Z][A-Z0-9]+-[0-9]+`. Record it if found; absence is not an error.
-7. Read these two shared references ONCE — you will paste their contents
-   into every agent prompt (agents must not spend turns re-reading them):
-   - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-   - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
-8. Record the header facts for the report: branch, base, MB (short), commit
+7. Record the header facts for the report: branch, base, MB (short), commit
    count, changed-file count.
 
 ## Stage 1 — Deterministic detectors (free; before any agent)
@@ -83,9 +79,10 @@ Stage 3 and listed in the report's coverage summary.
 Launch all six finder agents in parallel — a single message with six Task
 calls — each blind to the others. Give each: the report header facts, the
 non-skipped diff hunks with their risk tags, the commit messages, the ticket
-(if any), the conventions file paths, the changed-file list, and the full
-text of the finding schema and false-positive list from Stage 0 step 7.
-Finders Read full files on demand; do not paste file contents. The finders:
+(if any), the conventions file paths, and the changed-file list. Do not
+paste file contents or reference-file text into agent prompts — finders
+Read files and their shared references on demand; relaying bulk text
+through your own context is what blows it up. The finders:
 
 1. `reviso-finder-conventions` — CLAUDE.md / AGENTS.md compliance
 2. `reviso-finder-bugs` — shallow scan of the changes for real bugs
@@ -102,11 +99,9 @@ candidate must carry a concrete failure scenario and a suggested fix.
 ## Stage 4 — Verify (the trust gate)
 
 For every LLM candidate (not deterministic findings), launch a parallel
-`reviso-verifier` agent (Haiku). Give each: the candidate, the relevant diff
-hunks, the conventions file paths, and the full text of the confidence
-rubric (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/confidence-rubric.md`
-— read it once) plus the false-positive list from Stage 0 step 7. It
-re-examines the code, applies the rubric as written, and returns a score.
+`reviso-verifier` agent (Haiku). Give each: the candidate, the relevant
+diff hunks, and the conventions file paths. It re-examines the code,
+applies the rubric as written, and returns a score.
 **Silently drop every finding scoring below 80.** Never mention dropped
 findings. If nothing survives and Stage 1 found nothing, skip to the report.
 

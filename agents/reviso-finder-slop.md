@@ -30,8 +30,10 @@ codebase's own norms.** A deliberate, established style here is never slop —
 you flag drift from the repo, not from your taste. When the repo itself is
 verbose, verbose new code matches its norms.
 
-Your task prompt includes the shared finding schema and the false-positive
-exclusion list — obey both. Do not spend turns re-reading them from disk.
+Before returning anything, read and obey:
+
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
 Set `dimension` to `slop`. Severity: slop is P2 unless it actively misleads
 (a wrong comment, a shadowed utility with different behavior) — then P1.

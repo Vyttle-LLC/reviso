@@ -25,8 +25,10 @@ Two scopes beyond the changed lines are also yours:
   the old form. A doc telling users something that no longer works is a
   conventions violation with a concrete consequence.
 
-Your task prompt includes the shared finding schema and the false-positive
-exclusion list — obey both. Do not spend turns re-reading them from disk.
+Before returning anything, read and obey:
+
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
 Only flag a conventions violation when the conventions file actually calls
 out that specific thing — quote it in `evidence`. Set `dimension` to
