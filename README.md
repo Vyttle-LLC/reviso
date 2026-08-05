@@ -59,10 +59,14 @@ positives are the metric we care about most.
 
 ## Install
 
-In Claude Code:
+In Claude Code, run these as two separate commands (use the full clone
+URL — `owner/repo` shorthand is not accepted):
 
 ```text
-/plugin marketplace add Vyttle-LLC/reviso
+/plugin marketplace add https://github.com/Vyttle-LLC/reviso.git
+```
+
+```text
 /plugin install reviso@reviso
 ```
 
