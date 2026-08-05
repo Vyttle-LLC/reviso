@@ -1,0 +1,9 @@
+[
+  {
+    "file": "agents/reviso-finder-history.md",
+    "line": 4,
+    "title": "Finder/verifier agents grant unscoped Bash instead of read-only-scoped tool permissions",
+    "severity": "P1",
+    "description": "The frontmatter of reviso-finder-history.md:4, reviso-finder-prior-reviews.md:4, and reviso-verifier.md:4 grants bare `Bash`. These agents consume attacker-controlled input (commit messages, git blame, PR review comments — the prompt-injection surfaces named in SECURITY.md), so an injected instruction to run a write/exfil shell command is blocked only by prose (\"use Bash exclusively for read-only git commands\"), not by the tool-permission layer. This contradicts design D3 (\"report-only enforced structurally, not by convention\") and the review-command spec (\"every subagent it spawns SHALL be restricted to read-only tools\"), while commands/review.md:4 already scopes every Bash grant to `Bash(git …:*)` patterns. Fix: scope each agent's Bash grant to the subcommands its prose needs, e.g. `tools: Read, Grep, Glob, Bash(git blame:*), Bash(git log:*), Bash(git show:*)` for reviso-finder-history, with equivalent allow-lists for reviso-finder-prior-reviews (plus `gh pr list/view`, `gh search`) and reviso-verifier (plus `git diff`). Confidence 80; category: conventions."
+  }
+]

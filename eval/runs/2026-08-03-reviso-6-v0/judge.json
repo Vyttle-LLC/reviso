@@ -1,0 +1,81 @@
+{
+  "matched": [
+    {
+      "baseline": {
+        "file": "agents/reviso-finder-history.md",
+        "line": 253,
+        "title": "\"Report-only enforced structurally\" overstated for three agents",
+        "severity": "4 (not a blocker)",
+        "description": "reviso-finder-history, reviso-finder-prior-reviews, and reviso-verifier grant bare `Bash` in frontmatter, so 'read-only git commands only' is prompt-level convention, not structural (agent `tools:` lists can't pattern-scope Bash). D3's claim that a write attempt is a tool-permission failure is really prompt obedience plus user permission config. candidate.sh's dirty-tree check is a good backstop; add an honest caveat in D3 or a PreToolUse hook later."
+      },
+      "candidate": {
+        "file": "agents/reviso-finder-history.md",
+        "line": 4,
+        "title": "Finder/verifier agents grant unscoped Bash instead of read-only-scoped tool permissions",
+        "severity": "P1",
+        "description": "The frontmatter of reviso-finder-history.md:4, reviso-finder-prior-reviews.md:4, and reviso-verifier.md:4 grants bare `Bash`. These agents consume attacker-controlled input (commit messages, git blame, PR review comments — the prompt-injection surfaces named in SECURITY.md), so an injected instruction to run a write/exfil shell command is blocked only by prose (\"use Bash exclusively for read-only git commands\"), not by the tool-permission layer. This contradicts design D3 (\"report-only enforced structurally, not by convention\") and the review-command spec (\"every subagent it spawns SHALL be restricted to read-only tools\"), while commands/review.md:4 already scopes every Bash grant to `Bash(git …:*)` patterns. Fix: scope each agent's Bash grant to the subcommands its prose needs, e.g. `tools: Read, Grep, Glob, Bash(git blame:*), Bash(git log:*), Bash(git show:*)` for reviso-finder-history, with equivalent allow-lists for reviso-finder-prior-reviews (plus `gh pr list/view`, `gh search`) and reviso-verifier (plus `git diff`). Confidence 80; category: conventions."
+      }
+    }
+  ],
+  "missed_P0_regressions": [
+    {
+      "file": "commands/review.md",
+      "line": 463,
+      "title": "allowed-tools includes write-capable git patterns",
+      "severity": "1 (most severe)",
+      "description": "`Bash(git branch:*)` permits `git branch -D/-f` and `Bash(git symbolic-ref:*)` permits the 2-arg write form and `--delete`, contradicting the adjacent prose claiming all pre-approved tools are read-only and specs/review-command/spec.md's rule that allowed-tools MUST NOT include Bash patterns permitting writes. Fix: drop both; `git rev-parse --abbrev-ref origin/HEAD` and `git rev-parse --abbrev-ref HEAD` cover the read uses."
+    },
+    {
+      "file": "docs/evals.md",
+      "line": 0,
+      "title": "Stale command spelling `/reviso review`",
+      "severity": "5",
+      "description": "docs/evals.md still uses the space form `/reviso review` two lines below the stub edited in this PR, while README/CONTRIBUTING moved to `/reviso:review`."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Prompt-injection surface not documented in SECURITY.md",
+      "severity": null,
+      "description": "finder-prior-reviews ingests PR comments, and match.sh/extract.sh embed reviewed text into prompts. Bounded by read-only tooling, but worth a SECURITY.md sentence eventually."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "PR bundles ~6 concerns, violating one-concern-per-PR",
+      "severity": null,
+      "description": "The PR ships the OpenSpec change, the plugin, Stage-1 detectors, the parity eval harness, a vendored recipe snapshot, and doc TODO resolution in one PR despite the repo's 'one concern per PR' rule; the commit stack was clearly built for stacked PRs and landed as one."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "No committed test for `detect.awk`",
+      "severity": null,
+      "description": "DISCOVERY.md describes synthetic-fixture validation but neither fixture nor runner is in-repo, so the only executable non-prose code ships regression-unguarded. Cheap fix: commit the fixture diff, expected TSV, and a 3-line sh test."
+    },
+    {
+      "file": "match.sh",
+      "line": 0,
+      "title": "\"Matches at most once\" is prompt-enforced only",
+      "severity": "Minor / edge",
+      "description": "Nothing mechanically prevents duplicate pairs from the model; a duplicate double-counts in baseline majority and judge buckets. A jq dedup on `a_idx`/`b_idx` would harden it."
+    },
+    {
+      "file": "extract.sh",
+      "line": 29,
+      "title": "Loud-failure cross-check only greps one phrasing",
+      "severity": "Minor / edge",
+      "description": "The cross-check greps only the `found N issue` phrasing, so other wordings slip through silently."
+    }
+  ],
+  "claimed_wins_unverified": [],
+  "metrics": {
+    "baseline_count": 8,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "parity_pct": 12,
+    "baseline_mean_cost_usd": 2.8747973333333334,
+    "candidate_cost_usd": 9.737667150000002,
+    "cost_ratio": 3.38
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "reviso",
+  "owner": {
+    "name": "Vyttle",
+    "url": "https://github.com/Vyttle-LLC"
+  },
+  "plugins": [
+    {
+      "name": "reviso",
+      "source": "./",
+      "description": "Local, pre-PR code review: /review-grade findings plus an anti-slop lens, report-only, on your own subscription."
+    }
+  ]
+}

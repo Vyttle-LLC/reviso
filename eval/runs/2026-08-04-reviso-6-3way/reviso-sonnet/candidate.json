@@ -1,0 +1,9 @@
+[
+  {
+    "file": "CLAUDE.md",
+    "line": 41,
+    "title": "Root CLAUDE.md's Scope section contradicts the repo — plugin already landed but doc not updated",
+    "severity": "P2",
+    "description": "Scope section reads 'The plugin itself — `.claude-plugin/`, `commands/`, `skills/`, `agents/`, and the `eval/` corpus — is not here yet.' This diff adds exactly that surface across 19 commits, but never updates CLAUDE.md. A reader will be misdirected to 'grep for TODO(plugin)' when the plugin has already landed. Fix: Update or remove the Scope section to reflect current state, e.g. replace with pointer to CONTRIBUTING.md's map."
+  }
+]

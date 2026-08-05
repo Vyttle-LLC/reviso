@@ -28,10 +28,17 @@ job needed.
 
 Reviso is the missing review. Two commands, both local, both report-only:
 
-- **`/reviso review`** — assembles a mock PR (`base..HEAD` plus uncommitted work)
-  and reviews it the way `/review` would, before the PR exists. Plus the slop lens.
-- **`/reviso audit`** — the deep multi-agent adversarial pass, for when you want
-  maximum rigour.
+- **`/reviso:review`** — the inner-loop review: assembles a mock PR
+  (`base..HEAD` plus uncommitted work) and reviews it in a single pass, the
+  way `/review` does, at comparable cost. Plus the slop lens. Run it as
+  often as you commit.
+- **`/reviso:audit`** — the pre-PR gate: parallel blind finders per
+  dimension, then a per-finding verification gate. Slower and heavier, for
+  when the branch is about to become a PR. (Full adversarial multi-skeptic
+  depth lands in P1.)
+
+The intended rhythm: code → `review` → fix → a few more commits →
+`audit` → open the PR.
 
 It runs on the Claude subscription you already pay for. There is no account, no
 signup, and no telemetry.
@@ -52,8 +59,21 @@ positives are the metric we care about most.
 
 ## Install
 
+In Claude Code:
+
+```text
+/plugin marketplace add Vyttle-LLC/reviso
+/plugin install reviso@reviso
+```
+
+Then run `/reviso:review` on any branch. Default diff base is your repo's
+default branch; override with `--base <ref>`.
+
+To try it without installing (or to hack on it), load it straight from a
+checkout:
+
 ```bash
-# TODO(plugin): install instructions land with the plugin release
+claude --plugin-dir /path/to/reviso
 ```
 
 ## Using it in CI
@@ -69,9 +89,16 @@ funded.
 
 ## Status
 
-Early. The parity bar is that `/reviso review` catches everything `/review`
+Early. The parity bar is that `/reviso:review` catches everything `/review`
 catches on the same changes; anything it misses is a P0. Our eval results —
 including the runs we lose — are published in [docs/evals.md](docs/evals.md).
+
+What's here today: `/reviso:review` (single-pass mock-PR review, anti-slop
+lens, deterministic detectors), `/reviso:audit` (the multi-agent
+finder + verify pipeline), and the parity eval harness in [eval/](eval/).
+Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),
+comment humanization (P1), and `.reviso/` team memory — rules and dismissal
+learnings (P2). Report-only is permanent; those aren't.
 
 ## Contributing
 

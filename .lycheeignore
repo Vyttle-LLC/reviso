@@ -13,3 +13,9 @@ security/advisories/new
 ^https://vyttle\.com
 # Vendored verbatim in CODE_OF_CONDUCT.md; not our link to maintain.
 ^https://www\.contributor-covenant\.org
+
+# Example links inside the vendored recipe snapshot (eval/reference/); one
+# points at a private Anthropic repo and 404s from anywhere. Vendored
+# verbatim; not our links to maintain.
+^https://github\.com/anthropics/claude-cli-internal
+^https://github\.com/anthropics/claude-code/blob

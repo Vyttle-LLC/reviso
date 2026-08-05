@@ -1,0 +1,98 @@
+{
+  "matched": [
+    {
+      "baseline": {
+        "file": "commands/review.md",
+        "line": 463,
+        "title": "allowed-tools includes write-capable git patterns",
+        "severity": "1 (most severe)",
+        "description": "`Bash(git branch:*)` permits `git branch -D/-f` and `Bash(git symbolic-ref:*)` permits the 2-arg write form and `--delete`, contradicting the adjacent prose claiming all pre-approved tools are read-only and specs/review-command/spec.md's rule that allowed-tools MUST NOT include Bash patterns permitting writes. Fix: drop both; `git rev-parse --abbrev-ref origin/HEAD` and `git rev-parse --abbrev-ref HEAD` cover the read uses."
+      },
+      "candidate": {
+        "file": "commands/review.md",
+        "line": 4,
+        "title": "Report-only tool grants are wider than the spec allows — write-capable Bash surface",
+        "severity": "P1",
+        "description": "Command and subagents grant unscoped/overly-wide Bash access permitting write operations (git branch -D, git symbolic-ref HEAD), violating read-only spec. Should scope to specific read-only commands: git branch --show-current, git symbolic-ref refs/remotes/origin/HEAD, plus agent-specific forms (git blame, git log, git show, git diff for history/verifier; gh pr list, gh pr view, gh search for prior-reviews)."
+      }
+    },
+    {
+      "baseline": {
+        "file": "docs/evals.md",
+        "line": 0,
+        "title": "Stale command spelling `/reviso review`",
+        "severity": "5",
+        "description": "docs/evals.md still uses the space form `/reviso review` two lines below the stub edited in this PR, while README/CONTRIBUTING moved to `/reviso:review`."
+      },
+      "candidate": {
+        "file": "docs/evals.md",
+        "line": 7,
+        "title": "`docs/evals.md` still uses the old `/reviso review` spelling this diff renames",
+        "severity": "P2",
+        "description": "File uses old `/reviso review` spelling instead of new `/reviso:review` standardized in this branch. Users typing the old form will get unknown-command error. Change to `/reviso:review`."
+      }
+    }
+  ],
+  "missed_P0_regressions": [
+    {
+      "file": "agents/reviso-finder-history.md",
+      "line": 253,
+      "title": "\"Report-only enforced structurally\" overstated for three agents",
+      "severity": "4 (not a blocker)",
+      "description": "reviso-finder-history, reviso-finder-prior-reviews, and reviso-verifier grant bare `Bash` in frontmatter, so 'read-only git commands only' is prompt-level convention, not structural (agent `tools:` lists can't pattern-scope Bash). D3's claim that a write attempt is a tool-permission failure is really prompt obedience plus user permission config. candidate.sh's dirty-tree check is a good backstop; add an honest caveat in D3 or a PreToolUse hook later."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Prompt-injection surface not documented in SECURITY.md",
+      "severity": null,
+      "description": "finder-prior-reviews ingests PR comments, and match.sh/extract.sh embed reviewed text into prompts. Bounded by read-only tooling, but worth a SECURITY.md sentence eventually."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "PR bundles ~6 concerns, violating one-concern-per-PR",
+      "severity": null,
+      "description": "The PR ships the OpenSpec change, the plugin, Stage-1 detectors, the parity eval harness, a vendored recipe snapshot, and doc TODO resolution in one PR despite the repo's 'one concern per PR' rule; the commit stack was clearly built for stacked PRs and landed as one."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "No committed test for `detect.awk`",
+      "severity": null,
+      "description": "DISCOVERY.md describes synthetic-fixture validation but neither fixture nor runner is in-repo, so the only executable non-prose code ships regression-unguarded. Cheap fix: commit the fixture diff, expected TSV, and a 3-line sh test."
+    },
+    {
+      "file": "match.sh",
+      "line": 0,
+      "title": "\"Matches at most once\" is prompt-enforced only",
+      "severity": "Minor / edge",
+      "description": "Nothing mechanically prevents duplicate pairs from the model; a duplicate double-counts in baseline majority and judge buckets. A jq dedup on `a_idx`/`b_idx` would harden it."
+    },
+    {
+      "file": "extract.sh",
+      "line": 29,
+      "title": "Loud-failure cross-check only greps one phrasing",
+      "severity": "Minor / edge",
+      "description": "The cross-check greps only the `found N issue` phrasing, so other wordings slip through silently."
+    }
+  ],
+  "claimed_wins_unverified": [
+    {
+      "file": "eval/reference/code-review-recipe-2026-08-03.md",
+      "line": 86,
+      "title": "Vendored snapshot's private-repo link will trip the weekly external link sweep",
+      "severity": "P2",
+      "description": "Line 86 contains URL to private GitHub repo (github.com/anthropics/claude-cli-internal) returning 404 to unauthenticated requests, causing false-alarm failures in weekly link-check CI. Add to .lycheeignore or exclude eval/reference from lychee sweeps."
+    }
+  ],
+  "metrics": {
+    "baseline_count": 8,
+    "candidate_count": 3,
+    "matched_count": 2,
+    "parity_pct": 25,
+    "baseline_mean_cost_usd": 2.8747973333333334,
+    "candidate_cost_usd": 4.088756999999999,
+    "cost_ratio": 1.42
+  }
+}

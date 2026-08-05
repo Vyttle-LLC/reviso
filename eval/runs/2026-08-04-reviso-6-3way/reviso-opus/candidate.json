@@ -1,0 +1,37 @@
+[
+  {
+    "file": "CLAUDE.md",
+    "line": 18,
+    "title": "Branch bundles ~6 concerns, violating one-concern-per-PR",
+    "severity": "P1",
+    "description": "Branch lands OpenSpec plan, plugin surface (commands + 8 agents + skill), Stage-1 detectors, parity eval harness, vendored upstream recipe, D10 architecture split, and two published eval runs as one change. Should split into stacked PRs along commit boundaries and restack with `git rebase --onto` as each parent merges."
+  },
+  {
+    "file": "commands/review.md",
+    "line": 4,
+    "title": "/reviso:review hard-pins model: opus, contradicting its own spec",
+    "severity": "P2",
+    "description": "Spec requires the single-pass review to run on the session's model for parity and cost comparison, but the command hard-pins `model: opus`. Users on Sonnet sessions silently get Opus, making per-run cost several times higher than the /review baseline it is benchmarked against."
+  },
+  {
+    "file": "skills/reviso/SKILL.md",
+    "line": 9,
+    "title": "Harness docs still call commands/review.md the subagent orchestrator",
+    "severity": "P2",
+    "description": "SKILL.md and CONTRIBUTING.md predate the D10 split and were not updated. They incorrectly state that commands/review.md is the orchestrator and agents/ are driven by /reviso:review, but /reviso:review now has no subagents; agents/ is driven solely by /reviso:audit. Contributors following these docs will make changes that have no effect."
+  },
+  {
+    "file": "skills/reviso/detectors/run.sh",
+    "line": 22,
+    "title": "[ -f ] guard silently truncates the untracked-file scan",
+    "severity": "P2",
+    "description": "Under `set -eu`, the `[ -f \"$f\" ]` test is the last command in the loop body; when it fails the entire `while` subshell exits, skipping remaining untracked files with exit status 0 and no message. Occurs with nested untracked git repos, broken symlinks, or non-ASCII paths. A conflict marker in a later untracked file could go unflagged."
+  },
+  {
+    "file": "docs/evals.md",
+    "line": 11,
+    "title": "Parity numbers published while the matcher calibration gate is explicitly unrun",
+    "severity": "P2",
+    "description": "Parity numbers (12% and 25%) are published as measured results while eval/calibration/README.md and eval/README.md both state the matcher \"is not trusted until it agrees with hand labels (task 5.5)\" and calibration's results show the gate unchecked. Since parity is entirely a function of the uncalibrated matcher, readers take untrusted numbers."
+  }
+]
