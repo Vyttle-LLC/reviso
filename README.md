@@ -84,6 +84,10 @@ URL — `owner/repo` shorthand is not accepted):
 Then run `/reviso:review` on any branch. Default diff base is your repo's
 default branch; override with `--base <ref>`.
 
+Updates are not automatic: `/plugin update reviso@reviso` pulls the latest
+release, or enable auto-update for the marketplace under `/plugin` →
+Marketplaces. `/plugin list` shows the version you're running.
+
 To try it without installing (or to hack on it), load it straight from a
 checkout:
 
