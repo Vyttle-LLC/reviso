@@ -1,10 +1,11 @@
 # Feedback without disclosure
 
-> **This page is a contract, then a feature.** The assisted flow described
-> below is not shipped yet — TODO(feedback) — but the contract already binds
-> it: an implementation that violates any invariant here is a security bug
-> (see [SECURITY.md](../SECURITY.md)), not a design choice. Filing today is
-> manual, via the
+> **This page is a contract first.** The assisted flow below is implemented
+> by `skills/reviso/feedback/build-payload.sh` and offered by both commands
+> after a report. The contract outranks the code: an implementation change
+> that violates any invariant here is a security bug (see
+> [SECURITY.md](../SECURITY.md)), not a design choice. You can always skip
+> the assistance and file manually via the
 > [false positive](../../../issues/new?template=false-positive.yml) and
 > [missed finding](../../../issues/new?template=missed-finding.yml) forms.
 
@@ -53,11 +54,12 @@ ticket ids, or any free text. A tier-1 payload has nowhere to put your code.
 
 Tier 1 tells us *which* lens or detector misfires and how often — enough to
 recalibrate confidence. It cannot tell us *why* a specific finding was wrong.
-When you're willing to show the code, Reviso prefills the
-[false positive form](../../../issues/new?template=false-positive.yml) and
-opens it in your browser (`gh issue create --web`). The form is the payload:
-you see every character before it exists anywhere but your machine. Redact
-freely; a redacted report is still an eval case.
+When you're willing to show the code, Reviso hands you a link to the
+[false positive form](../../../issues/new?template=false-positive.yml)
+prefilled with the finding as reported — nothing else. You open it, add the
+code and the why yourself, edit anything, and submit it yourself. The form
+is the payload: you see every character before it exists anywhere but your
+machine. Redact freely; a redacted report is still an eval case.
 
 Reports are GitHub issues filed from your account, so your GitHub identity
 is attached — the same as any issue you file by hand.
@@ -68,8 +70,9 @@ Belt and braces on top of the allowlist, all in the deterministic script:
 
 - Secret-pattern and high-entropy scan on the final payload; any hit
   refuses to send and says why
-- Reject payloads containing code fences, diff markers, or paths that match
-  the repository tree
+- Reject payloads containing code fences or diff markers, and any tier-1
+  field value shaped like a path — no payload field can name a file in
+  your tree
 - A hard length cap a code snippet can't fit under
 - The exact payload is printed before the send, every time
 

@@ -65,8 +65,8 @@ the feedback design is bound by a written privacy contract —
 automatically; the default report is metadata-only, built by a deterministic
 script from an allowlist the model can't reach past; and anything that
 includes code opens as a prefilled issue in your browser for you to read,
-edit, and send yourself. That contract is enforceable today; the assisted
-flow that rides on it ships later (see Status).
+edit, and send yourself. After a review, name a wrong finding and Reviso
+offers to file it under exactly those rules.
 
 ## Install
 
@@ -110,12 +110,12 @@ including the runs we lose — are published in [docs/evals.md](docs/evals.md).
 
 What's here today: `/reviso:review` (single-pass mock-PR review, anti-slop
 lens, deterministic detectors), `/reviso:audit` (the multi-agent
-finder + verify pipeline), and the parity eval harness in [eval/](eval/).
+finder + verify pipeline), the parity eval harness in [eval/](eval/), and
+the assisted false-positive feedback flow under the
+[docs/feedback.md](docs/feedback.md) privacy contract.
 Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),
-comment humanization (P1), the assisted feedback flow — its privacy contract
-is already written in [docs/feedback.md](docs/feedback.md) (P1) — and
-`.reviso/` team memory — rules and dismissal learnings (P2). Report-only is
-permanent; those aren't.
+comment humanization (P1), and `.reviso/` team memory — rules and dismissal
+learnings (P2). Report-only is permanent; those aren't.
 
 ## Contributing
 

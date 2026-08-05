@@ -25,3 +25,13 @@ so comparison is apples-to-apples.
   outside-the-repo config convention). No entry, diff content, or finding
   text from it ever lands in this repository; its run artifacts go to
   `eval/runs/private/` (gitignored).
+
+## Intake
+
+Issues labelled `eval-candidate` are the corpus queue — the false-positive
+and missed-finding forms apply the label, and tier-1 feedback reports
+(see [docs/feedback.md](../../docs/feedback.md)) carry it too. A tier-2
+report with code becomes a corpus entry directly; a tier-1 metadata report
+can't (no code), but recurring ones tell us which lens or detector needs a
+seeded case. Close the issue with a pointer to the entry it became, or to
+the calibration change it motivated.
