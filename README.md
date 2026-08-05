@@ -57,6 +57,17 @@ maybe. If it's noisy for you, that's a bug — please
 [report it](../../issues/new?template=false-positive.yml), because false
 positives are the metric we care about most.
 
+## Feedback that can't leak your code
+
+The catch with false-positive reports: the finding is about *your* code. So
+the feedback design is bound by a written privacy contract —
+[docs/feedback.md](docs/feedback.md). The short version: nothing is ever sent
+automatically; the default report is metadata-only, built by a deterministic
+script from an allowlist the model can't reach past; and anything that
+includes code opens as a prefilled issue in your browser for you to read,
+edit, and send yourself. That contract is enforceable today; the assisted
+flow that rides on it ships later (see Status).
+
 ## Install
 
 In Claude Code, run these as two separate commands (use the full clone
@@ -101,8 +112,10 @@ What's here today: `/reviso:review` (single-pass mock-PR review, anti-slop
 lens, deterministic detectors), `/reviso:audit` (the multi-agent
 finder + verify pipeline), and the parity eval harness in [eval/](eval/).
 Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),
-comment humanization (P1), and `.reviso/` team memory — rules and dismissal
-learnings (P2). Report-only is permanent; those aren't.
+comment humanization (P1), the assisted feedback flow — its privacy contract
+is already written in [docs/feedback.md](docs/feedback.md) (P1) — and
+`.reviso/` team memory — rules and dismissal learnings (P2). Report-only is
+permanent; those aren't.
 
 ## Contributing
 

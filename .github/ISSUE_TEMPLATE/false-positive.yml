@@ -38,14 +38,16 @@ body:
     id: lens
     attributes:
       label: Which lens produced it, if you know
+      description: The report names it in parentheses after each finding.
       options:
         - Not sure
-        - Correctness
-        - Security
-        - Error handling
-        - API contract
-        - Tests
+        - Bugs
+        - Conventions
+        - History
+        - Prior reviews
+        - Code comments
         - Anti-slop
+        - Deterministic detector
   - type: input
     id: command
     attributes:
