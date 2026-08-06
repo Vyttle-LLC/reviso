@@ -57,6 +57,17 @@ maybe. If it's noisy for you, that's a bug — please
 [report it](../../issues/new?template=false-positive.yml), because false
 positives are the metric we care about most.
 
+## Feedback that can't leak your code
+
+The catch with false-positive reports: the finding is about *your* code. So
+the feedback design is bound by a written privacy contract —
+[docs/feedback.md](docs/feedback.md). The short version: nothing is ever sent
+automatically; the default report is metadata-only, built by a deterministic
+script from an allowlist the model can't reach past; and anything that
+includes code opens as a prefilled issue in your browser for you to read,
+edit, and send yourself. After a review, name a wrong finding and Reviso
+offers to file it under exactly those rules.
+
 ## Install
 
 In Claude Code, run these as two separate commands (use the full clone
@@ -72,6 +83,10 @@ URL — `owner/repo` shorthand is not accepted):
 
 Then run `/reviso:review` on any branch. Default diff base is your repo's
 default branch; override with `--base <ref>`.
+
+Updates are not automatic: `/plugin update reviso@reviso` pulls the latest
+release, or enable auto-update for the marketplace under `/plugin` →
+Marketplaces. `/plugin list` shows the version you're running.
 
 To try it without installing (or to hack on it), load it straight from a
 checkout:
@@ -99,7 +114,9 @@ including the runs we lose — are published in [docs/evals.md](docs/evals.md).
 
 What's here today: `/reviso:review` (single-pass mock-PR review, anti-slop
 lens, deterministic detectors), `/reviso:audit` (the multi-agent
-finder + verify pipeline), and the parity eval harness in [eval/](eval/).
+finder + verify pipeline), the parity eval harness in [eval/](eval/), and
+the assisted false-positive feedback flow under the
+[docs/feedback.md](docs/feedback.md) privacy contract.
 Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),
 comment humanization (P1), and `.reviso/` team memory — rules and dismissal
 learnings (P2). Report-only is permanent; those aren't.

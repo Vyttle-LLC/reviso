@@ -29,6 +29,10 @@ We take that seriously and you should hold us to it.
   finding, fabricate one, or act outside its report-only contract
 - Any path by which Reviso **modifies files** — it is report-only, so any write
   is a vulnerability by definition
+- Any **outbound network write** beyond the feedback contract in
+  [docs/feedback.md](docs/feedback.md) — the only permitted send is a feedback
+  report the user explicitly approved; any other destination, or a payload
+  carrying content the user never saw, is a vulnerability
 - Command injection or path traversal in the detectors or context assembly
 - Exfiltration of repository contents, environment variables, or credentials
 - Escaping the repository sandbox

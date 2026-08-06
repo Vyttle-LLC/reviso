@@ -19,6 +19,10 @@ the commands and agents cite one copy instead of drifting apart.
 - `detectors/` — the zero-token Stage 1 suite. `run.sh <base-ref>` runs every
   detector; each is FP-free by construction or it does not ship
   (`detectors/DISCOVERY.md` records what was evaluated and why).
+- `feedback/` — the deterministic false-positive payload builder
+  (`build-payload.sh`). The only thing in the plugin permitted to make a
+  network write, and only to the Reviso issue tracker with the user's
+  explicit approval; `docs/feedback.md` is the contract it implements.
 
 Invariant, stated once more because every piece of this plugin inherits it:
 **report-only**. Nothing in this skill, the command, or the agents may

@@ -147,3 +147,42 @@ the same report to that path (this triggers a permission prompt — correct
 behavior; approve applies only to that file). Never write anywhere else.
 
 Keep the report brief. No emojis. Cite `file:line` for every finding.
+
+## Stage 7 — False-positive feedback (only if the user asks)
+
+If the report had findings, close with exactly one line: "Wrong about
+something? Say which finding — I can file feedback (metadata-only by
+default)." Nothing below runs unless the user then names a finding. Never
+run the feedback script unprompted, never batch findings the user didn't
+name, and read the contract it implements if in doubt:
+`${CLAUDE_PLUGIN_ROOT}/docs/feedback.md`.
+
+When the user names a finding:
+
+1. Pick the reason from what they said (ask if unclear):
+   `codebase-convention`, `upstream-guarantee`, `deliberate-choice`,
+   `linter-territory`, `wrong-on-facts`, or `other`.
+2. **Tier 1 (default).** Bucket the confidence (80–89 → `80s`, 90–99 →
+   `90s`, 100 → `100`) and run:
+
+   ```sh
+   sh ${CLAUDE_PLUGIN_ROOT}/skills/reviso/feedback/build-payload.sh meta \
+     --lens <dimension> --severity <P0|P1|P2> --confidence <bucket> \
+     --reason <reason> --command audit --model <your model id>
+   ```
+
+   (For a deterministic finding add `--detector <id>` and use
+   `--confidence 100`.) Show its output verbatim — that is the entire
+   payload. Only on the user's explicit go-ahead, re-run the identical
+   command with `--send` appended: the build is deterministic, so what was
+   shown is what is sent, and the `gh` call inside it is not pre-approved —
+   the permission prompt is the last gate.
+3. **Tier 2 (only if the user offers code context).** Pipe the finding
+   block exactly as reported into
+   `... build-payload.sh tier2 --command audit` and relay the URL it
+   prints. It opens the false-positive form prefilled with the finding;
+   the user adds the code and the why in the browser and submits it
+   themselves. Never post tier-2 content with `gh`.
+4. If the script exits 3, `gh` is missing or unauthenticated — relay the
+   manual form URL it printed. If it vetoes (exit 2), tell the user to file
+   via the form instead; do not retry around a veto.
