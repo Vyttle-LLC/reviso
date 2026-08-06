@@ -7,3 +7,5 @@ dist/
 !.env.example
 .reviso/learnings/local/
 eval/.cache/
+eval/runs/private/
+eval/reference/private/

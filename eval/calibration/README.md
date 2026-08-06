@@ -29,3 +29,15 @@ trap pairs: same file + similar topic but different root cause). Aim for
 | date | model | pairs | agreement | trap false-match | notes |
 | --- | --- | --- | --- | --- | --- |
 | _pending — task 5.5_ | – | – | – | – | – |
+| 2026-08-06 | sonnet | 5 (spot-check) | 5/5 | 0/1 | Private-corpus `sagechat-15` cross-run pairs (4 true pairs + 1 contradictory-root-cause trap, authentic per-run wordings). Spot-check only — the ~30-pair sample above is still owed. |
+
+## Tier calibration (judge P0 scope)
+
+The judge's correctness-vs-cleanup tiering is calibrated against the same
+hand-labeled cases (labels live in the private corpus; numbers only here).
+Publish gate: **≥90% tier agreement**, plus zero trap false-matches on the
+matcher checks.
+
+| date | case | agreement | notes |
+| --- | --- | --- | --- |
+| 2026-08-06 | `sagechat-15` (20 findings, 4 runs) | 16/20 → **19/20 (95%)** | `observability` and `deploy-safety` added to the cleanup list per the labels (all such findings ruled out-of-lane). Remaining disagreement: one efficiency finding labeled actionable — the efficiency-tier boundary stays open, tracked in the private calibration record. |
