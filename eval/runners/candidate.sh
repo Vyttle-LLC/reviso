@@ -36,4 +36,11 @@ fi
 jq '{cost: .total_cost_usd, duration_ms: .duration_ms, num_turns: .num_turns, models: (.modelUsage // {} | keys)}' \
   "$OUT/candidate-raw.json" > "$OUT/candidate-cost.json"
 
+# Identity metadata (design D4): judge.sh refuses baseline/candidate
+# comparisons across differing CLI versions — the built-in review the
+# baseline measures changes with the CLI.
+jq -n --arg v "$(claude --version 2>/dev/null | awk '{print $1}')" \
+  --slurpfile r "$OUT/candidate-raw.json" \
+  '{cli_version: $v, models: ($r[0].modelUsage // {} | keys)}' > "$OUT/meta.json"
+
 echo "candidate: $(jq 'length' "$OUT/candidate.json") findings, cost \$$(jq -r '.cost' "$OUT/candidate-cost.json") → $OUT/candidate.json" >&2

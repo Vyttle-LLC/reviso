@@ -1,33 +1,53 @@
 # Parity eval harness
 
 The acceptance test for Reviso's north star: on the same changes,
-`/reviso:review` catches everything `/review` catches. A baseline finding we
-miss is a P0 regression. See the PRD (§5, §13) and the change's `design.md`
-(D8).
+`/reviso:review` catches every **correctness-tier** finding that the
+built-in `/code-review` at **medium** catches. A correctness-tier baseline
+finding we miss is a P0 regression. See the PRD (§5, §13) and the
+`re-aim-parity-eval` change for why the target names a level: upstream
+`/review` is now effort-scaled, and its default (xhigh) is a recall-biased
+deep audit with the opposite philosophy to Reviso's precision invariant.
+Medium is the level that shares our stance ("every finding you surface
+should be one a maintainer would act on") and cost class.
 
 ## Flow
 
 ```text
 corpus entry {repo, pr, base_sha, head_sha}
   │
-  ├─ runners/baseline.sh   3 headless /review runs on the real PR
+  ├─ runners/baseline.sh   3 headless "/code-review medium" runs on the
+  │                        real PR, subagent fan-out allowed
   │                        → majority baseline (findings in ≥2 of 3 runs)
   ├─ runners/candidate.sh  checkout head_sha, /reviso:review --base base_sha
   │                        → candidate findings from the report
-  └─ runners/judge.sh      conservative root-cause matching →
+  └─ runners/judge.sh      tier baseline findings (correctness vs cleanup),
+                           conservative root-cause matching →
                            matched | missed | claimed_wins + metrics
 ```
 
-- **Misses** are listed individually — each is a P0 regression, not a
-  percentage.
+- **Misses in the correctness tier** are listed individually — each is a P0
+  regression, not a percentage. Cleanup-tier baseline findings
+  (simplification, efficiency, reuse, altitude, conventions, test-coverage)
+  are reported informationally: Reviso gates that tier by design, and a
+  "miss" there is the product working as intended. Unknown or missing
+  categories resolve to the correctness tier — ambiguity fails loud, toward
+  P0 scope.
 - **Claimed wins** (candidate-only findings) count as wins only after a
   verification pass confirms they're real; until then they're suspects.
 - **Cost is a first-class metric.** Runners record per-run cost; the judge
   reports `cost_ratio` (candidate ÷ baseline mean) next to parity. Target:
-  **≤ 1.5×**. Matching `/review`'s findings at 3× its price fails the
+  **≤ 1.5×**. Matching the baseline's findings at 3× its price fails the
   everyday-use bar just as surely as missing findings does.
 - **Parse failures are loud.** A baseline run whose output can't be parsed
   fails the run; the baseline is never silently reduced.
+- **Degraded runs are loud.** Without subagent fan-out available the
+  built-in degrades to a single-pass inline review and says so; a run that
+  self-reports that mode fails. It is not the pipeline users get.
+- **Findings come from the typed report when possible.** Headless, the
+  built-in reports through the `ReportFindings` tool in the run's
+  transcript; `report-findings.sh` harvests it (level, category, verdict
+  intact) and verifies the reported level matches the pinned one. Prose
+  extraction (`extract.sh`) is the fallback.
 
 ## Layout
 
@@ -35,37 +55,50 @@ corpus entry {repo, pr, base_sha, head_sha}
   The private (Vyttle) tier lives outside the repo, referenced by
   `REVISO_EVAL_PRIVATE_CORPUS`.
 - `runners/` — `baseline.sh`, `candidate.sh`, `judge.sh`, plus shared
-  `extract.sh` (review text → findings JSON) and `match.sh` (the LLM
-  matcher both majority and judging build on).
-- `runs/` — run artifacts (raw output + parsed findings + judge reports).
-  `runs/private/` is gitignored; only public-tier runs are committed.
+  `report-findings.sh` (transcript → findings JSON), `extract.sh` (review
+  text → findings JSON) and `match.sh` (the LLM matcher both majority and
+  judging build on).
+- `runs/` — run artifacts (raw output + parsed findings + per-run
+  `meta.json` + judge reports). `runs/private/` is gitignored; only
+  public-tier runs are committed.
 - `calibration/` — hand-labeled matcher samples; the judge's numbers are
   not trusted until it agrees with the labels (task 5.5).
-- `reference/` — the dated snapshot of the upstream recipe we forked;
-  re-benchmarking against a newer `/review` is just another eval run
-  diffed against runs recorded before it.
+- `reference/` — the upstream capture: `extract-builtin.sh` +
+  `builtin-skill-notes.md` (structure and drift fingerprints for the
+  CLI-embedded skill), and the superseded 2026-08-03 marketplace snapshot.
 
 ## Requirements
 
 `claude` CLI (with the target repo's subscription auth), `gh`, `jq`, `git`.
-Baseline runs consume real `/review` invocations; candidate runs need this
-plugin loadable via `--plugin-dir`.
+Baseline runs consume real `/code-review` invocations; candidate runs need
+this plugin loadable via `--plugin-dir`.
 
-Environment: `REVIEW_CMD` (default `/review`), `JUDGE_MODEL` (matcher model
-override), `REVISO_PLUGIN_DIR` (default: this repo), and
-`*_CLAUDE_FLAGS` pass-throughs per script — see script headers.
+Environment: `REVIEW_CMD` (default `/code-review medium`; it must name a
+level — the runner refuses an unpinned command), `BASELINE_MODEL` (default
+`opus`), `JUDGE_MODEL` (matcher model override), `REVISO_PLUGIN_DIR`
+(default: this repo), and `*_CLAUDE_FLAGS` pass-throughs per script — see
+script headers.
+
+**Runs carry their identity.** Each baseline run records the CLI version,
+the pinned level, and the resolved model IDs in `meta.json`; the three runs
+behind a majority baseline must agree on all three, and `judge.sh` refuses
+baseline/candidate comparisons across CLI versions
+(`JUDGE_ALLOW_VERSION_MISMATCH=1` downgrades the refusal to a
+`non_comparable` label). The built-in review ships inside the CLI, so **a
+CLI version roll is a re-baseline event** — re-run the corpus, diff, re-tune
+— exactly as a model-tier roll is:
 
 **Models are tiers, not versions.** The plugin pins aliases (`opus`,
 `sonnet`, `haiku`) and the baseline defaults to the `opus` alias — both
 sides resolve to the current model of the tier, so comparisons stay
 same-tier as generations roll. Run artifacts record the *resolved* model
 IDs; only compare runs whose resolved pairs match, and treat any tier roll
-as a re-baseline event (re-run the corpus, diff, re-tune).
+as a re-baseline event.
 
 **Clean context.** Every runner invokes `claude` with
 `--setting-sources project,local`: user-level CLAUDE.md, memory, and
-installed plugins are excluded, so the baseline is *stock* `/review`, the
-candidate is *this plugin*, and results reproduce on any machine. Project
-context (the target repo's own CLAUDE.md, lint configs) stays in — reading
-it is part of the review under test. Runs made without this isolation are
-smoke tests, not eval results.
+installed plugins are excluded, so the baseline is the *stock built-in*,
+the candidate is *this plugin*, and results reproduce on any machine.
+Project context (the target repo's own CLAUDE.md, lint configs) stays in —
+reading it is part of the review under test. Runs made without this
+isolation are smoke tests, not eval results.

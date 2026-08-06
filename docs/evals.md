@@ -3,8 +3,22 @@
 > The harness and the first published run are live — see
 > [eval/](../eval/README.md) for how baselines, candidates, and the judge
 > work. Yes, the first numbers are bad. That's the point of publishing them.
+>
+> **Protocol re-aim (2026-08-06).** Upstream `/review` turned out to be an
+> effort-scaled skill embedded in the CLI, not the marketplace recipe we
+> forked — and its default level (xhigh) is a recall-biased deep audit with
+> the opposite philosophy to Reviso's precision invariant. The parity target
+> is now the built-in `/code-review` pinned to **medium** (the
+> precision-stance level), scored on **correctness-tier** findings only;
+> cleanup-tier baseline findings are reported informationally. Baselines
+> now run with fan-out allowed and record CLI version + level; a CLI
+> version roll re-baselines. Details: `eval/README.md`,
+> `eval/reference/builtin-skill-notes.md`, and the `re-aim-parity-eval`
+> change. **The runs below predate the re-aim** (see each run dir's
+> `SUPERSEDED.md`) — their numbers are internally consistent but not
+> comparable with re-aimed runs.
 
-## Runs
+## Runs (superseded protocol — pre-2026-08-06)
 
 | date | corpus case | version | parity | misses | cost vs `/review` | artifacts |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,8 +56,11 @@ grants — both tools agreed). Several misses are deliberate policy differences
 policy-exclusion bucket. Same-day outcome: 6 of the baseline's findings were
 real bugs, fixed before this page was published.
 
-The parity bar: `/reviso:review` should catch everything Claude Code's
-`/review` catches on the same changes. Anything it misses is a P0.
+The parity bar: `/reviso:review` should catch every correctness-tier
+finding the built-in `/code-review` at medium catches on the same changes.
+Anything it misses in that tier is a P0. Cleanup-tier findings the baseline
+reports and Reviso gates are policy, not misses — they're published in an
+informational bucket.
 
 We publish the runs we lose alongside the ones we win. A review tool that only
 reports its wins is not measuring anything.
