@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Parity eval re-aimed at the built-in `/code-review` pinned to medium
+  (upstream `/review` is a CLI-embedded, effort-scaled skill; the
+  marketplace recipe the harness previously tracked is dead). Baselines now
+  record run identity (CLI version, level, resolved models), harvest the
+  typed ReportFindings report, and score parity on correctness-tier
+  findings only. Repo-side only — the installed plugin is unchanged.
+
 ## [0.2.0] — 2026-08-05
 
 ### Added
