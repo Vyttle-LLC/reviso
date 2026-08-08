@@ -1,0 +1,17 @@
+{
+  "case": "security-sql-injection-001",
+  "origin": "synthetic",
+  "imported": "2026-08-06",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+      "line": 40,
+      "title": "SQL injection vulnerability: the `username` request parameter is concatenated directly into the SQL query string on line",
+      "severity": "high",
+      "category": "security",
+      "crb_category": "security",
+      "description": "SQL injection vulnerability: the `username` request parameter is concatenated directly into the SQL query string on line 40 without sanitization or parameterization. An attacker can inject arbitrary SQL (e.g., `' OR '1'='1' --`) to dump or modify data. Use a PreparedStatement with parameterized queries instead."
+    }
+  ]
+}

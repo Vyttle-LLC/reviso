@@ -1,0 +1,26 @@
+[
+  {
+    "file": "app/assets/stylesheets/desktop/topic-post.scss",
+    "line": 291,
+    "title": "Light-theme argument transposed — light theme regresses on two rules",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Arguments to dark-light-choose transposed, causing contrast regression in light theme. Username link jumps from near-body-text to washed-out tint. Also affects mobile/modal.scss:102 with opposite transposition."
+  },
+  {
+    "file": "app/assets/stylesheets/desktop/user.scss",
+    "line": 522,
+    "title": "Three more light-theme values silently changed during the mechanical sweep",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Light-theme values incorrectly changed for .name (user.scss) and topic-list h3 (topic-post.scss), collapsing visual hierarchy and breaking mobile/desktop parity. Should restore original light values and derive dark side as 100-N."
+  },
+  {
+    "file": "app/assets/stylesheets/common/base/_topic-list.scss",
+    "line": 115,
+    "title": "One `scale-color($primary, …)` missed by the sweep",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Badge notification color was not converted to dark-light-choose like the rest of the file. In dark theme, this makes the category topic count near-illegible."
+  }
+]

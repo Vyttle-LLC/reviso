@@ -1,0 +1,34 @@
+[
+  {
+    "file": "app/assets/stylesheets/common/base/topic.scss",
+    "line": 30,
+    "title": "@include order(2) on .extra-info-wrapper is inert — not a flex child",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Component emits anonymous div between .contents and .extra-info-wrapper, making that div the flex item instead. order/flex sizing on .extra-info-wrapper don't apply, causing long titles to push .panel past .wrap instead of ellipsizing."
+  },
+  {
+    "file": "app/assets/stylesheets/common/base/header.scss",
+    "line": 35,
+    "title": "Removing float: right from .panel breaks ERB header layout",
+    "severity": "P2",
+    "category": "bugs",
+    "description": ".row is not a flex container in ERB view, so margin-left: auto and order don't work. Removed float: right was essential for positioning .panel at right edge. Anonymous login button now renders beside logo instead of top-right."
+  },
+  {
+    "file": "app/assets/stylesheets/common/base/topic-post.scss",
+    "line": 280,
+    "title": ".small-action-desc padding change orphans mobile overrides",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Padding change from 0.5em 0 0.5em 4em to 0 1.5% drops left padding, but mobile override .custom-message { margin-left: -40px } still applies, causing custom messages to hang left and overlap .topic-avatar."
+  },
+  {
+    "file": "app/assets/stylesheets/common/base/topic-post.scss",
+    "line": 264,
+    "title": ".small-action flex container lacks sizing for .small-action-desc",
+    "severity": "P2",
+    "category": "bugs",
+    "description": ".small-action-desc gets no flex value, defaults to flex: 0 1 auto, shrinks to max-content. Delete/edit buttons hug description text instead of right edge. float: left on .topic-avatar is inert in flex context."
+  }
+]

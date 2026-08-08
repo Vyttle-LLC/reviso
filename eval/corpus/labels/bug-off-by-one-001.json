@@ -1,0 +1,17 @@
+{
+  "case": "bug-off-by-one-001",
+  "origin": "synthetic",
+  "imported": "2026-08-06",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/utils/pagination.ts",
+      "line": 29,
+      "title": "Off-by-one error in the loop condition: `i <= startIndex + pageSize` iterates pageSize + 1 times instead of pageSize tim",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Off-by-one error in the loop condition: `i <= startIndex + pageSize` iterates pageSize + 1 times instead of pageSize times. The condition should be `i < startIndex + pageSize`. This causes each page to return one extra element (stealing the first item from the next page), breaking pagination boundaries and producing inconsistent results across pages."
+    }
+  ]
+}

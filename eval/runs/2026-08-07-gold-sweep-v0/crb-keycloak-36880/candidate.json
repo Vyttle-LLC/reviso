@@ -1,0 +1,34 @@
+[
+  {
+    "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java",
+    "line": 237,
+    "title": "A permission scoped to a single client grants realm-wide client management",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "hasPermission(String scope) doesn't check that the granting policy is bound to the all-clients resource, allowing a single-client permission to grant realm-wide access through DefaultPolicyEvaluator's resource-type-wide evaluation."
+  },
+  {
+    "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java",
+    "line": 262,
+    "title": "Dead code and unused imports in the new ClientPermissionsV2",
+    "severity": "P2",
+    "category": "slop",
+    "description": "getEvaluationContext() method is private and never called; logger field is unused; six imports (Scope, TOKEN_EXCHANGE, ClientModelIdentity, DefaultEvaluationContext, EvaluationContext) exist only for the dead method."
+  },
+  {
+    "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionEvaluator.java",
+    "line": 96,
+    "title": "New javadoc describes two void methods as returning a boolean",
+    "severity": "P2",
+    "category": "comments",
+    "description": "requireView() and requireViewClientScopes() javadoc incorrectly claim they return boolean when they are void methods that throw ForbiddenException, misleading callers about the return type."
+  },
+  {
+    "file": "server-spi-private/src/main/java/org/keycloak/authorization/AdminPermissionsSchema.java",
+    "line": 304,
+    "title": "Clients resources have no display name in the permission UI",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "getResourceName() only handles USERS type; CLIENTS type falls through to resource.getDisplayName() which is never set, resulting in blank display names and raw UUIDs in the admin console instead of client IDs."
+  }
+]

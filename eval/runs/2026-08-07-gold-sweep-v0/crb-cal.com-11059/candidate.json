@@ -1,0 +1,42 @@
+[
+  {
+    "file": "packages/app-store/googlecalendar/lib/CalendarService.ts",
+    "line": 97,
+    "title": "Google Calendar credential key is overwritten with the zod result wrapper, not the parsed key",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "`parseRefreshTokenResponse` returns the `safeParse` result wrapper instead of just the parsed object, so prisma writes `{success:true,data:{...}}` into `Credential.key`, causing parsing to fail on next load and breaking Google Calendar permanently."
+  },
+  {
+    "file": "packages/app-store/_utils/oauth/parseRefreshTokenResponse.ts",
+    "line": 7,
+    "title": "`minimumTokenResponseSchema`'s computed keys collapse to a single literal key; the expiry claim is never enforced",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`[z.string().toString()]` and `[z.string().optional().toString()]` both produce `\"[object Object]\"`, so the schema has only one dynamic key which overwrites expiry, causing tokens to be treated as permanently expired."
+  },
+  {
+    "file": "packages/app-store/_utils/oauth/refreshOAuthTokens.ts",
+    "line": 12,
+    "title": "`refreshOAuthTokens` returns a raw `fetch` Response in the sharing branch, but four callers expect an SDK/axios shape",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Helper returns raw Response when credential sync enabled, but callers expect parsed body properties like `.data`, causing credential sync to fail for googlecalendar, hubspot, zohocrm, zoho-bigin."
+  },
+  {
+    "file": "packages/app-store/zoho-bigin/lib/CalendarService.ts",
+    "line": 93,
+    "title": "Zoho Bigin passes `credentialId` where `refreshOAuthTokens` expects `userId`",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Passes `credentialId` instead of `credential.userId` to sync endpoint, causing it to resolve to wrong user and return another account's access token or none."
+  },
+  {
+    "file": "packages/app-store/salesforce/lib/CalendarService.ts",
+    "line": 106,
+    "title": "Salesforce refreshes the token on every instantiation, then builds the connection with the stale one",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Token refreshed unconditionally on every construction without expiry check, but connection built with old token values before refresh completes, making refresh ineffective and adding unnecessary network calls."
+  }
+]

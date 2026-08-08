@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/sentry/integrations/services/assignment_source.py",
+    "line": 18,
+    "title": "`AssignmentSource.queued` default evaluated at import time",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`timezone.now()` is evaluated once when the module imports, not per instance. Every AssignmentSource carries the identical process-start timestamp instead of the actual queueing time. Should use `field(default_factory=timezone.now)`."
+  },
+  {
+    "file": "src/sentry/integrations/mixins/issues.py",
+    "line": 411,
+    "title": "`assignment_source` parameter in `sync_status_outbound` unreachable",
+    "severity": "P2",
+    "category": "bugs; enforcement-vs-claim",
+    "description": "Parameter added to abstract signature but never passed by the only caller. Implementations inconsistent—some use **kwargs (safe), example integration lacks **kwargs and would raise TypeError if called."
+  }
+]

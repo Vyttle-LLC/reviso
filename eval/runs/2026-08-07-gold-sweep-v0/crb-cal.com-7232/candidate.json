@@ -1,0 +1,18 @@
+[
+  {
+    "file": "packages/features/ee/workflows/api/scheduleEmailReminders.ts",
+    "line": 53,
+    "title": "One SendGrid failure aborts every remaining cancellation, and no row is ever deleted",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "The entire for loop over remindersToCancel is wrapped in a single try/catch. If any client.request rejects, the loop exits and all remaining reminders keep their scheduled SendGrid sends. The workflowRemindersToDelete lazy PrismaPromises are only executed by Promise.all on line 74, which is skipped on throw, so cancelled reminders are never deleted. The same failing row re-aborts the loop on every cron run, permanently disabling cancellation for all users."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings.tsx",
+    "line": 486,
+    "title": "Reminder cancellation is now fire-and-forget; the awaits that guaranteed it were removed",
+    "severity": "P1",
+    "category": "bugs, comments",
+    "description": "await Promise.all(remindersToDelete) was deleted and reminder promises were dropped from prismaPromises. Replacement deleteScheduledEmailReminder/deleteScheduledSMSReminder calls are async but unawaited inside forEach, allowing the handler to return before operations complete. On Vercel the function freezes after response sends, so cancellations are lost. Similar patterns at handleCancelBooking.ts:485, handleNewBooking.ts:964, workflows.tsx:374. The try/catch at handleNewBooking.ts:964 is dead code since forEach discards returned promises, yet it reads as error handling."
+  }
+]

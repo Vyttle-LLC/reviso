@@ -1,0 +1,58 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Asynchronous functions deleteScheduledEmailReminder and deleteScheduledSMSReminder are called without await inside forEa",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Asynchronous functions deleteScheduledEmailReminder and deleteScheduledSMSReminder are called without await inside forEach loops. This occurs during booking rescheduling/cancellation, and workflow/workflow step deletion/updates. Consequently, scheduled workflow reminders may not be reliably cancelled, potentially leaving them active.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/bookings.tsx",
+        "line": 486,
+        "title": "Reminder cancellation is now fire-and-forget; the awaits that guaranteed it were removed",
+        "severity": "P1",
+        "category": "bugs, comments",
+        "description": "await Promise.all(remindersToDelete) was deleted and reminder promises were dropped from prismaPromises. Replacement deleteScheduledEmailReminder/deleteScheduledSMSReminder calls are async but unawaited inside forEach, allowing the handler to return before operations complete. On Vercel the function freezes after response sends, so cancellations are lost. Similar patterns at handleCancelBooking.ts:485, handleNewBooking.ts:964, workflows.tsx:374. The try/catch at handleNewBooking.ts:964 is dead code since forEach discards returned promises, yet it reads as error handling."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "When immediateDelete is true, the deleteScheduledEmailReminder function cancels the SendGrid email but fails to delete t",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "When immediateDelete is true, the deleteScheduledEmailReminder function cancels the SendGrid email but fails to delete the corresponding WorkflowReminder record from the database. This creates orphaned database entries and is inconsistent with the immediateDelete: false path, which marks the record as cancelled. The SendGrid DELETE API call is also omitted in this path.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/features/ee/workflows/api/scheduleEmailReminders.ts",
+      "line": 53,
+      "title": "One SendGrid failure aborts every remaining cancellation, and no row is ever deleted",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "The entire for loop over remindersToCancel is wrapped in a single try/catch. If any client.request rejects, the loop exits and all remaining reminders keep their scheduled SendGrid sends. The workflowRemindersToDelete lazy PrismaPromises are only executed by Promise.all on line 74, which is skipped on throw, so cancelled reminders are never deleted. The same failing row re-aborts the loop on every cron run, permanently disabling cancellation for all users."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 50
+  }
+}

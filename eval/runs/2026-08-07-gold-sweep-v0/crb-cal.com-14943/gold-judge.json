@@ -1,0 +1,55 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Using retryCount: reminder.retryCount + 1 reads a possibly stale value and can lose increments under concurrency; consid",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Using retryCount: reminder.retryCount + 1 reads a possibly stale value and can lose increments under concurrency; consider an atomic increment via Prisma (increment: 1) to avoid race conditions (also applies to the similar update in the catch block).",
+      "tier": "correctness"
+    },
+    {
+      "file": "packages/features/ee/workflows/api/scheduleSMSReminders.ts",
+      "line": 0,
+      "title": "The deletion logic in scheduleSMSReminders.ts incorrectly deletes non-SMS workflow reminders (e.g., Email, WhatsApp) tha",
+      "severity": "high",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "The deletion logic in scheduleSMSReminders.ts incorrectly deletes non-SMS workflow reminders (e.g., Email, WhatsApp) that have retryCount > 1. This occurs because the retryCount condition within the OR clause for deletion lacks a method: WorkflowMethods.SMS filter, causing it to apply to all reminder types instead of only SMS reminders, which is the intended scope of this function.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/features/ee/workflows/api/scheduleSMSReminders.ts",
+      "line": 190,
+      "title": "Retry-count bump inside `catch` can throw and abort the whole cron run",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Row can be deleted during batch processing, causing the retry-count update at line 190 to throw P2025. Since this throw occurs inside a catch block, it escapes the loop and skips all remaining reminders, causing the endpoint to 500."
+    },
+    {
+      "file": "packages/features/ee/workflows/api/scheduleSMSReminders.ts",
+      "line": 178,
+      "title": "SMS-lock is counted as a retryable failure, permanently deleting pending reminders",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "SMS-lock state from twilio.scheduleSMS is treated as a retryable failure and incremented at line 178. Reminders with retryCount > 1 are hard-deleted, so teams locked for ~45 minutes permanently lose all pending reminders in the 7-day window with no logging."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}

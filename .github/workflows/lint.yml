@@ -25,4 +25,7 @@ jobs:
           # reasons we don't control — they're on a schedule instead, in
           # link-check.yml. A required check that goes red on someone else's
           # WAF gets muted, and a muted check catches nothing at all.
-          args: --no-progress --offline '**/*.md'
+          # eval/runs is excluded for the same reason markdownlint ignores
+          # it: machine-captured review output, preserved verbatim,
+          # containing link-shaped text that was never a link.
+          args: --no-progress --offline --exclude-path eval/runs '**/*.md'

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "app/controllers/topics_controller.rb",
+    "line": 105,
+    "title": "`unsubscribe` writes `topic_users` directly instead of going through `TopicUser.change`",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Bypassing TopicUser.change causes: (a) NoMethodError/500 when TopicUser.find_by returns nil for user with no topic row; (b) missing notifications_reason_id/notifications_changed_at fields causing silent re-subscription via auto_track; (c) missing MessageBus.publish for cross-tab sync"
+  },
+  {
+    "file": "app/assets/javascripts/discourse/templates/topic/unsubscribe.hbs",
+    "line": 3,
+    "title": "Unsubscribe page claims notifications stop, but only drops watching → regular",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "UI claims user will stop receiving notifications but server only changes level from watching to regular, not muted. PostAlerter only suppresses notifications at muted level, so user still receives emails for replies/mentions"
+  }
+]

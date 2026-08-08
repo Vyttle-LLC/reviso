@@ -1,0 +1,27 @@
+{
+  "case": "crb-cal.com-8330",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/calcom/cal.com/pull/8330",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "packages/trpc/server/routers/viewer/slots.ts",
+      "line": 0,
+      "title": "Incorrect end time calculation using slotStartTime instead of slotEndTime",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Incorrect end time calculation using slotStartTime instead of slotEndTime"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Using === for dayjs object comparison will always return false as it compares object references, not values. Use .isSame",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Using === for dayjs object comparison will always return false as it compares object references, not values. Use .isSame() method instead: dayjs(date.start).add(utcOffset, 'minutes').isSame(dayjs(date.end).add(utcOffset, minutes))"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "cases": 63,
+  "clean_cases": 5,
+  "clean_case_fp_total": 4,
+  "gold_correctness_total": 139,
+  "matched_correctness_total": 68,
+  "aggregate_recall_correctness_pct": 48,
+  "candidate_total": 189,
+  "matched_total": 71,
+  "aggregate_precision_proxy_pct": 37
+}

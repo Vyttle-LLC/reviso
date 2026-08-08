@@ -1,0 +1,17 @@
+{
+  "id": "clean-no-issues-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add date formatting utility for dashboard timestamps",
+    "description": "Adds a small utility module for formatting dates consistently across the dashboard. Uses Intl.DateTimeFormat for locale-aware output and includes a relative time helper."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/utils/date-format.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,28 @@\n+export interface FormatOptions {\n+  locale?: string;\n+  includeTime?: boolean;\n+}\n+\n+var defaultOptions: FormatOptions = {\n+  locale: \"en-US\",\n+  includeTime: false,\n+};\n+\n+export function formatDate(date: Date, options?: FormatOptions): string {\n+  var opts = { ...defaultOptions, ...options };\n+\n+  if (!(date instanceof Date) || isNaN(date.getTime())) {\n+    return \"Invalid date\";\n+  }\n+\n+  var formatConfig: Intl.DateTimeFormatOptions = {\n+    year: \"numeric\",\n+    month: \"short\",\n+    day: \"numeric\",\n+  };\n+\n+  if (opts.includeTime) {\n+    formatConfig.hour = \"2-digit\";\n+    formatConfig.minute = \"2-digit\";\n+  }\n+\n+  return new Intl.DateTimeFormat(opts.locale, formatConfig).format(date);\n+}"
+    }
+  ]
+}

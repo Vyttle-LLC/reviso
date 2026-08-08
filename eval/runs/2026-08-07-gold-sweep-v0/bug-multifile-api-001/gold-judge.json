@@ -1,0 +1,38 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/routes/user-roles.ts",
+        "line": 25,
+        "title": "Argument order mismatch: `updateUserRole(userId, role)` on line 25 passes arguments in the wrong order. The service func",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Argument order mismatch: `updateUserRole(userId, role)` on line 25 passes arguments in the wrong order. The service function signature is `updateUserRole(role: string, userId: string)` (role first, userId second), but the handler passes userId first and role second. Since both parameters are strings, TypeScript does not catch this. The result is that the role validation will check the userId value and the database query will use the role string as the user ID, causing either incorrect errors or silent data corruption.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/routes/user-roles.ts",
+        "line": 25,
+        "title": "updateUserRole called with arguments swapped — every role update fails",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Route calls updateUserRole(userId, role) but service signature is updateUserRole(role: string, userId: string). Causes validation to fail with 'Invalid role: u_123' for every request. Also risks writing garbage role onto wrong row if userId matches a role literal."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

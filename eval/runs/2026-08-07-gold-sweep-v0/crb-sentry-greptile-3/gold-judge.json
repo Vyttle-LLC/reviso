@@ -1,0 +1,92 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Using Python’s built-in hash() to build cache keys is non-deterministic across processes (hash randomization), so keys w",
+        "severity": "low",
+        "category": "efficiency",
+        "crb_category": "performance",
+        "description": "Using Python’s built-in hash() to build cache keys is non-deterministic across processes (hash randomization), so keys won’t match across workers and invalidate_upsampling_cache may fail to delete them. Use a deterministic serialization of project_ids for the cache key.",
+        "tier": "cleanup"
+      },
+      "candidate": {
+        "file": "src/sentry/api/helpers/error_upsampling.py",
+        "line": 27,
+        "title": "60s eligibility cache is slower than original and cannot be invalidated",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "Cache swaps local dict read for network cache round-trip on every request, making it slower. Functionally non-revertible: when projects are removed from allowlist, endpoint keeps returning upsampled counts for up to 60s per distinct project-subset."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "sample_rate = 0.0 is falsy and skipped",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "sample_rate = 0.0 is falsy and skipped",
+      "tier": "correctness"
+    },
+    {
+      "file": "src/sentry/api/endpoints/organization_events_stats.py",
+      "line": 0,
+      "title": "The upsampling eligibility check passes the outer dataset instead of the actual dataset used by scoped_dataset. In paths",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The upsampling eligibility check passes the outer dataset instead of the actual dataset used by scoped_dataset. In paths where the query ultimately runs against discover (e.g., dashboard split) while the original dataset is metrics, upsampling may be skipped even when all projects are allowlisted.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/sentry/search/events/datasets/discover.py",
+      "line": 1048,
+      "title": "`upsampled_count()` drops the `ifNull` default, silently reverting defensive logic",
+      "severity": "P0",
+      "category": "bugs",
+      "description": "commit `6ad6fe38` changes `sum(ifNull(sample_weight, 1))` → `sum(sample_weight)`, silently reverting the defensive default. Events without `sample_weight` count as zero instead of one, causing projects to report count() == 0 for all historical error volume."
+    },
+    {
+      "file": "sentry-repo",
+      "line": 1,
+      "title": "Stray `sentry-repo` gitlink committed with no `.gitmodules`",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "`6ad6fe38` adds mode 160000 entry `sentry-repo` without `.gitmodules`, causing every fresh clone to get an empty directory and `git submodule update --init` to fail."
+    },
+    {
+      "file": "src/sentry/api/helpers/error_upsampling.py",
+      "line": 137,
+      "title": "Negated `!event.type:error` queries misclassified as error-focused",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "`_is_error_focused_query` does substring test, so `!event.type:error` (negation) is incorrectly classified as error-focused, causing non-error rows without `sample_weight` to report count as 0."
+    },
+    {
+      "file": "src/sentry/api/endpoints/organization_events_stats.py",
+      "line": 218,
+      "title": "Endpoint refactor triples line count with no behavior change",
+      "severity": "P2",
+      "category": "slop",
+      "description": "Replaces two lines with an inert alias and three identical copies of the same `if`/transform in each return branch, creating three places to keep in sync."
+    }
+  ],
+  "metrics": {
+    "gold_count": 3,
+    "gold_correctness_count": 2,
+    "candidate_count": 5,
+    "matched_count": 1,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 20
+  }
+}

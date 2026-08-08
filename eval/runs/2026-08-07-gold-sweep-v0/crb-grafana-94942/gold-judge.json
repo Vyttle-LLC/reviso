@@ -1,0 +1,66 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "pkg/expr/reader.go",
+        "line": 0,
+        "title": "The enableSqlExpressions function has flawed logic that always returns false, effectively disabling SQL expressions unco",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The enableSqlExpressions function has flawed logic that always returns false, effectively disabling SQL expressions unconditionally:",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "pkg/expr/reader.go",
+        "line": 194,
+        "title": "`enableSqlExpressions` can never return true — the feature-flag read is dead and inverted",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "The toggle lookup is computed and discarded; both branches return false. The feature flag has zero effect. The condition is also inverted relative to the name, making any fix that returns true when enabled incorrect."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Several methods such as NewInMemoryDB().RunCommands and db.QueryFramesInto return 'not implemented'.",
+      "severity": "high",
+      "category": "efficiency",
+      "crb_category": "performance",
+      "description": "Several methods such as NewInMemoryDB().RunCommands and db.QueryFramesInto return 'not implemented'.",
+      "tier": "cleanup"
+    }
+  ],
+  "promotion_candidates": [
+    {
+      "file": "pkg/expr/nodes.go",
+      "line": 160,
+      "title": "Default (non-`expressionParser`) path isn't gated and reports valid SQL as malformed",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "Guard lives only in `ReadQuery`, reached only when `expressionParser` is enabled. Default path runs `UnmarshalSQLCommand` which fails with 'not implemented', swallowed into BadRequest claiming SQL is invalid, breaking existing dashboards with valid SQL."
+    },
+    {
+      "file": "pkg/services/featuremgmt/registry.go",
+      "line": 1084,
+      "title": "Flag description, docs, and frontend still advertise working DuckDB SQL expressions",
+      "severity": "P2",
+      "category": "conventions",
+      "description": "Feature-flag registry, docs, and frontend UI advertise DuckDB SQL expressions as working when the dependency is removed and the feature is non-functional, misleading operators into enabling a broken feature."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 1,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 33
+  }
+}

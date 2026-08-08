@@ -1,0 +1,47 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "Race condition: Multiple concurrent requests could pass the device count check simultaneously and create devices beyond ",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Race condition: Multiple concurrent requests could pass the device count check simultaneously and create devices beyond the limit. Consider using a database transaction or lock."
+  },
+  {
+    "file": "pkg/services/anonymous/anonimpl/client.go",
+    "line": 0,
+    "title": "Anonymous authentication now fails entirely if anonDeviceService.TagDevice returns ErrDeviceLimitReached. Previously, de",
+    "severity": "medium",
+    "category": "security",
+    "crb_category": "security",
+    "description": "Anonymous authentication now fails entirely if anonDeviceService.TagDevice returns ErrDeviceLimitReached. Previously, device tagging was asynchronous and non-blocking. This change prevents anonymous users from authenticating when the device limit is reached."
+  },
+  {
+    "file": "pkg/services/anonymous/anonimpl/anonstore/database.go",
+    "line": 0,
+    "title": "This call won’t compile: dbSession.Exec(args...) is given a []interface{} where the first element is the query, but Exec",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "This call won’t compile: dbSession.Exec(args...) is given a []interface{} where the first element is the query, but Exec’s signature requires a first parameter of type string (not an interface{} splat)."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Returning ErrDeviceLimitReached when no rows were updated is misleading; the device might not exist.",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Returning ErrDeviceLimitReached when no rows were updated is misleading; the device might not exist."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Time window calculation inconsistency: Using device.UpdatedAt.UTC().Add(-anonymousDeviceExpiration) as the lower bound b",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Time window calculation inconsistency: Using device.UpdatedAt.UTC().Add(-anonymousDeviceExpiration) as the lower bound but device.UpdatedAt as the current time may not match the intended logic. Consider using time.Now().UTC() consistently."
+  }
+]

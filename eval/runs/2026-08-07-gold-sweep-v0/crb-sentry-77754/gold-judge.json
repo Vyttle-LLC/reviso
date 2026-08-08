@@ -1,0 +1,78 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Shared mutable default in dataclass timestamp",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Shared mutable default in dataclass timestamp",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/integrations/services/assignment_source.py",
+        "line": 18,
+        "title": "`AssignmentSource.queued` default evaluated at import time",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "`timezone.now()` is evaluated once when the module imports, not per instance. Every AssignmentSource carries the identical process-start timestamp instead of the actual queueing time. Should use `field(default_factory=timezone.now)`."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": "tests/sentry/integrations/services/test_assignment_source.py",
+      "line": 0,
+      "title": "The method name has a typo: test_from_dict_inalid_data should be test_from_dict_invalid_data.",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The method name has a typo: test_from_dict_inalid_data should be test_from_dict_invalid_data.",
+      "tier": "correctness"
+    },
+    {
+      "file": "tests/sentry/integrations/services/test_assignment_source.py",
+      "line": 0,
+      "title": "Method name says 'empty_array' but tests empty dict - consider renaming to 'test_from_dict_empty_dict' for clarity.",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Method name says 'empty_array' but tests empty dict - consider renaming to 'test_from_dict_empty_dict' for clarity.",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "to_dict() returns a datetime for queued; if this dict is passed in task kwargs (e.g., via apply_async), JSON serializati",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "to_dict() returns a datetime for queued; if this dict is passed in task kwargs (e.g., via apply_async), JSON serialization may fail depending on the serializer, which can cause enqueue errors.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/sentry/integrations/mixins/issues.py",
+      "line": 411,
+      "title": "`assignment_source` parameter in `sync_status_outbound` unreachable",
+      "severity": "P2",
+      "category": "bugs; enforcement-vs-claim",
+      "description": "Parameter added to abstract signature but never passed by the only caller. Implementations inconsistent—some use **kwargs (safe), example integration lacks **kwargs and would raise TypeError if called."
+    }
+  ],
+  "metrics": {
+    "gold_count": 4,
+    "gold_correctness_count": 4,
+    "candidate_count": 2,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 25,
+    "precision_proxy_pct": 50
+  }
+}

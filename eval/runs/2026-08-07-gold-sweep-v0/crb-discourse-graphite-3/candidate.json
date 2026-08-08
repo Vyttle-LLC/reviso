@@ -1,0 +1,10 @@
+[
+  {
+    "file": "lib/validators/email_validator.rb",
+    "line": 13,
+    "title": "Blocked-email match stats are rolled back by the enclosing save transaction",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "BlockedEmail.should_block? writes match_count/last_match_at from inside a validator, but the write is rolled back when validation fails because validations run inside the transaction that gets rolled back on error. This contradicts the feature's intent to track blocked email stats and is never caught by tests because the signup path accidentally records via a separate should_block? call outside the transaction."
+  }
+]

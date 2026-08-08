@@ -1,0 +1,58 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "ConditionalPasskeysEnabled() called without UserModel parameter",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "ConditionalPasskeysEnabled() called without UserModel parameter",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "services/src/main/java/org/keycloak/authentication/authenticators/browser/UsernameForm.java",
+        "line": 47,
+        "title": "Build break: `UsernameForm` calls the removed no-arg `isConditionalPasskeysEnabled()`",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Commit `3214b188de` renamed `isConditionalPasskeysEnabled()` to `isConditionalPasskeysEnabled(UserModel)` without updating the caller in the subclass. `UsernameForm.authenticate()` still invokes the zero-arg form; no zero-arg overload exists. Compilation fails: `method isConditionalPasskeysEnabled in class UsernamePasswordForm cannot be applied to given types`. Fix: update call site to `!isConditionalPasskeysEnabled(context.getUser())` or restore the zero-arg overload."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "With isConditionalPasskeysEnabled(UserModel user) requiring user != null, authenticate(...) will not call webauthnAuth.f",
+        "severity": "medium",
+        "category": "security",
+        "crb_category": "security",
+        "description": "With isConditionalPasskeysEnabled(UserModel user) requiring user != null, authenticate(...) will not call webauthnAuth.fillContextForm(context) on the initial login page where context.getUser() is still null, so conditional passkey UI will not be set up for first-time passkey login. Consider whether this should also be enabled when no user has been selected yet so ID-less passkey authentication on the initial login form continues to work.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "services/src/main/java/org/keycloak/authentication/authenticators/browser/UsernamePasswordForm.java",
+        "line": 161,
+        "title": "`user != null` in `isConditionalPasskeysEnabled` disables passkeys on anonymous login page",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Adding `&& user != null` inverts conditional-UI passkey form from rendering in both first-login and re-authentication into re-auth only. At lines 115 and 137, `context.getUser()` is null on normal first login, so `webauthnAuth.fillContextForm(context)` never runs and conditional-UI passkey autofill disappears. Contradicts tests asserting webauth form is present on initial anonymous login page. Fix: revert to `return webauthnAuth != null && webauthnAuth.isPasskeysEnabled();`."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

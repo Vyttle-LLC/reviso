@@ -1,0 +1,20 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "The updateManyByCredentialId call uses an empty data object, which prevents Prisma's @updatedAt decorator from updating ",
+    "severity": "medium",
+    "category": "security",
+    "crb_category": "security",
+    "description": "The updateManyByCredentialId call uses an empty data object, which prevents Prisma's @updatedAt decorator from updating the updatedAt timestamp. This results in inaccurate cache status tracking, as the timestamp isn't updated when the cache is refreshed. To fix this, explicitly set the updatedAt field."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "logic: macOS-specific sed syntax with empty string after -i flag will fail on Linux systems",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "logic: macOS-specific sed syntax with empty string after -i flag will fail on Linux systems"
+  }
+]

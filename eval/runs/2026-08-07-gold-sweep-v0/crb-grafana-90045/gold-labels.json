@@ -1,0 +1,29 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "The context is being created with d.Log instead of the log variable that was initialized with additional context values ",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The context is being created with d.Log instead of the log variable that was initialized with additional context values (name, kind, method). This means those values won't be propagated to the logging context."
+  },
+  {
+    "file": "pkg/apiserver/rest/dualwriter_mode3.go",
+    "line": 0,
+    "title": "Bug: calling recordLegacyDuration when storage operation fails should be recordStorageDuration.",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Bug: calling recordLegacyDuration when storage operation fails should be recordStorageDuration."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Inconsistency: using name instead of options.Kind for metrics recording differs from other methods.",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Inconsistency: using name instead of options.Kind for metrics recording differs from other methods."
+  }
+]

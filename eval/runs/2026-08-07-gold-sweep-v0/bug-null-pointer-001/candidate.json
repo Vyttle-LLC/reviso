@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/services/profile-summary.ts",
+    "line": 42,
+    "title": "Unguarded deref of nullable `profile.address` crashes summary",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "profile.address is typed Address | null but dereferenced without null check. Crashes with TypeError when address is null instead of falling back to 'Not specified' fallback on line 48"
+  }
+]

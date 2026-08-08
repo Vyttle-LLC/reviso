@@ -1,0 +1,17 @@
+{
+  "id": "security-path-traversal-001",
+  "language": "python",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add file download endpoint for uploaded documents",
+    "description": "Implements a download endpoint that serves uploaded files from the uploads directory. Authenticated users can download their previously uploaded documents by filename."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/routes/downloads.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,48 @@\n+import os\n+import mimetypes\n+from flask import Blueprint, request, send_file, jsonify, abort\n+from auth import require_login\n+\n+downloads_bp = Blueprint(\"downloads\", __name__)\n+\n+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), \"..\", \"uploads\")\n+\n+\n+@downloads_bp.route(\"/api/files/<path:filename>\", methods=[\"GET\"])\n+@require_login\n+def download_file(filename):\n+    \"\"\"Serve an uploaded file for download.\n+\n+    The filename is taken from the URL path and resolved against the\n+    uploads directory.\n+    \"\"\"\n+    if not filename:\n+        return jsonify({\"error\": \"filename is required\"}), 400\n+\n+    file_path = os.path.join(UPLOAD_DIR, filename)\n+\n+    if not os.path.isfile(file_path):\n+        abort(404)\n+\n+    mime_type, _ = mimetypes.guess_type(file_path)\n+    if mime_type is None:\n+        mime_type = \"application/octet-stream\"\n+\n+    return send_file(file_path, mimetype=mime_type, as_attachment=True)\n+\n+\n+@downloads_bp.route(\"/api/files\", methods=[\"GET\"])\n+@require_login\n+def list_files():\n+    \"\"\"List all available files in the uploads directory.\"\"\"\n+    if not os.path.isdir(UPLOAD_DIR):\n+        return jsonify({\"files\": []})\n+\n+    files = []\n+    for entry in os.listdir(UPLOAD_DIR):\n+        full_path = os.path.join(UPLOAD_DIR, entry)\n+        if os.path.isfile(full_path):\n+            stat = os.stat(full_path)\n+            files.append({\"name\": entry, \"size\": stat.st_size})\n+\n+    return jsonify({\"files\": files})"
+    }
+  ]
+}

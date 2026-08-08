@@ -1,0 +1,56 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "SSRF vulnerability using open(url) without validation",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "SSRF vulnerability using open(url) without validation"
+  },
+  {
+    "file": "app/assets/javascripts/embed.js",
+    "line": 0,
+    "title": "The current origin validation using indexOf is insufficient and can be bypassed. An attacker could use a malicious domai",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The current origin validation using indexOf is insufficient and can be bypassed. An attacker could use a malicious domain like evil-discourseUrl.com to pass this check."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "postMessage targetOrigin should be the origin (scheme+host+port), not the full referrer URL; using the full URL will cau",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "postMessage targetOrigin should be the origin (scheme+host+port), not the full referrer URL; using the full URL will cause the message to be dropped and prevent resizing."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "The code sets X-Frame-Options: ALLOWALL which completely disables clickjacking protection. The referer validation can be",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The code sets X-Frame-Options: ALLOWALL which completely disables clickjacking protection. The referer validation can be bypassed (referer headers are easily spoofed), and the fallback to empty string for nil referer masks validation failures."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "The TopicEmbed.import method is susceptible to a NoMethodError if the contents parameter is nil when attempting to appen",
+    "severity": "medium",
+    "category": "security",
+    "crb_category": "security",
+    "description": "The TopicEmbed.import method is susceptible to a NoMethodError if the contents parameter is nil when attempting to append a string, and an XSS vulnerability due to unescaped url interpolation in the generated HTML."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "The ERB block closes with end if, which is invalid Ruby/ERB and will raise at render; it should just be end to close the",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The ERB block closes with end if, which is invalid Ruby/ERB and will raise at render; it should just be end to close the if block."
+  }
+]

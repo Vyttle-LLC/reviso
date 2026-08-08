@@ -1,0 +1,58 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Returns wrong provider (default keystore instead of BouncyCastle)",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Returns wrong provider (default keystore instead of BouncyCastle)",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "common/src/main/java/org/keycloak/common/crypto/CryptoIntegration.java",
+        "line": 57,
+        "title": "Removing the multi-provider guard makes an ambiguous crypto classpath silently pick a provider instead of failing",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "Removing multi-provider guard causes ambiguous crypto provider selection to silently pick a provider based on jar order instead of failing. FIPS deployment that accidentally includes keycloak-crypto-default now boots on non-FIPS BouncyCastle instead of failing at startup as intended."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Dead code exists where ASN1Encoder instances are created and written to, but their results are immediately discarded. Th",
+        "severity": "low",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Dead code exists where ASN1Encoder instances are created and written to, but their results are immediately discarded. The actual encoding is performed by new ASN1Encoder instances created in the subsequent return statement, rendering the earlier operations useless.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "authz/client/src/main/java/org/keycloak/authorization/client/util/crypto/AuthzClientCryptoProvider.java",
+        "line": 114,
+        "title": "Dead code: two ASN.1 encoders are built and discarded",
+        "severity": "P2",
+        "category": "slop",
+        "description": "Lines 114–115 create two ASN1Encoder instances, write values into them, and discard results; return statement constructs four fresh encoders and does the real work. Harmless at runtime but invites future misuse."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

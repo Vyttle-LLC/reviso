@@ -49,15 +49,46 @@ corpus entry {repo, pr, base_sha, head_sha}
   intact) and verifies the reported level matches the pinned one. Prose
   extraction (`extract.sh`) is the fallback.
 
+## Gold mode
+
+Parity answers "do we match upstream?"; gold mode answers "are we right?"
+— the candidate alone against hand- or benchmark-labeled ground truth, no
+upstream invocation anywhere. Per case it costs one `/reviso:review` run
+plus matcher calls (~10× cheaper than a parity case's three baseline
+runs), which makes it the sweep you run on every meaningful pipeline
+change; parity runs on the `active_parity` subset at re-baseline events.
+
+```text
+runners/gold.sh <case-id> <outdir>     one case
+runners/sweep.sh gold <outroot>        every labeled case + summary.json
+```
+
+- **Metrics**: `gold_recall_correctness` (matched correctness-tier gold
+  issues ÷ total; cleanup-tier gold misses are informational),
+  `precision_proxy_pct` (candidate findings matching any gold issue ÷ all
+  candidate findings — a *proxy*: unmatched findings may be
+  real-but-unlabeled and are listed as `promotion_candidates` for the
+  labels file), and `clean_case_fp_count` (every finding on an
+  expected-clean case is a false positive, no matcher call needed).
+- Same matcher (`match.sh`) and tiering as parity mode — one calibration
+  covers both.
+- **Synthetic cases** (no upstream repo) materialize into a throwaway git
+  repo as uncommitted additions on an empty base; parity tooling refuses
+  them.
+- Real cases check out via blobless clone cache (`eval/.cache/clones/`) +
+  a detached worktree; expect multi-GB disk for the big upstreams
+  (grafana, keycloak) on first use.
+
 ## Layout
 
-- `corpus/` — entry schema and the public tier (see `corpus/README.md`).
-  The private (Vyttle) tier lives outside the repo, referenced by
-  `REVISO_EVAL_PRIVATE_CORPUS`.
-- `runners/` — `baseline.sh`, `candidate.sh`, `judge.sh`, plus shared
-  `report-findings.sh` (transcript → findings JSON), `extract.sh` (review
-  text → findings JSON) and `match.sh` (the LLM matcher both majority and
-  judging build on).
+- `corpus/` — entry schema, the public tier (64 entries: 50 CRB-imported
+  real PRs, 13 synthetics, 1 legacy), gold labels under `corpus/labels/`,
+  and the importers (see `corpus/README.md`). The private (Vyttle) tier
+  lives outside the repo, referenced by `REVISO_EVAL_PRIVATE_CORPUS`.
+- `runners/` — `baseline.sh`, `candidate.sh`, `judge.sh`, `gold.sh`,
+  `sweep.sh`, plus shared `report-findings.sh` (transcript → findings
+  JSON), `extract.sh` (review text → findings JSON) and `match.sh` (the
+  LLM matcher everything builds on).
 - `runs/` — run artifacts (raw output + parsed findings + per-run
   `meta.json` + judge reports). `runs/private/` is gitignored; only
   public-tier runs are committed.

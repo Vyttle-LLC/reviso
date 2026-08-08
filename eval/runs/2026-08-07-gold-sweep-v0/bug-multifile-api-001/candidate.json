@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/routes/user-roles.ts",
+    "line": 25,
+    "title": "updateUserRole called with arguments swapped — every role update fails",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "Route calls updateUserRole(userId, role) but service signature is updateUserRole(role: string, userId: string). Causes validation to fail with 'Invalid role: u_123' for every request. Also risks writing garbage role onto wrong row if userId matches a role literal."
+  }
+]

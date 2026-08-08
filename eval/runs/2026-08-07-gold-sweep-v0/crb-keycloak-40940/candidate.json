@@ -1,0 +1,18 @@
+[
+  {
+    "file": "tests/base/src/test/java/org/keycloak/tests/admin/group/GroupTest.java",
+    "line": 155,
+    "title": "Regression test asserts before joining the reader thread, so it can miss the very NPE it guards",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Test has a race condition where assertion executes before reader thread completes, allowing it to miss the NPE it guards. The caughtExceptions list is read as empty before the reader thread adds the exception. Thread is also never joined, outliving the test method."
+  },
+  {
+    "file": "model/infinispan/src/main/java/org/keycloak/models/cache/infinispan/GroupAdapter.java",
+    "line": 275,
+    "title": "getSubGroupsCount() now returns null, contradicting the interface's documented 'Never returns null'",
+    "severity": "P2",
+    "category": "contract",
+    "description": "Method returns null for concurrently-deleted groups, violating the documented interface contract. Causes null check failures in callers and incorrect rendering of deleted groups as expandable in admin UI."
+  }
+]

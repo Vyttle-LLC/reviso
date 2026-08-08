@@ -1,0 +1,116 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Invalid Zod schema syntax. Computed property keys like [z.string().toString()] are not valid in Zod object schemas and w",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Invalid Zod schema syntax. Computed property keys like [z.string().toString()] are not valid in Zod object schemas and will cause runtime errors. ",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/app-store/_utils/oauth/parseRefreshTokenResponse.ts",
+        "line": 7,
+        "title": "`minimumTokenResponseSchema`'s computed keys collapse to a single literal key; the expiry claim is never enforced",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "`[z.string().toString()]` and `[z.string().optional().toString()]` both produce `\"[object Object]\"`, so the schema has only one dynamic key which overwrites expiry, causing tokens to be treated as permanently expired."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "parseRefreshTokenResponse returns a Zod safeParse result ({ success, data, error }), not the credential key object. Pers",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "parseRefreshTokenResponse returns a Zod safeParse result ({ success, data, error }), not the credential key object. Persisting that as key stores the wrapper instead of the token payload; we should store the parsed data or use schema parse.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/app-store/googlecalendar/lib/CalendarService.ts",
+        "line": 97,
+        "title": "Google Calendar credential key is overwritten with the zod result wrapper, not the parsed key",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "`parseRefreshTokenResponse` returns the `safeParse` result wrapper instead of just the parsed object, so prisma writes `{success:true,data:{...}}` into `Credential.key`, causing parsing to fail on next load and breaking Google Calendar permanently."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "When APP_CREDENTIAL_SHARING_ENABLED and CALCOM_CREDENTIAL_SYNC_ENDPOINT are set, the refreshFunction helper returns the ",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "When APP_CREDENTIAL_SHARING_ENABLED and CALCOM_CREDENTIAL_SYNC_ENDPOINT are set, the refreshFunction helper returns the fetch Response, but several callers (for example GoogleCalendarService.refreshAccessToken expecting res.data, and HubspotCalendarService.refreshAccessToken expecting a HubspotToken) assume it returns the integration-specific token object. That mismatch will cause runtime errors in the sync-enabled path unless the return type or those call sites are adjusted.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/app-store/_utils/oauth/refreshOAuthTokens.ts",
+        "line": 12,
+        "title": "`refreshOAuthTokens` returns a raw `fetch` Response in the sharing branch, but four callers expect an SDK/axios shape",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "Helper returns raw Response when credential sync enabled, but callers expect parsed body properties like `.data`, causing credential sync to fail for googlecalendar, hubspot, zohocrm, zoho-bigin."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The parseRefreshTokenResponse function incorrectly sets refresh_token to the hardcoded string 'refresh_token' when it's ",
+      "severity": "high",
+      "category": "security",
+      "crb_category": "security",
+      "description": "The parseRefreshTokenResponse function incorrectly sets refresh_token to the hardcoded string 'refresh_token' when it's missing from the OAuth refresh token response. This invalidates the token, breaking subsequent token refreshes and causing authentication failures.",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "When the sync endpoint path is used, res is a fetch Response and has no .data; res?.data will be undefined and token.acc",
+      "severity": "high",
+      "category": "security",
+      "crb_category": "security",
+      "description": "When the sync endpoint path is used, res is a fetch Response and has no .data; res?.data will be undefined and token.access_token will throw at runtime. This relies on a consistent return shape from refreshOAuthTokens, which isn’t guaranteed currently.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/app-store/zoho-bigin/lib/CalendarService.ts",
+      "line": 93,
+      "title": "Zoho Bigin passes `credentialId` where `refreshOAuthTokens` expects `userId`",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Passes `credentialId` instead of `credential.userId` to sync endpoint, causing it to resolve to wrong user and return another account's access token or none."
+    },
+    {
+      "file": "packages/app-store/salesforce/lib/CalendarService.ts",
+      "line": 106,
+      "title": "Salesforce refreshes the token on every instantiation, then builds the connection with the stale one",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Token refreshed unconditionally on every construction without expiry check, but connection built with old token values before refresh completes, making refresh ineffective and adding unnecessary network calls."
+    }
+  ],
+  "metrics": {
+    "gold_count": 5,
+    "gold_correctness_count": 5,
+    "candidate_count": 5,
+    "matched_count": 3,
+    "matched_correctness_count": 3,
+    "gold_recall_correctness": 60,
+    "precision_proxy_pct": 60
+  }
+}

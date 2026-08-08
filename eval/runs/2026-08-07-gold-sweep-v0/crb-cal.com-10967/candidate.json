@@ -1,0 +1,74 @@
+[
+  {
+    "file": "packages/core/EventManager.ts",
+    "line": 119,
+    "title": "Google Meet fallback crashes when there is no destination calendar",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "Array destructuring yields undefined when destinationCalendar is null/[], then unguarded dereference of .integration throws TypeError"
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/organizations/create.handler.ts",
+    "line": 151,
+    "title": "Organization slug/requestedSlug logic inverted",
+    "severity": "P0",
+    "category": "history",
+    "description": "Condition flipped in ternary conversion; org created with slug when billing enabled instead of disabled"
+  },
+  {
+    "file": "packages/app-store/googlecalendar/lib/CalendarService.ts",
+    "line": 256,
+    "title": "Google updateEvent/deleteEvent fallback compares externalCalendarId to itself",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "find only runs when externalCalendarId is falsy; comparison always matches undefined; updateEvent fails with undefined calendarId, deleteEvent deletes from wrong calendar"
+  },
+  {
+    "file": "packages/core/EventManager.ts",
+    "line": 170,
+    "title": "Video booking references lose their credentialId",
+    "severity": "P1",
+    "category": "history",
+    "description": "credentialId set to undefined for video references, reverting fix from PR #9281 that stored correct credential"
+  },
+  {
+    "file": "packages/core/EventManager.ts",
+    "line": 380,
+    "title": "New booking references lose externalCalendarId for destinations without credentialId",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "externalCalendarId not passed through createEvent for destination calendars without credentialId, resulting in undefined references"
+  },
+  {
+    "file": "packages/core/EventManager.ts",
+    "line": 592,
+    "title": "updateAllCalendarEvents catch block no longer logs anything",
+    "severity": "P2",
+    "category": "history",
+    "description": "console.error(message) removed but message still built; calendar-update failures silently swallowed"
+  },
+  {
+    "file": "packages/features/bookings/lib/handleCancelBooking.ts",
+    "line": 445,
+    "title": "Recurring-cancellation deletes are re-run once per calendar reference",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Recurring event deletion loop nested inside per-reference loop, causing N× identical deleteEvent calls for N calendar references"
+  },
+  {
+    "file": "packages/features/bookings/lib/handleNewBooking.ts",
+    "line": 1078,
+    "title": "Team destination calendars silently dropped when organizer has none",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "push() on null destinationCalendar is no-op; team calendars discarded when organizer lacks destination calendar"
+  },
+  {
+    "file": "packages/core/EventManager.ts",
+    "line": 343,
+    "title": "22-line credential-from-DB block duplicated verbatim",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Identical prisma.credential.findUnique + field remap appears at lines 343 and 516; should extract to helper method"
+  }
+]

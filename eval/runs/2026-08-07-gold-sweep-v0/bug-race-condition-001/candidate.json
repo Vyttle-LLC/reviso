@@ -1,0 +1,26 @@
+[
+  {
+    "file": "pkg/ratelimit/limiter.go",
+    "line": 31,
+    "title": "RateLimiter has no synchronization — concurrent use crashes the process",
+    "severity": "P0",
+    "category": "bugs; concurrency",
+    "description": "Allow reads and writes rl.clients and mutates state.Count/state.WindowStart with no lock, and Reset swaps the map out from under it. Concurrent calls trip Go's map-write detector causing fatal error. Concurrent state.Count++ loses updates, allowing clients to exceed maxPerWindow."
+  },
+  {
+    "file": "pkg/ratelimit/limiter.go",
+    "line": 36,
+    "title": "clients map grows without bound",
+    "severity": "P1",
+    "category": "bugs; external input",
+    "description": "Entries are only ever added, never evicted. Client keys from external input or long-tail traffic grow the map forever; expired windows keep entries alive indefinitely. Only Reset() clears entries but also wipes every live limit."
+  },
+  {
+    "file": "pkg/ratelimit/limiter.go",
+    "line": 13,
+    "title": "Doc comment claims a sliding window; code implements a fixed window",
+    "severity": "P2",
+    "category": "comments; enforcement-vs-claim",
+    "description": "Line 13 says 'within a sliding time window', but lines 43–46 reset counter wholesale once windowDuration elapses — a fixed window. Callers get up to 2*maxPerWindow requests in a single windowDuration, doubling the intended burst ceiling."
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java",
+    "line": 115,
+    "title": "Recovery codes written to user storage lose one-time-use, hashing, and metadata",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "createRecoveryCodesCredential flattens RecoveryAuthnCodesCredentialModel into a bare UserCredentialModel, dropping hashing, per-code ordinal, remaining-count, and metadata. Storage boundary discards the model; provider update logic never runs, so used codes are never consumed and any leaked code becomes a permanent second-factor bypass."
+  },
+  {
+    "file": "testsuite/integration-arquillian/tests/base/src/test/java/org/keycloak/testsuite/federation/storage/BackwardsCompatibilityUserStorageTest.java",
+    "line": 123,
+    "title": "Test helpers copied verbatim from RecoveryAuthnCodesAuthenticatorTest, typo and dead config included",
+    "severity": "P2",
+    "category": "slop",
+    "description": "configureBrowserFlowWithRecoveryAuthnCodes and enterRecoveryCodes are duplicated from shared test, carrying over a 'delayed-suthenticator-config' typo and unused delayed-authenticator execution (delay=0). Dead code dependency causes unrelated failures if provider changes; copies drift independently."
+  }
+]

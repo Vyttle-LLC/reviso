@@ -1,0 +1,148 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Potential null reference if mainHostDestinationCalendar is undefined if evt.destinationCalendar is null or an empty arra",
+        "severity": "high",
+        "category": "robustness",
+        "crb_category": "error-handling",
+        "description": "Potential null reference if mainHostDestinationCalendar is undefined if evt.destinationCalendar is null or an empty array ",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/core/EventManager.ts",
+        "line": 119,
+        "title": "Google Meet fallback crashes when there is no destination calendar",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Array destructuring yields undefined when destinationCalendar is null/[], then unguarded dereference of .integration throws TypeError"
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Logic error: when externalCalendarId is provided, you're searching for a calendar where externalId === externalCalendarI",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "Logic error: when externalCalendarId is provided, you're searching for a calendar where externalId === externalCalendarId, but this will always fail since you're looking for a calendar that matches itself. Should likely find by credentialId or use different logic.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/app-store/googlecalendar/lib/CalendarService.ts",
+        "line": 256,
+        "title": "Google updateEvent/deleteEvent fallback compares externalCalendarId to itself",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "find only runs when externalCalendarId is falsy; comparison always matches undefined; updateEvent fails with undefined calendarId, deleteEvent deletes from wrong calendar"
+      }
+    },
+    {
+      "gold": {
+        "file": "packages/trpc/server/routers/viewer/organizations/create.handler.ts",
+        "line": 0,
+        "title": "Logic inversion in organization creation: The slug property is now conditionally set when IS_TEAM_BILLING_ENABLED is tru",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Logic inversion in organization creation: The slug property is now conditionally set when IS_TEAM_BILLING_ENABLED is true, instead of when it's false as originally intended. This change, combined with requestedSlug still being set when IS_TEAM_BILLING_ENABLED is true, results in both properties being set when billing is enabled, and neither when disabled",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/organizations/create.handler.ts",
+        "line": 151,
+        "title": "Organization slug/requestedSlug logic inverted",
+        "severity": "P0",
+        "category": "history",
+        "description": "Condition flipped in ternary conversion; org created with slug when billing enabled instead of disabled"
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The optional chaining on mainHostDestinationCalendar?.integration is redundant since you already check mainHostDestinati",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The optional chaining on mainHostDestinationCalendar?.integration is redundant since you already check mainHostDestinationCalendar in the ternary condition.",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "The Calendar interface now requires createEvent(event, credentialId), but some implementations (e.g., Lark/Office365) st",
+      "severity": "low",
+      "category": "security",
+      "crb_category": "security",
+      "description": "The Calendar interface now requires createEvent(event, credentialId), but some implementations (e.g., Lark/Office365) still declare createEvent(event) only—this breaks the interface contract (also applies to other locations in the PR).",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/core/EventManager.ts",
+      "line": 170,
+      "title": "Video booking references lose their credentialId",
+      "severity": "P1",
+      "category": "history",
+      "description": "credentialId set to undefined for video references, reverting fix from PR #9281 that stored correct credential"
+    },
+    {
+      "file": "packages/core/EventManager.ts",
+      "line": 380,
+      "title": "New booking references lose externalCalendarId for destinations without credentialId",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "externalCalendarId not passed through createEvent for destination calendars without credentialId, resulting in undefined references"
+    },
+    {
+      "file": "packages/core/EventManager.ts",
+      "line": 592,
+      "title": "updateAllCalendarEvents catch block no longer logs anything",
+      "severity": "P2",
+      "category": "history",
+      "description": "console.error(message) removed but message still built; calendar-update failures silently swallowed"
+    },
+    {
+      "file": "packages/features/bookings/lib/handleCancelBooking.ts",
+      "line": 445,
+      "title": "Recurring-cancellation deletes are re-run once per calendar reference",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "Recurring event deletion loop nested inside per-reference loop, causing N× identical deleteEvent calls for N calendar references"
+    },
+    {
+      "file": "packages/features/bookings/lib/handleNewBooking.ts",
+      "line": 1078,
+      "title": "Team destination calendars silently dropped when organizer has none",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "push() on null destinationCalendar is no-op; team calendars discarded when organizer lacks destination calendar"
+    },
+    {
+      "file": "packages/core/EventManager.ts",
+      "line": 343,
+      "title": "22-line credential-from-DB block duplicated verbatim",
+      "severity": "P2",
+      "category": "slop",
+      "description": "Identical prisma.credential.findUnique + field remap appears at lines 343 and 516; should extract to helper method"
+    }
+  ],
+  "metrics": {
+    "gold_count": 5,
+    "gold_correctness_count": 5,
+    "candidate_count": 9,
+    "matched_count": 3,
+    "matched_correctness_count": 3,
+    "gold_recall_correctness": 60,
+    "precision_proxy_pct": 33
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "case": "bug-null-guarded-001",
+  "origin": "synthetic",
+  "imported": "2026-08-06",
+  "expected_clean": true,
+  "findings": []
+}

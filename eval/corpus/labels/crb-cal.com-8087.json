@@ -1,0 +1,27 @@
+{
+  "case": "crb-cal.com-8087",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/calcom/cal.com/pull/8087",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Consider adding try-catch around the await to handle import failures gracefully",
+      "severity": "low",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "Consider adding try-catch around the await to handle import failures gracefully"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "The code uses forEach with async callbacks, which causes asynchronous operations (e.g., calendar/video event deletions, ",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The code uses forEach with async callbacks, which causes asynchronous operations (e.g., calendar/video event deletions, payment refunds) to run concurrently without being awaited. This 'fire-and-forget' behavior leads to unhandled promise rejections, race conditions, and incomplete cleanup, as surrounding try-catch blocks cannot properly handle errors from these unawaited promises. Replace forEach with for...of loops or Promise.all() with map() to ensure proper sequential execution and error handling."
+    }
+  ]
+}

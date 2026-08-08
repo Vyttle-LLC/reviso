@@ -1,0 +1,90 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "The rendered GrafanaRuleListItem is missing the required key prop for React list items. This can cause rendering issues ",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The rendered GrafanaRuleListItem is missing the required key prop for React list items. This can cause rendering issues when the list order changes.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "public/app/features/alerting/unified/rule-list/FilterView.tsx",
+        "line": 157,
+        "title": "Missing React key on GrafanaRuleListItem in the filter view",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "key destructured at line 152 and passed to datasource/default branches but dropped from grafana branch. React reconciles Grafana rows by index on pagination, causing incorrect DOM/state reuse and console warnings."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "RuleActionsButtons is invoked with only promRule, but SilenceGrafanaRuleDrawer inside RuleActionsButtons still depends o",
+      "severity": "high",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "RuleActionsButtons is invoked with only promRule, but SilenceGrafanaRuleDrawer inside RuleActionsButtons still depends on a Grafana Ruler rule being present, so for Grafana rules coming from list views the 'Silence notifications' menu entry (now driven by Grafana Prom abilities) will toggle showSilenceDrawer without ever rendering the drawer. This means clicking 'Silence notifications' for these rules has no visible effect, even when abilities indicate silencing is allowed.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "public/app/features/alerting/unified/components/rule-viewer/AlertRuleMenu.tsx",
+      "line": 82,
+      "title": "Delete and Pause are unreachable in the new Grafana rule list",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "GrafanaRuleListItem passes rule without rulerRule, so AlertRuleMenu receives rulerRule === undefined. New grafanaPauseAbility/grafanaDeleteAbility compute correctly but render guards are false, making Pause and Delete unreachable for users with permissions."
+    },
+    {
+      "file": "public/app/features/alerting/unified/hooks/useAbilities.ts",
+      "line": 245,
+      "title": "Federated-rule-group guard silently removed from useAllAlertRuleAbilities",
+      "severity": "P1",
+      "category": "history",
+      "description": "Federated-rule-group check removed when folded into useAllRulerRuleAbilities (hardcodes isFederated = false). Allows Edit button to render for immutable federated rules and lets users reach edit form for read-only groups."
+    },
+    {
+      "file": "public/app/features/alerting/unified/hooks/useAbilities.ts",
+      "line": 324,
+      "title": "Grafana-managed recording rules lose the Export action in the list view",
+      "severity": "P2",
+      "category": "comments",
+      "description": "ModifyExport gates on prometheusRuleType.grafana.alertingRule, excluding recording rules. Replaced ruler version used rulerRuleType.grafana.rule which included them. Recording rules lose Export action in More menu."
+    },
+    {
+      "file": "public/app/features/alerting/unified/rule-list/GrafanaRuleListItem.tsx",
+      "line": 41,
+      "title": "returnTo dropped from the Grafana rule view link",
+      "severity": "P2",
+      "category": "history",
+      "description": "Replacement omits returnTo from rule view link href. RuleViewer falls back to /alerting/list, losing user's filters on back navigation. DataSourceRuleListItem still passes returnTo, creating inconsistent behavior."
+    },
+    {
+      "file": "public/app/features/alerting/unified/components/rules/RulesTable.test.tsx",
+      "line": 26,
+      "title": "Unused mock and duplicated explanatory comments in the reworked tests",
+      "severity": "P2",
+      "category": "slop",
+      "description": "useGrafanaPromRuleAbility mocked and stubbed twice despite not being called. Identical four-line comment about cloud rules pasted four times. Stray // duplicate marker in useAbilities.ts. Obscures which mocks matter."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 6,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 16
+  }
+}

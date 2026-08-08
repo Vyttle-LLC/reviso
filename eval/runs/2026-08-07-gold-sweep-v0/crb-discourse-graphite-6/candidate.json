@@ -1,0 +1,26 @@
+[
+  {
+    "file": "app/serializers/user_serializer.rb",
+    "line": 43,
+    "title": "`website_name` bypasses the `untrusted_attributes` gate that hides `website` from anonymous TL0 profiles",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`untrusted_attributes` lists `:website` but not `:website_name`, so for a TL0 user viewed by an anonymous visitor, `website_name` is still serialized. The field is exposed in the JSON API and renders on the profile when it shouldn't."
+  },
+  {
+    "file": "app/serializers/user_serializer.rb",
+    "line": 153,
+    "title": "`include_website_name` is missing the trailing `?`, so it never runs",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "The method name should be `include_website_name?` to match ActiveModel::Serializers convention. As written, the method is dead code and `website_name` is emitted unconditionally."
+  },
+  {
+    "file": "app/assets/javascripts/discourse/templates/user/user.hbs",
+    "line": 66,
+    "title": "Website in the profile header no longer updates after saving preferences",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "The removed `websiteName` computed property was reactive, but `User#save` doesn't copy `website_name` back from the response. A user who sets a website and saves sees it update but the website_name stays undefined until a full page reload."
+  }
+]

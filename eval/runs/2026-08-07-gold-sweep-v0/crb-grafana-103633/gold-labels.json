@@ -1,0 +1,20 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "The Check operation exhibits asymmetric cache trust logic: cached permission grants are trusted and returned immediately",
+    "severity": "high",
+    "category": "security",
+    "crb_category": "security",
+    "description": "The Check operation exhibits asymmetric cache trust logic: cached permission grants are trusted and returned immediately, but cached denials from the same permission cache are ignored, leading to a fresh database lookup. This allows stale cached grants to provide access to revoked resources, posing a security risk. "
+  },
+  {
+    "file": "pkg/services/authz/rbac/service.go",
+    "line": 0,
+    "title": "The test comment says the cached permissions 'allow access', but the map stores false for dashboards:uid:dash1, so check",
+    "severity": "low",
+    "category": "efficiency",
+    "crb_category": "performance",
+    "description": "The test comment says the cached permissions 'allow access', but the map stores false for dashboards:uid:dash1, so checkPermission will still treat this scope as not allowed."
+  }
+]

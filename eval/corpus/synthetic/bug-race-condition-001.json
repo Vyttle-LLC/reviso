@@ -1,0 +1,17 @@
+{
+  "id": "bug-race-condition-001",
+  "language": "go",
+  "difficulty": "hard",
+  "pr": {
+    "title": "Add in-memory rate limiter for API endpoints",
+    "description": "Implements a simple token-bucket-style rate limiter that tracks request counts per client IP. The limiter is shared across goroutines handling concurrent HTTP requests and resets counts on a configurable interval."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "pkg/ratelimit/limiter.go",
+      "status": "added",
+      "patch": "@@ -0,0 +1,60 @@\n+package ratelimit\n+\n+import (\n+\t\"time\"\n+)\n+\n+// ClientState tracks the request count and window start for a single client.\n+type ClientState struct {\n+\tCount     int\n+\tWindowStart time.Time\n+}\n+\n+// RateLimiter enforces per-client request limits within a sliding time window.\n+type RateLimiter struct {\n+\tclients    map[string]*ClientState\n+\tmaxPerWindow int\n+\twindowDuration time.Duration\n+}\n+\n+// New creates a RateLimiter that allows maxPerWindow requests within each window.\n+func New(maxPerWindow int, windowDuration time.Duration) *RateLimiter {\n+\treturn &RateLimiter{\n+\t\tclients:        make(map[string]*ClientState),\n+\t\tmaxPerWindow:   maxPerWindow,\n+\t\twindowDuration: windowDuration,\n+\t}\n+}\n+\n+// Allow checks whether the given client key is allowed to make another request.\n+// It increments the counter and returns true if the client is within limits.\n+func (rl *RateLimiter) Allow(clientKey string) bool {\n+\tnow := time.Now()\n+\n+\tstate, exists := rl.clients[clientKey]\n+\tif !exists {\n+\t\trl.clients[clientKey] = &ClientState{\n+\t\t\tCount:       1,\n+\t\t\tWindowStart: now,\n+\t\t}\n+\t\treturn true\n+\t}\n+\n+\tif now.Sub(state.WindowStart) > rl.windowDuration {\n+\t\tstate.Count = 1\n+\t\tstate.WindowStart = now\n+\t\treturn true\n+\t}\n+\n+\tif state.Count >= rl.maxPerWindow {\n+\t\treturn false\n+\t}\n+\n+\tstate.Count++\n+\treturn true\n+}\n+\n+// Reset clears all tracked client state.\n+func (rl *RateLimiter) Reset() {\n+\trl.clients = make(map[string]*ClientState)\n+}"
+    }
+  ]
+}

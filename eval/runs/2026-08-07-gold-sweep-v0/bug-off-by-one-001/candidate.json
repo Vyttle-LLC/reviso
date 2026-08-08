@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/utils/pagination.ts",
+    "line": 29,
+    "title": "Pagination loop is off by one — returns pageSize + 1 items and overlaps adjacent pages",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "Loop iterates pageSize + 1 times using `i <= startIndex + pageSize`. Causes duplicate items at page boundaries (e.g., paginate(['a','b','c','d','e'], 1, 2) returns 3 items instead of 2, with 'c' appearing in both page 1 and page 2). Page boundary items duplicated across pages; items.length never matches advertised pageSize. Fix: use const items = data.slice(startIndex, startIndex + pageSize)."
+  }
+]

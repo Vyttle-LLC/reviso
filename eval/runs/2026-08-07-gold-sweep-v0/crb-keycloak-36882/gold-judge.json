@@ -1,0 +1,45 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Incorrect method call for exit codes. The picocli.exit() method calls System.exit() directly, which is problematic:",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Incorrect method call for exit codes. The picocli.exit() method calls System.exit() directly, which is problematic:",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "docs/guides/operator/advanced-configuration.adoc",
+      "line": 448,
+      "title": "Operator side of the preview feature is never gated — docs claim a failure that no code produces",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "CAUTION documents that rolling-updates must be enabled in the operator, but no operator code reads the flag. UpgradeLogicFactory only checks spec.update.strategy, not the feature flag. The documented remedy (setting features.enabled) cannot work because it only affects server container args, not the operator's Profile. CLI commands are gated but operator path remains ungated."
+    },
+    {
+      "file": "docs/guides/templates/kc.adoc",
+      "line": 53,
+      "title": "Documented --features=rolling-updates on update-compatibility is ignored on distributions built with --features",
+      "severity": "P2",
+      "category": "bugs, conventions",
+      "description": "The --features flag is build-time; persisted build values override CLI values. Pre-built distributions with explicit features ignore the documented --features=rolling-updates flag and require a rebuild instead. The flag also replaces rather than extends existing features, contradicting the guide's own warning to include all configuration options. CI doesn't catch this because tests run against unbuilt distributions."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 2,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}

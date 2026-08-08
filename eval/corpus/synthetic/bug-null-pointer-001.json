@@ -1,0 +1,17 @@
+{
+  "id": "bug-null-pointer-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add user profile summary component",
+    "description": "Implements a profile summary component that fetches user data from the API and displays name, email, and city. Uses the internal user service for data retrieval."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/services/profile-summary.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,51 @@\n+interface Address {\n+  street: string;\n+  city: string;\n+  state: string;\n+  zipCode: string;\n+  country: string;\n+}\n+\n+interface UserProfile {\n+  id: string;\n+  name: string;\n+  email: string;\n+  address: Address | null;\n+  phone: string | null;\n+  createdAt: string;\n+}\n+\n+interface ProfileSummary {\n+  displayName: string;\n+  email: string;\n+  location: string;\n+  memberSince: string;\n+}\n+\n+async function fetchUserProfile(userId: string): Promise<UserProfile> {\n+  var response = await fetch(\"/api/users/\" + userId);\n+  if (!response.ok) {\n+    throw new Error(\"Failed to fetch user profile: \" + response.status);\n+  }\n+  return response.json();\n+}\n+\n+export async function getProfileSummary(userId: string): Promise<ProfileSummary> {\n+  var profile = await fetchUserProfile(userId);\n+\n+  var createdDate = new Date(profile.createdAt);\n+  var formattedDate = createdDate.toLocaleDateString(\"en-US\", {\n+    year: \"numeric\",\n+    month: \"long\",\n+  });\n+\n+  var locationParts = [profile.address.city, profile.address.state];\n+  var location = locationParts.filter(Boolean).join(\", \");\n+\n+  return {\n+    displayName: profile.name,\n+    email: profile.email,\n+    location: location || \"Not specified\",\n+    memberSince: formattedDate,\n+  };\n+}"
+    }
+  ]
+}

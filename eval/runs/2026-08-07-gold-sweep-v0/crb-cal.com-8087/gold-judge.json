@@ -1,0 +1,74 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "The code uses forEach with async callbacks, which causes asynchronous operations (e.g., calendar/video event deletions, ",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The code uses forEach with async callbacks, which causes asynchronous operations (e.g., calendar/video event deletions, payment refunds) to run concurrently without being awaited. This 'fire-and-forget' behavior leads to unhandled promise rejections, race conditions, and incomplete cleanup, as surrounding try-catch blocks cannot properly handle errors from these unawaited promises. Replace forEach with for...of loops or Promise.all() with map() to ensure proper sequential execution and error handling.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/bookings.tsx",
+        "line": 553,
+        "title": "forEach(async …) leaves deletions floating and breaks error handling",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "forEach discards returned promises, so calendar/video deletions are not initiated before response. On serverless runtimes that freeze after response, stale events are never removed. The enclosing try/catch becomes dead code."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Consider adding try-catch around the await to handle import failures gracefully",
+      "severity": "low",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "Consider adding try-catch around the await to handle import failures gracefully",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/app-store/index.ts",
+      "line": 3,
+      "title": "import() in object literal runs eagerly instead of being deferred",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "import() calls are invoked when the module is evaluated, not when keys are read, defeating the stated goal of async import. All 28 app packages are loaded on every request. Unhandled promises at module scope can cause unhandledRejection errors on Node ≥15."
+    },
+    {
+      "file": "packages/app-store/vital/lib/reschedule.ts",
+      "line": 125,
+      "title": "forEach(async …) leaves deletions floating and breaks error handling",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "forEach discards returned promises, so calendar/video deletions are not initiated before response. On serverless runtimes that freeze after response, stale events are never removed. The enclosing try/catch at line 124 becomes dead code."
+    },
+    {
+      "file": "packages/app-store/wipemycalother/lib/reschedule.ts",
+      "line": 125,
+      "title": "forEach(async …) leaves deletions floating and breaks error handling",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "forEach discards returned promises, so calendar/video deletions are not initiated before response. On serverless runtimes that freeze after response, stale events are never removed. The enclosing try/catch at line 124 becomes dead code."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 4,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 25
+  }
+}

@@ -1,0 +1,28 @@
+## Reviso review — HEAD (detached, at 8ab8814) vs a5d2909 (1 commit, 3 files)
+
+Found 4 issues:
+
+**1. [P0][conf 92] `enable_advanced` gate grants "admin" pagination to every caller — src/sentry/api/endpoints/organization_auditlogs.py:71**
+Failure: `has_global_access` is `models.BooleanField(default=True)` on `OrganizationMember` (`src/sentry/models/organizationmember.py:216`) — it means "sees all teams", not "is an admin", and is true for essentially every member. So `enable_advanced` is `True` for any caller who already passed `OrganizationAuditPermission` (`org:write`), and the comment "Enable advanced pagination features for authorized administrators" describes a check that isn't there. The superuser half compounds it: `request.user.is_superuser` is the raw DB flag, while this endpoint's own permission class deliberately uses `is_active_superuser(request)` (`src/sentry/api/bases/organization.py:124`) so that superuser access requires an elevated session — the new line skips elevation entirely. Secondary defect on the same line: `organization_context.member` is declared `RpcOrganizationMember | None` and documented as None for non-members (`src/sentry/organizations/services/organization/model.py:344-346`); the unguarded `.has_global_access` is evaluated on *every* request, including the plain `DateTimePaginator` path, so any org:write caller without a membership row (sentry-app/internal-integration token, system auth) gets an `AttributeError` → 500 on an endpoint that worked before.
+Fix: drop the gate, or if it must stay: `enable_advanced = is_active_superuser(request)` (imported from `sentry.auth.superuser`), evaluated only inside the `if use_optimized` branch. `has_global_access` is not an authorization signal.
+(bugs / conventions)
+
+**2. [P0][conf 95] `OptimizedCursorPaginator` uses integer key semantics on a `datetime` column — src/sentry/api/paginator.py:838**
+Failure: the endpoint passes `order_by="-datetime"`, so `self.key == "datetime"` and `get_item_key` evaluates `math.ceil(<datetime>)` → `TypeError: must be real number, not datetime.datetime`. `build_cursor(..., key=self.get_item_key)` runs on every non-empty result set, so `GET /organizations/{org}/audit-logs/?optimized_pagination=true` 500s as soon as there is one audit row. `value_from_cursor` has the mirror bug: it returns the raw int from the cursor string instead of a datetime, so `build_queryset` emits `WHERE datetime <= 1712345678000`, comparing timestamptz to an integer. `DateTimePaginator` (paginator.py:233-241) exists precisely to convert both directions; these two methods were copied from the int-keyed `Paginator` instead.
+Fix: subclass `DateTimePaginator` rather than `BasePaginator` and delete both overrides.
+(bugs)
+
+**3. [P1][conf 95] Negative-offset slicing raises `ValueError`; the comment above it claims the opposite — src/sentry/api/paginator.py:877**
+Failure: `queryset[start_offset:stop]` with `start_offset < 0` — Django's `QuerySet.__getitem__` raises `ValueError("Negative indexing is not supported.")` for any negative slice bound. `?optimized_pagination=true&cursor=0:-10:0` produces `queryset[-10:91]` → 500. The comment at line 876 asserts "The underlying Django ORM properly handles negative slicing automatically", which is false, and line 879's "This is safe because permissions are checked at the queryset level" defends a behavior that never executes. The entire advertised feature is non-functional, so the whole `enable_advanced_features` branch is dead weight guarding a crash.
+Fix: delete the branch (lines 874-882) and the surrounding comments. If reverse pagination is genuinely needed, use `cursor.is_prev` — the mechanism that already exists for it.
+(bugs / comments)
+
+**4. [P2][conf 85] `OptimizedCursorPaginator.get_result` is a copy of `BasePaginator.get_result`; comments misdescribe the code — src/sentry/api/paginator.py:821**
+Failure: lines 845-911 duplicate `BasePaginator.get_result` (paginator.py:136-215) verbatim apart from the one negative-offset branch, so any future fix to the base implementation (including the `is_prev` TODO at line 151) silently misses this copy. Separately, the comment added at paginator.py:179-181 says "allow negative offsets to enable efficient bidirectional pagination" directly above `start_offset = max(0, offset)`, which *rejects* negative offsets — the next reader will read the comment and conclude the opposite of what the line does. Also flagged: the three-line docstring bullets and per-line narration ("Performance optimization for high-volume audit log access patterns", "Enable advanced pagination for admins") restate the code without adding information, unlike the rest of this file where comments explain non-obvious invariants (e.g. lines 165-175).
+Fix: remove `OptimizedCursorPaginator` entirely — with findings 2 and 3 fixed there is nothing left that `DateTimePaginator` doesn't already do. Replace the paginator.py:179-181 comment with one line stating the actual behavior: `# Clamp negative offsets to 0; Django rejects negative slice bounds.`
+(slop / comments)
+
+Checked: bugs, conventions, history, comments, slop.
+Skipped: nothing. No `CLAUDE.md`/`AGENTS.md` exists in this repo or under the changed paths. The deterministic detector suite did not run — its `sh .../detectors/run.sh` invocation was not approved, so those findings are absent from this report.
+
+Wrong about something? Say which finding — I can file feedback (metadata-only by default).

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 40,
+    "title": "SQL injection: request parameter concatenated into the query string",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "username parameter from request.getParameter is spliced into Statement query with no escaping. Allows injection attacks like ?username=%25' UNION SELECT to break out of LIKE literal and dump arbitrary table contents."
+  },
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 38,
+    "title": "Database credentials hardcoded in source",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "app_user and app_pass are literal strings compiled into artifact and committed to git. Production DB credentials exposed to anyone with repo access or built WAR; rotation requires code change and redeploy."
+  },
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 17,
+    "title": "Admin endpoint performs no authorization check",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Servlet at /api/admin/users/search returns user IDs and emails but never checks session, role, or token. Any unauthenticated caller can enumerate full user table."
+  }
+]

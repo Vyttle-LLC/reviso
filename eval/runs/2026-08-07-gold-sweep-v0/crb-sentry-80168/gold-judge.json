@@ -1,0 +1,58 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "MetricAlertDetectorHandler inherits from StatefulDetectorHandler but only contains pass, failing to implement its requir",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "MetricAlertDetectorHandler inherits from StatefulDetectorHandler but only contains pass, failing to implement its required abstract methods: counter_names (property), get_dedupe_value(), get_group_key_values(), and build_occurrence_and_event_data(). This will cause a TypeError at runtime when the class is instantiated.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/incidents/grouptype.py",
+        "line": 11,
+        "title": "MetricAlertDetectorHandler is now abstract but still registered as a handler",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "MetricAlertDetectorHandler implements none of the four abstract members from StatefulDetectorHandler (counter_names, get_dedupe_value, get_group_key_values, build_occurrence_and_event_data), so it cannot be instantiated. It is still wired up as MetricAlertFire.detector_handler and called without an abstract-class guard, causing TypeError on first process_detectors call. Fix: either keep it on DetectorHandler with stub evaluate returning {} until real implementation lands, or provide stub implementations of the four abstract members. Also drop now-wrong TODO on grouptype.py:10."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Docstring says this returns a list of DetectorEvaluationResult, but the method now returns a dict keyed by DetectorGroup",
+        "severity": "low",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Docstring says this returns a list of DetectorEvaluationResult, but the method now returns a dict keyed by DetectorGroupKey. Consider updating the docstring to match the new return type.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/workflow_engine/processors/detector.py",
+        "line": 230,
+        "title": "`evaluate` docstring still describes the old list return",
+        "severity": "P2",
+        "category": "conventions/comments",
+        "description": "Function signature now returns dict[DetectorGroupKey, DetectorEvaluationResult], but docstring still says 'returns a list of DetectorEvaluationResult'. Actively misleads next implementer of stateful detector. Fix: update docstring to 'Evaluates a given data packet and returns a dict of DetectorEvaluationResult keyed by group key.'"
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "case": "bug-null-pointer-001",
+  "origin": "synthetic",
+  "imported": "2026-08-06",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/services/profile-summary.ts",
+      "line": 42,
+      "title": "Null pointer access: `profile.address` is typed as `Address | null` (line 13) but is accessed without a null check on li",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Null pointer access: `profile.address` is typed as `Address | null` (line 13) but is accessed without a null check on line 42 (`profile.address.city` and `profile.address.state`). When a user has no address set, this will throw a TypeError at runtime. Add a null guard before accessing nested address properties."
+    }
+  ]
+}

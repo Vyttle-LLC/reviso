@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/routes/downloads.py",
+    "line": 22,
+    "title": "Path traversal — user-controlled path joined to UPLOAD_DIR with no containment check",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "The route uses the `<path:filename>` converter, allowing `filename` to contain `/` and `..` segments. os.path.join(UPLOAD_DIR, filename) resolves outside the uploads directory without containment checks; any authenticated user can read arbitrary files (secrets, source, keys) at web process privileges via paths like `../../etc/passwd` or `../../.env`."
+  }
+]

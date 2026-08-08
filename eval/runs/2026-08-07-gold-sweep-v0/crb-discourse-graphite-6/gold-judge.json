@@ -1,0 +1,55 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "app/serializers/user_serializer.rb",
+        "line": 0,
+        "title": "The include_website_name method is missing the required ? suffix. Rails serializers expect include_ methods to end with ",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The include_website_name method is missing the required ? suffix. Rails serializers expect include_ methods to end with ? for conditional attribute inclusion, a convention followed by other methods in this serializer. Without it, the website_name attribute may not be conditionally included as intended. Additionally, the '.' << website_host string concatenation should be replaced with '.' + website_host or '.#{website_host}' to avoid mutating string literals, which can lead to issues.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "app/serializers/user_serializer.rb",
+        "line": 153,
+        "title": "`include_website_name` is missing the trailing `?`, so it never runs",
+        "severity": "P1",
+        "category": "conventions",
+        "description": "The method name should be `include_website_name?` to match ActiveModel::Serializers convention. As written, the method is dead code and `website_name` is emitted unconditionally."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "app/serializers/user_serializer.rb",
+      "line": 43,
+      "title": "`website_name` bypasses the `untrusted_attributes` gate that hides `website` from anonymous TL0 profiles",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "`untrusted_attributes` lists `:website` but not `:website_name`, so for a TL0 user viewed by an anonymous visitor, `website_name` is still serialized. The field is exposed in the JSON API and renders on the profile when it shouldn't."
+    },
+    {
+      "file": "app/assets/javascripts/discourse/templates/user/user.hbs",
+      "line": 66,
+      "title": "Website in the profile header no longer updates after saving preferences",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "The removed `websiteName` computed property was reactive, but `User#save` doesn't copy `website_name` back from the response. A user who sets a website and saves sees it update but the website_name stays undefined until a full page reload."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 33
+  }
+}

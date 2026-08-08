@@ -18,6 +18,53 @@
 > `SUPERSEDED.md`) — their numbers are internally consistent but not
 > comparable with re-aimed runs.
 
+## Metrics glossary
+
+Two metric families, deliberately not comparable to each other:
+
+- **Gold** (absolute, whole corpus, per release): the candidate alone
+  against labeled ground truth — 63 labeled cases (50 CRB-imported real
+  PRs + 13 synthetics incl. 5 expected-clean). `gold recall
+  (correctness)` = matched correctness-tier gold issues ÷ total;
+  `precision proxy` = candidate findings matching any gold issue ÷ all
+  candidate findings (unmatched ones may be real-but-unlabeled — they
+  queue for label promotion, mirroring parity's claimed-wins rule);
+  `clean-case FPs` = findings on expected-clean cases. This is the
+  number tracked per release.
+- **Parity** (relative, `active_parity` subset, per re-baseline event):
+  correctness-tier findings of built-in `/code-review` medium
+  (majority-of-3) that `/reviso:review` also catches, at ≤1.5× cost.
+  This is the market-position check.
+
+## Runs (gold)
+
+| date | corpus | recall (correctness) | precision proxy | clean cases | artifacts |
+| --- | --- | --- | --- | --- | --- |
+| 2026-08-07 | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
+
+First-sweep notes — the aggregate is a **floor**, for reasons the
+artifacts document case by case:
+
+- **Synthetics: 8/8 bug cases at 100% recall; 4/5 clean cases silent.**
+  The one "noisy" clean case (`security-sql-parameterized-001`) drew four
+  findings on scaffolding the label never audited (bare `/api/admin/`
+  servlet, no auth in sight) — a label-quality question queued for hand
+  adjudication, not a gate failure.
+- **Real cases are where the 48% lives**, and the zero-recall cluster
+  (8 cases, 6 of them grafana/Go) is partly *label disagreement with
+  receipts*: e.g. `crb-grafana-76186`, where the review examined the
+  gold's exact concern and refuted it with a `file:line` mechanism, then
+  shipped an arguably better finding the gold doesn't contain. CRB gold
+  also includes classes Reviso excludes on purpose (compiler-catchable
+  errors are linter territory). Raw recall against unaudited benchmark
+  labels conflates real misses, policy differences, and label noise —
+  the promotion/adjudication loop is how they get separated.
+- **The deterministic detector lens did not run** in any candidate leg
+  (headless permission gap, since fixed in `candidate.sh`) — another
+  reason this sweep understates.
+- Matcher calibration at this scale is still the spot-check +
+  sagechat-15 sample; treat per-case numbers as screening, not verdicts.
+
 ## Runs (superseded protocol — pre-2026-08-06)
 
 | date | corpus case | version | parity | misses | cost vs `/review` | artifacts |

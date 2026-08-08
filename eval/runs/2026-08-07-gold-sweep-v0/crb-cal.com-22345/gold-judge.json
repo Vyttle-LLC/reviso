@@ -1,0 +1,74 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "packages/lib/server/service/insightsBooking.ts",
+        "line": 0,
+        "title": "In getBaseConditions(), the else if (filterConditions) and final else branches are unreachable. This is because getAutho",
+        "severity": "low",
+        "category": "security",
+        "crb_category": "security",
+        "description": "In getBaseConditions(), the else if (filterConditions) and final else branches are unreachable. This is because getAuthorizationConditions() always returns a non-null Prisma.Sql object, making authConditions always truthy, which means only the first two if/else if conditions are ever evaluated.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/lib/server/service/insightsBooking.ts",
+        "line": 74,
+        "title": "Three unreachable branches in `getBaseConditions()`",
+        "severity": null,
+        "category": "slop",
+        "description": "authConditions is always truthy, making lines 76-80 unreachable and misleading readers that auth conditions are optional"
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": "packages/lib/server/service/insightsBooking.ts",
+      "line": 0,
+      "title": "Fetching userIdsFromOrg only when teamsFromOrg.length > 0 can exclude org-level members for orgs without child teams; co",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Fetching userIdsFromOrg only when teamsFromOrg.length > 0 can exclude org-level members for orgs without child teams; consider deriving from teamIds (which includes orgId) or removing the guard so org-only orgs still include member user bookings.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/lib/server/service/insightsBooking.ts",
+      "line": 68,
+      "title": "`getBaseConditions()` can return an unparenthesized top-level `OR`",
+      "severity": null,
+      "category": "bugs",
+      "description": "getBaseConditions() returns unparenthesized OR, causing SQL precedence issues when composed into WHERE clauses that make filters silently ignored"
+    },
+    {
+      "file": "packages/lib/server/service/__tests__/insightsBooking.integration-test.ts",
+      "line": 292,
+      "title": "Org and team auth SQL lost all execution coverage",
+      "severity": null,
+      "category": "bugs",
+      "description": "Tests assert against hand-written Prisma.sql literals instead of executing against database, losing coverage for org and team authorization scope paths"
+    },
+    {
+      "file": "packages/lib/server/service/insightsBooking.ts",
+      "line": 29,
+      "title": "`InsightsBookingServicePublicOptions` drops the discriminant, turning a compile error into silent no-data",
+      "severity": null,
+      "category": "conventions",
+      "description": "Constructor type widens scope to bare union and makes teamId optional, losing type-safe discriminated union validation so misconfiguration fails silently"
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 4,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 25
+  }
+}

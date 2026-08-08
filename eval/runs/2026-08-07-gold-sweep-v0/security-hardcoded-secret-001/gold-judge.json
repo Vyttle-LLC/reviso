@@ -1,0 +1,47 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/middleware/jwt-auth.ts",
+        "line": 4,
+        "title": "JWT signing secret is hardcoded as a string literal in source code. This secret will be committed to version control and",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "JWT signing secret is hardcoded as a string literal in source code. This secret will be committed to version control and exposed to anyone with repository access. It should be loaded from an environment variable or secrets manager.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/middleware/jwt-auth.ts",
+        "line": 4,
+        "title": "JWT signing secret hardcoded in source with no environment override",
+        "severity": "P0",
+        "category": "security",
+        "description": "JWT_SECRET is a source-code literal (sk_live_…) used as HMAC key, readable by anyone with repo access. Allows authentication bypass and privilege escalation. Should read from environment and fail closed at startup."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/middleware/jwt-auth.ts",
+      "line": 26,
+      "title": "Expiry check fails open for tokens with no `exp` claim",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Guard uses `if (payload.exp && …)`, so tokens without exp claim are accepted forever despite exp being declared as required. Should require the claim instead of tolerating its absence."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 2,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 50
+  }
+}
