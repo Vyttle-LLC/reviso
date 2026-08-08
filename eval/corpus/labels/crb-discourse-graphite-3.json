@@ -1,0 +1,27 @@
+{
+  "case": "crb-discourse-graphite-3",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/ai-code-review-evaluation/discourse-graphite/pull/3",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "BlockedEmail.should_block_email? method has side effects during a read operation - it updates statistics even when just ",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "BlockedEmail.should_block_email? method has side effects during a read operation - it updates statistics even when just checking if an email should be blocked. This could cause race conditions in concurrent environments and makes the method name misleading."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Regex pattern @(#{domains}) only matches domain suffixes, not full domains. evil.example.com would match whitelist entry",
+      "severity": "medium",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "Regex pattern @(#{domains}) only matches domain suffixes, not full domains. evil.example.com would match whitelist entry example.com."
+    }
+  ]
+}

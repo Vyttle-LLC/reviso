@@ -1,0 +1,18 @@
+[
+  {
+    "file": "model/infinispan/src/main/java/org/keycloak/models/cache/infinispan/idp/InfinispanIdentityProviderStorageProvider.java",
+    "line": 93,
+    "title": "Update-invalidation compares org-wrapped original against raw updated model, skipping cache invalidations",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "update() passes wrapped model as original but compares against raw updated model. When org state changes (e.g., disabling/enabling), org-aware predicates return false while raw model changes remain undetected, causing cache invalidations to be skipped and disabled org brokers to appear on login pages after org re-enablement."
+  },
+  {
+    "file": "testsuite/integration-arquillian/tests/base/src/test/java/org/keycloak/testsuite/organization/cache/OrganizationCacheTest.java",
+    "line": 381,
+    "title": "Test cleanup registers literal \"alias\" instead of actual alias names, causing 21 IDP leaks",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Test cleanup attempts to remove identity provider with literal string \"alias\" instead of actual names (idp-alias-0 through idp-alias-20). Since NotFoundException is silently swallowed, 21 IDPs leak into shared realm, making test execution order-dependent."
+  }
+]

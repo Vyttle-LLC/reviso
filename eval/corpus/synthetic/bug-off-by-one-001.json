@@ -1,0 +1,17 @@
+{
+  "id": "bug-off-by-one-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add paginated data windowing for table component",
+    "description": "Implements server-side pagination logic that slices a dataset into pages. Used by the data table component to display rows in fixed-size chunks with proper offset calculation."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/utils/pagination.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,42 @@\n+export interface PaginationResult<T> {\n+  items: T[];\n+  page: number;\n+  pageSize: number;\n+  totalPages: number;\n+  totalItems: number;\n+  hasNext: boolean;\n+  hasPrev: boolean;\n+}\n+\n+export function paginate<T>(\n+  data: T[],\n+  page: number,\n+  pageSize: number\n+): PaginationResult<T> {\n+  if (page < 1) {\n+    page = 1;\n+  }\n+\n+  if (pageSize < 1) {\n+    pageSize = 10;\n+  }\n+\n+  var totalItems = data.length;\n+  var totalPages = Math.ceil(totalItems / pageSize);\n+  var startIndex = (page - 1) * pageSize;\n+  var items: T[] = [];\n+\n+  for (var i = startIndex; i <= startIndex + pageSize; i++) {\n+    if (i < totalItems) {\n+      items.push(data[i]);\n+    }\n+  }\n+\n+  return {\n+    items,\n+    page,\n+    pageSize,\n+    totalPages,\n+    totalItems,\n+    hasNext: page < totalPages,\n+    hasPrev: page > 1,\n+  };\n+}"
+    }
+  ]
+}

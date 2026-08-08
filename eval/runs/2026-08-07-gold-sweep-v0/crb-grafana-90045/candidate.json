@@ -1,0 +1,50 @@
+[
+  {
+    "file": "pkg/apiserver/rest/dualwriter_mode3.go",
+    "line": 51,
+    "title": "Async legacy writes are cancelled as soon as the HTTP handler returns",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "Goroutines derive timeout from inbound request context which is cancelled on handler return, causing legacy writes to abort with context.Canceled and creating divergence between unified and legacy storage"
+  },
+  {
+    "file": "pkg/apiserver/rest/dualwriter_mode3.go",
+    "line": 50,
+    "title": "Panics in detached goroutines kill the Grafana process",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Bare goroutines lack recover() on stack; panics in legacy store calls terminate the entire Grafana process instead of being handled by apiserver's panic filter"
+  },
+  {
+    "file": "pkg/apiserver/rest/dualwriter_mode3.go",
+    "line": 45,
+    "title": "Storage/legacy duration metrics are recorded against the wrong series",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Metrics recording inverts error flags: storage failures record as legacy errors and legacy delete-collection records as storage duration, making metrics unusable for gating mode-3 rollout"
+  },
+  {
+    "file": "pkg/apiserver/rest/dualwriter_mode3.go",
+    "line": 106,
+    "title": "Delete's success path writes the object name into the 'kind' metric label",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Per-object name passed to metric instead of options.Kind, causing unbounded cardinality growth and unaggregatable series"
+  },
+  {
+    "file": "pkg/tests/apis/playlist/playlist_test.go",
+    "line": 132,
+    "title": "The new mode-3 integration tests actually run in mode 1",
+    "severity": "P1",
+    "category": "bugs, history",
+    "description": "Mode transition logic lacks Mode2→Mode3 gate; all three new subtests exercise mode 1, leaving mode-3 code without integration coverage"
+  },
+  {
+    "file": "pkg/apiserver/rest/dualwriter_mode3.go",
+    "line": 97,
+    "title": "Delete puts the wrong logger into the context",
+    "severity": "P2",
+    "category": "bugs, conventions",
+    "description": "Uses bare receiver logger instead of enriched log variable, causing downstream and legacy store logging to lack name, kind, and method fields"
+  }
+]

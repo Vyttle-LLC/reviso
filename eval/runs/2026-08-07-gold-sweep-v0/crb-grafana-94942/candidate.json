@@ -1,0 +1,26 @@
+[
+  {
+    "file": "pkg/expr/reader.go",
+    "line": 194,
+    "title": "`enableSqlExpressions` can never return true — the feature-flag read is dead and inverted",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "The toggle lookup is computed and discarded; both branches return false. The feature flag has zero effect. The condition is also inverted relative to the name, making any fix that returns true when enabled incorrect."
+  },
+  {
+    "file": "pkg/expr/nodes.go",
+    "line": 160,
+    "title": "Default (non-`expressionParser`) path isn't gated and reports valid SQL as malformed",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Guard lives only in `ReadQuery`, reached only when `expressionParser` is enabled. Default path runs `UnmarshalSQLCommand` which fails with 'not implemented', swallowed into BadRequest claiming SQL is invalid, breaking existing dashboards with valid SQL."
+  },
+  {
+    "file": "pkg/services/featuremgmt/registry.go",
+    "line": 1084,
+    "title": "Flag description, docs, and frontend still advertise working DuckDB SQL expressions",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Feature-flag registry, docs, and frontend UI advertise DuckDB SQL expressions as working when the dependency is removed and the feature is non-functional, misleading operators into enabling a broken feature."
+  }
+]

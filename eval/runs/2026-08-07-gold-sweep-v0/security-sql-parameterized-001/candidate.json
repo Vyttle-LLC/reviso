@@ -1,0 +1,34 @@
+[
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 26,
+    "title": "Admin user-search endpoint has no authentication or authorization check",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "GET /api/admin/users/search is served unauthenticated to any caller, returning PII (email, username, id). No HttpSession check, role check, @ServletSecurity, or web.xml filter. /api/admin/ path asserts privilege boundary that code does not enforce."
+  },
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 39,
+    "title": "Database credentials hardcoded in source",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "DB password embedded as string literal in DriverManager.getConnection. Lands in version control, compiled .class bytes, and is readable to anyone with repo or JAR access. Rotating requires code change and redeploy."
+  },
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 41,
+    "title": "LIKE wildcards in user input are not escaped, allowing full-table enumeration",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Pattern string correctly parameterized but raw input interpolated into pattern via string concatenation. username=% produces LIKE '%%%' matching every row; unbounded result set with no LIMIT."
+  },
+  {
+    "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+    "line": 51,
+    "title": "Database failures are swallowed with no logging",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Broad Exception catch discards errors and returns generic 500. Query failures in production reach no logs, making outages undiagnosable. Also absorbs unexpected RuntimeExceptions from gson/servlet code."
+  }
+]

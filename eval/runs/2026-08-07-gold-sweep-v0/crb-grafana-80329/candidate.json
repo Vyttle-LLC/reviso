@@ -1,0 +1,26 @@
+[
+  {
+    "file": "pkg/services/annotations/annotationsimpl/xorm_store.go",
+    "line": 534,
+    "title": "Debug logging left in at Error level, dumping every row ID each batch",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "CleanAnnotations and CleanOrphanedAnnotationTags emit two log.Error lines per batch on success path, each with full ids slice. With default cleanupjob_batchsize=100, instance cleaning 1M stale annotations emits 20,000 ERROR lines per cycle. Also at lines 537, 554, 557, 576, 579."
+  },
+  {
+    "file": "pkg/services/cleanup/cleanup.go",
+    "line": 77,
+    "title": "Cleanup ticker cut from 10 minutes to 1 minute, unrelated to the change",
+    "severity": "P0",
+    "category": "history",
+    "description": "Cleanup ticker cadence changed to 10× more often, bundled into commit about annotation batching with no mention in commit message. Changes every cleanup job cadence (temp files, expired snapshots, dashboard versions, expired images, temp users, annotations). Appears to be leftover from shortening test loop."
+  },
+  {
+    "file": "pkg/services/annotations/annotationsimpl/xorm_store.go",
+    "line": 609,
+    "title": "Quadratic string building for the SQLite inline-ID path",
+    "severity": "P2",
+    "category": "slop",
+    "description": "fmt.Sprintf(\"%s, %d\", values, v) reallocates and copies whole string on every iteration. Test runs with annotationCleanupJobBatchSize: 32767, building ~230 KB string via ~32k copies — roughly 3.8 GB of memcpy per batch."
+  }
+]

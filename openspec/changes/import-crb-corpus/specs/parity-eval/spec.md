@@ -61,8 +61,10 @@ content into the repository.
 Corpus entries SHALL support an optional `active_parity` boolean; parity
 baseline tooling SHALL run only entries marked true, while gold mode
 ignores the marker. The imported corpus SHALL mark a subset (~10–15
-cases) spanning the corpus's languages and repos, including at least two
-expected-clean cases.
+cases) spanning the corpus's languages and repos. (No CRB case is
+expected-clean — the task-1.1 audit found all 50 carry gold issues —
+so clean-case discipline is covered by gold mode's synthetic cases, not
+the parity subset.)
 
 #### Scenario: Parity run filters on the marker
 

@@ -1,0 +1,17 @@
+{
+  "case": "bug-race-condition-001",
+  "origin": "synthetic",
+  "imported": "2026-08-06",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "pkg/ratelimit/limiter.go",
+      "line": 31,
+      "title": "Data race: the `RateLimiter` struct is intended for concurrent use across goroutines handling HTTP requests, but the `Al",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Data race: the `RateLimiter` struct is intended for concurrent use across goroutines handling HTTP requests, but the `Allow` method (line 31) reads and writes `rl.clients` map and `ClientState` fields without any synchronization (mutex or sync.Map). Concurrent goroutines calling `Allow` will produce data races on the map and counter fields, causing undefined behavior. Protect access with a `sync.Mutex` or `sync.RWMutex`."
+    }
+  ]
+}

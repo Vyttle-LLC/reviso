@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/middleware/jwt-auth.ts",
+    "line": 4,
+    "title": "JWT signing secret hardcoded in source with no environment override",
+    "severity": "P0",
+    "category": "security",
+    "description": "JWT_SECRET is a source-code literal (sk_live_…) used as HMAC key, readable by anyone with repo access. Allows authentication bypass and privilege escalation. Should read from environment and fail closed at startup."
+  },
+  {
+    "file": "src/middleware/jwt-auth.ts",
+    "line": 26,
+    "title": "Expiry check fails open for tokens with no `exp` claim",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Guard uses `if (payload.exp && …)`, so tokens without exp claim are accepted forever despite exp being declared as required. Should require the claim instead of tolerating its absence."
+  }
+]

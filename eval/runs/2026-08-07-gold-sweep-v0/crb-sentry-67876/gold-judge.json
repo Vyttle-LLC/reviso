@@ -1,0 +1,86 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "OAuth state uses pipeline.signature (static) instead of a per-request random value",
+        "severity": "medium",
+        "category": "security",
+        "crb_category": "security",
+        "description": "OAuth state uses pipeline.signature (static) instead of a per-request random value",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/integrations/github/integration.py",
+        "line": 402,
+        "title": "OAuth `state` is `pipeline.signature`, a global constant — the CSRF check is decorative",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Pipeline.signature is an md5 hash of constant pipeline view class names, identical for all users and stable across deploys. Attacker can exploit by installing the GitHub App on a controlled org, then luring a Sentry admin to `/extensions/github/setup/?code=<attacker_code>&state=<constant>`, causing the victim's pipeline to bind the attacker's GitHub user and connect their installation to the victim's org."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "The code attempts to access integration.metadata[sender][login] without checking for the existence of the sender key. Th",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The code attempts to access integration.metadata[sender][login] without checking for the existence of the sender key. This causes a KeyError for integrations where the sender metadata was not set during creation",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/integrations/github/integration.py",
+        "line": 503,
+        "title": "`integration.metadata[\"sender\"]` raises `KeyError` for pipeline-created integrations",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "The `sender` key in metadata only exists for webhook-created integrations, not pipeline-created ones. Re-installing after disconnection hits unhandled KeyError at line 503 instead of showing the failure dialog."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": "src/sentry/integrations/github/integration.py",
+      "line": 0,
+      "title": "Null reference if github_authenticated_user state is missing",
+      "severity": "medium",
+      "category": "security",
+      "crb_category": "security",
+      "description": "Null reference if github_authenticated_user state is missing",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "tests/sentry/integrations/github/test_integration.py",
+      "line": 379,
+      "title": "`test_installation_not_found` no longer tests installation-not-found",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "Test uses incorrect state parameter that doesn't match pipeline.signature, causing request to error at state check before reaching `build_integration`. The installation-not-found error path is now uncovered."
+    },
+    {
+      "file": "src/sentry/integrations/github/integration.py",
+      "line": 494,
+      "title": "`Integration` fetched twice for the same `external_id`",
+      "severity": "P2",
+      "category": "slop",
+      "description": "Integration is queried twice: at line 478 without status filter, then at line 494 with ACTIVE status filter. Redundant round-trip, and status condition split across blocks causes non-ACTIVE integrations to silently take the generic error path."
+    }
+  ],
+  "metrics": {
+    "gold_count": 3,
+    "gold_correctness_count": 3,
+    "candidate_count": 4,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 66,
+    "precision_proxy_pct": 50
+  }
+}

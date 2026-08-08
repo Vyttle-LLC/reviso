@@ -1,0 +1,20 @@
+## Reviso review — HEAD vs 8671f86 (5 commits, 11 files)
+
+Found 2 issues:
+
+1. **[P1][conf 85] Operator side of the preview feature is never gated — docs claim a failure that no code produces** — `docs/guides/operator/advanced-configuration.adoc:448`
+   Failure: The new CAUTION says "the feature `rolling-updates` must be enabled. Otherwise, the {project_name} Operator will fail." Nothing in the operator reads that flag — `grep -rn "ROLLING_UPDATES\|rolling-updates" operator/src/main` returns nothing, and `UpgradeLogicFactory.create` (`operator/src/main/java/org/keycloak/operator/upgrade/UpgradeLogicFactory.java:36`) dispatches on `spec.update.strategy` alone. A user who sets `spec.update.strategy: Recreate` without the feature gets the preview update logic applied silently; a user who follows the doc adds a preview feature that changes nothing. The documented remedy can't work even in principle: `spec.features.enabled` only adds `--features=` to the Keycloak *server* container args, so it could never gate the operator process's own `Profile`. This PR gates the two CLI commands but leaves the operator half of the same preview feature ungated (`UpgradeTest.java:115` only enables it in the CR, which is why the tests still pass).
+   Fix: Either gate the operator path — reject/ignore `spec.update.strategy` with a status condition unless the feature is enabled in the operator's own profile — or drop the "the Operator will fail" claim and the `features.enabled` snippet from the guide until that gating lands.
+   (bugs; enforcement-vs-claim)
+
+2. **[P2][conf 80] Documented `--features=rolling-updates` on `update-compatibility` is ignored on distributions built with `--features`** — `docs/guides/templates/kc.adoc:53`
+   Failure: `--features` is a build-time option, and `QuarkusProfileConfigResolver` (`quarkus/runtime/src/main/java/org/keycloak/quarkus/runtime/QuarkusProfileConfigResolver.java:13-14`) resolves it as `getRawPersistedProperty("kc.features").orElse(getRawValue("kc.features"))` — the persisted build value wins over the CLI value. Any deployment built with an explicit feature list (e.g. `kc.sh build --features=token-exchange`) has `kc.features` in `persisted.properties`, so the documented `bin/kc.sh update-compatibility metadata --file=... --features=rolling-updates` still sees the feature disabled and exits 4 with "the preview feature 'rolling-updates' is not enabled". Only a rebuild works — which is exactly what commits b196596 → 5d2490d did for `operator/scripts/Dockerfile-custom-image`, but the guide never says so. The `@RawDistOnly` test (`UpdateCommandDistTest.java:44`) runs against an unbuilt dist where nothing is persisted, so CI never covers this. Secondarily, the flag is appended unconditionally, so it also replaces (not extends) a user's real feature list, contradicting the guide's own warning at `docs/guides/server/update-compatibility.adoc:72` to include all configuration options.
+   Fix: Add a note in `update-compatibility.adoc` that optimized/pre-built distributions must be rebuilt with `--features=rolling-updates` (and must keep their existing features in that list), rather than appending the flag to every rendered example in the shared macro.
+   (bugs, conventions; doc-vs-behavior)
+
+Checked: bugs, conventions, history, comments, slop.
+Skipped: nothing. Note: the deterministic detector suite (`detectors/run.sh`) was not approved to run, so no `deterministic`-tagged findings are included.
+
+Two things I checked and cleared, for the record: the `RECREATE_UPGRADE_EXIT_CODE` 4→3 change makes the code match what `update-compatibility.adoc` already documented, and the command predates any release (introduced 2025-01-24 on `999.0.0-SNAPSHOT`), so no shipped contract breaks. And `Profile` is initialized before `run()` via `PropertyMappers.sanitizeDisabledMappers()` at `Picocli.java:128`, so the new feature checks read a populated profile.
+
+Wrong about something? Say which finding — I can file feedback (metadata-only by default).

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "src/sentry/api/endpoints/organization_auditlogs.py",
+    "line": 71,
+    "title": "`organization_context.member` dereferenced without a None guard — 500s every audit-log request for token auth",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "`enable_advanced` computed unconditionally before branch check, causing 500s on every audit-log request for token auth. `RpcUserOrganizationContext.member` is nullable and None for non-org members, raising AttributeError without guard."
+  },
+  {
+    "file": "src/sentry/api/paginator.py",
+    "line": 838,
+    "title": "`OptimizedCursorPaginator` uses integer-key semantics against a `datetime` column",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "`get_item_key`/`value_from_cursor` assume numeric keys but endpoint passes `datetime` column. Raises TypeError on cursor build and comparison failures on Postgres. Should subclass `DateTimePaginator` instead."
+  },
+  {
+    "file": "src/sentry/api/paginator.py",
+    "line": 876,
+    "title": "Negative-offset branch is guaranteed to raise; its comment claims the opposite",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Comment incorrectly claims Django ORM handles negative slicing, but it raises ValueError. Negative offsets from user-controlled cursor param create unauthenticated 500 crash path. Should remove unsupported branch."
+  },
+  {
+    "file": "src/sentry/api/endpoints/organization_auditlogs.py",
+    "line": 71,
+    "title": "Superuser gate bypasses superuser elevation, and `has_global_access` gates nothing",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Uses raw `is_superuser` flag instead of proper `is_active_superuser` check. `has_global_access` defaults to True and provides no real authorization gate. Creates dangerous bypass pattern."
+  },
+  {
+    "file": "src/sentry/spans/buffer.py",
+    "line": 197,
+    "title": "Redis key type changed set→zset with no key migration — WRONGTYPE crash-loop across a rolling deploy",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`span-buf:s:` keys switch from set operations to zset operations without migration. During rolling deploy, new pods encounter old schema keys causing WRONGTYPE errors and crash-loops until key expiry. Should bump key prefix or unlink on WRONGTYPE."
+  }
+]

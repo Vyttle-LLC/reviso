@@ -1,0 +1,106 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/sentry/spans/consumers/process/flusher.py",
+        "line": 0,
+        "title": "Because flusher processes are created via multiprocessing.get_context('spawn').Process, they are instances of multiproce",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Because flusher processes are created via multiprocessing.get_context('spawn').Process, they are instances of multiprocessing.context.SpawnProcess, which on POSIX is not a subclass of multiprocessing.Process, so this isinstance check will always be false and hung processes won't be killed here.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/spans/consumers/process/flusher.py",
+        "line": 254,
+        "title": "Hung flusher processes are never killed — isinstance guard is always false",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "isinstance(process, multiprocessing.Process) is always false for SpawnProcess objects, so process.kill() never executes. On hang paths, processes aren't killed and new ones spawn for the same shards, causing duplicate segment production and accumulation of orphan flushers with Redis connection leaks."
+      }
+    },
+    {
+      "gold": {
+        "file": "tests/sentry/spans/consumers/process/test_consumer.py",
+        "line": 0,
+        "title": "Sleep in test_consumer.py won’t actually wait because time.sleep was monkeypatched above; consider restoring sleep or us",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Sleep in test_consumer.py won’t actually wait because time.sleep was monkeypatched above; consider restoring sleep or using a different sync to ensure the flusher has time to process.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "tests/sentry/spans/consumers/process/test_consumer.py",
+        "line": 62,
+        "title": "The sleep added to test_basic is a no-op",
+        "severity": "P2",
+        "category": "bugs",
+        "description": "time.sleep is patched to a lambda at line 15, so sleep(0.1) at line 62 returns immediately. Comment claims it gives flusher threads time to process, but the monkeypatch defeats this."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Inconsistent metric tagging with 'shard' and 'shards'",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Inconsistent metric tagging with 'shard' and 'shards'",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Fixed sleep in tests can be flaky; wait on condition instead",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Fixed sleep in tests can be flaky; wait on condition instead",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Breaking out of the loop when the deadline has elapsed can skip terminating remaining flusher processes, potentially lea",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Breaking out of the loop when the deadline has elapsed can skip terminating remaining flusher processes, potentially leaving them running after shutdown; consider ensuring termination is attempted even if the deadline is exceeded.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/sentry/spans/consumers/process/flusher.py",
+      "line": 127,
+      "title": "Dead method with no callers and misleading comments",
+      "severity": "P2",
+      "category": "slop",
+      "description": "_create_process_for_shard(self, shard) has no callers in src/ or tests/. Also dead guard at line 222 (if not process: continue), misleading per-shard comment at line 235, and restated comment at line 178."
+    },
+    {
+      "file": "src/sentry/spans/consumers/process/flusher.py",
+      "line": 32,
+      "title": "Class docstring claims one process per shard; default is one for all shards",
+      "severity": "P2",
+      "category": "comments",
+      "description": "Docstring says 'Creates one process per shard' but --flusher-processes defaults to 1, making a single process handle all shards. Documentation contradicts the shipped default behavior."
+    }
+  ],
+  "metrics": {
+    "gold_count": 5,
+    "gold_correctness_count": 5,
+    "candidate_count": 4,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 40,
+    "precision_proxy_pct": 50
+  }
+}

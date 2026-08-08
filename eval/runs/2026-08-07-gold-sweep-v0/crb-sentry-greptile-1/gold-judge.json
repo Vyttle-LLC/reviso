@@ -1,0 +1,98 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/sentry/api/endpoints/organization_auditlogs.py",
+        "line": 0,
+        "title": "When requests are authenticated with API keys or org auth tokens (which have user_id=None), organization_context.member ",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "When requests are authenticated with API keys or org auth tokens (which have user_id=None), organization_context.member is None. Line 71 attempts to access organization_context.member.has_global_access without checking if member is None, causing an AttributeError crash when optimized_pagination=true is used, even though the request passed all permission checks with valid org:write scope.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/api/endpoints/organization_auditlogs.py",
+        "line": 71,
+        "title": "`enable_advanced` gate grants unintended pagination to every caller",
+        "severity": "P0",
+        "category": "bugs / conventions",
+        "description": "`has_global_access` means 'sees all teams' (true for every member), not 'is admin'. Superuser check bypasses elevated session requirement. Unguarded `.has_global_access` access on potentially-None `organization_context.member` causes AttributeError for non-member tokens."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "get_item_key assumes a numeric key, but the paginator is used with order_by=-datetime in the audit logs endpoint; callin",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "get_item_key assumes a numeric key, but the paginator is used with order_by=-datetime in the audit logs endpoint; calling math.floor/ceil on a datetime will raise a TypeError.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/api/paginator.py",
+        "line": 838,
+        "title": "`OptimizedCursorPaginator` uses integer key semantics on datetime column",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "`math.ceil(<datetime>)` raises TypeError. `value_from_cursor` returns int instead of datetime, emitting `WHERE datetime <= <int>` comparison. Endpoint 500s on any audit row. Should subclass `DateTimePaginator` instead."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Django querysets do not support negative slicing",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Django querysets do not support negative slicing",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/sentry/api/paginator.py",
+        "line": 877,
+        "title": "Negative-offset slicing raises ValueError; comment claims opposite",
+        "severity": "P1",
+        "category": "bugs / comments",
+        "description": "Django's QuerySet raises ValueError on negative slice bounds, but comment falsely claims 'Django properly handles negative slicing automatically'. Feature is entirely non-functional."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Importing non-existent OptimizedCursorPaginator",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Importing non-existent OptimizedCursorPaginator",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/sentry/api/paginator.py",
+      "line": 821,
+      "title": "`OptimizedCursorPaginator.get_result` duplicates base with misaligned comments",
+      "severity": "P2",
+      "category": "slop / comments",
+      "description": "Lines 845–911 verbatim copy of BasePaginator.get_result; future base fixes are silently missed. Comment at 179–181 says 'allow negative offsets' directly above code that rejects them. Narrative comments restate code without adding information."
+    }
+  ],
+  "metrics": {
+    "gold_count": 4,
+    "gold_correctness_count": 4,
+    "candidate_count": 4,
+    "matched_count": 3,
+    "matched_correctness_count": 3,
+    "gold_recall_correctness": 75,
+    "precision_proxy_pct": 75
+  }
+}

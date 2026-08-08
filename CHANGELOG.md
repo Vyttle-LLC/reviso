@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Gold-mode eval: 63-case public corpus (50 real PRs imported from
+  code-review-benchmark with MIT-attributed labels, 13 synthetics),
+  `gold.sh`/`sweep.sh` runners, and the first published sweep
+  (docs/evals.md). Repo-side only — the installed plugin is unchanged.
+
 ### Changed
 
 - Parity eval re-aimed at the built-in `/code-review` pinned to medium

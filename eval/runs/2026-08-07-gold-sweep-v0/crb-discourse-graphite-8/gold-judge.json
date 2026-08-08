@@ -1,0 +1,84 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "In the next action, capping the next offset at user_count can produce an empty page (e.g., total equal to limit results ",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "In the next action, capping the next offset at user_count can produce an empty page (e.g., total equal to limit results in offset == total, showing 2/2 with no members). This can cause confusing UX on the last page.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "app/assets/javascripts/admin/controllers/admin-group.js.es6",
+        "line": 13,
+        "title": "`totalPages` off-by-one produces a phantom empty page",
+        "severity": "P2",
+        "category": "bugs",
+        "description": "Math.floor(user_count / limit) + 1 returns 2 for 50 members at limit 50, creating phantom empty page"
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": " The findMembers() call is now asynchronous and unhandled. The controller may not have member data immediately available",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": " The findMembers() call is now asynchronous and unhandled. The controller may not have member data immediately available, creating a race condition.",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "HTTP method mismatch in .remove_member - test uses PUT but remove_member action expects DELETE",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "HTTP method mismatch in .remove_member - test uses PUT but remove_member action expects DELETE",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "app/controllers/admin/groups_controller.rb",
+      "line": 90,
+      "title": "`users.delete(id)` bypasses `Group#remove` — stale `user_count` and 500 on non-members",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "users.delete(id) bypasses Group#remove, causing stale user_count and 500 errors on non-members; delete_all skips counter_cache callback"
+    },
+    {
+      "file": "app/controllers/admin/groups_controller.rb",
+      "line": 73,
+      "title": "`add_members` raises 500 when a username is already in the group",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Group#add has no dedupe logic; UNIQUE index on (group_id, user_id) raises ActiveRecord::RecordNotUnique when adding existing member"
+    },
+    {
+      "file": "app/controllers/admin/groups_controller.rb",
+      "line": 34,
+      "title": "`PATCH /admin/groups/:id` still routes here and now silently hides the group",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "update_patch is gone but PATCH still routes to update action; group.visible set to false for absent visible parameter, silently hiding group"
+    }
+  ],
+  "metrics": {
+    "gold_count": 3,
+    "gold_correctness_count": 3,
+    "candidate_count": 4,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 33,
+    "precision_proxy_pct": 25
+  }
+}

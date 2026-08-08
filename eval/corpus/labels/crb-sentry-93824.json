@@ -1,0 +1,54 @@
+{
+  "case": "crb-sentry-93824",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/getsentry/sentry/pull/93824",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Inconsistent metric tagging with 'shard' and 'shards'",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Inconsistent metric tagging with 'shard' and 'shards'"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Fixed sleep in tests can be flaky; wait on condition instead",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Fixed sleep in tests can be flaky; wait on condition instead"
+    },
+    {
+      "file": "src/sentry/spans/consumers/process/flusher.py",
+      "line": 0,
+      "title": "Because flusher processes are created via multiprocessing.get_context('spawn').Process, they are instances of multiproce",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Because flusher processes are created via multiprocessing.get_context('spawn').Process, they are instances of multiprocessing.context.SpawnProcess, which on POSIX is not a subclass of multiprocessing.Process, so this isinstance check will always be false and hung processes won't be killed here."
+    },
+    {
+      "file": "tests/sentry/spans/consumers/process/test_consumer.py",
+      "line": 0,
+      "title": "Sleep in test_consumer.py won’t actually wait because time.sleep was monkeypatched above; consider restoring sleep or us",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Sleep in test_consumer.py won’t actually wait because time.sleep was monkeypatched above; consider restoring sleep or using a different sync to ensure the flusher has time to process."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Breaking out of the loop when the deadline has elapsed can skip terminating remaining flusher processes, potentially lea",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Breaking out of the loop when the deadline has elapsed can skip terminating remaining flusher processes, potentially leaving them running after shutdown; consider ensuring termination is attempted even if the deadline is exceeded."
+    }
+  ]
+}

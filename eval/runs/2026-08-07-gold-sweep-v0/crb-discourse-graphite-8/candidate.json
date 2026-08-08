@@ -1,0 +1,34 @@
+[
+  {
+    "file": "app/controllers/admin/groups_controller.rb",
+    "line": 90,
+    "title": "`users.delete(id)` bypasses `Group#remove` — stale `user_count` and 500 on non-members",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "users.delete(id) bypasses Group#remove, causing stale user_count and 500 errors on non-members; delete_all skips counter_cache callback"
+  },
+  {
+    "file": "app/controllers/admin/groups_controller.rb",
+    "line": 73,
+    "title": "`add_members` raises 500 when a username is already in the group",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Group#add has no dedupe logic; UNIQUE index on (group_id, user_id) raises ActiveRecord::RecordNotUnique when adding existing member"
+  },
+  {
+    "file": "app/controllers/admin/groups_controller.rb",
+    "line": 34,
+    "title": "`PATCH /admin/groups/:id` still routes here and now silently hides the group",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "update_patch is gone but PATCH still routes to update action; group.visible set to false for absent visible parameter, silently hiding group"
+  },
+  {
+    "file": "app/assets/javascripts/admin/controllers/admin-group.js.es6",
+    "line": 13,
+    "title": "`totalPages` off-by-one produces a phantom empty page",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Math.floor(user_count / limit) + 1 returns 2 for 50 members at limit 50, creating phantom empty page"
+  }
+]

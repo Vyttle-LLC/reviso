@@ -1,0 +1,11 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "Incorrect method call for exit codes. The picocli.exit() method calls System.exit() directly, which is problematic:",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Incorrect method call for exit codes. The picocli.exit() method calls System.exit() directly, which is problematic:"
+  }
+]

@@ -2,6 +2,9 @@
   // Prose is hard-wrapped by hand, not to a fixed column.
   "config": {
     "MD013": false,
+    // Keep a Changelog repeats "### Added"/"### Changed" under every
+    // version heading by design; only flag duplicates among siblings.
+    "MD024": { "siblings_only": true },
     // The README centres its lockup and badges with inline HTML, which
     // Markdown has no equivalent for.
     "MD033": false,
@@ -16,6 +19,9 @@
     "eval/reference/code-review-recipe-*.md",
     // Archived eval-run artifacts: machine-captured review output,
     // preserved verbatim — not prose to reformat.
-    "eval/runs/**/*.md"
+    "eval/runs/**/*.md",
+    // Gitignored clone cache for eval checkouts: third-party repos'
+    // own markdown. CI never sees it; keep local runs quiet too.
+    "eval/.cache/**"
   ]
 }

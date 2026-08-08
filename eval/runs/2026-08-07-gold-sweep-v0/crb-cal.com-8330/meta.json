@@ -1,0 +1,6 @@
+{
+  "cli_version": "2.1.224",
+  "models": [
+    "claude-opus-5"
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+    "line": 95,
+    "title": "Adding guests bypasses the \"seats disable guests\" invariant and inflates seat counts",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "New endpoint has no seatsPerTimeSlot guard, allowing attendees to create unlimited attendee rows on seated bookings. Over-capacity is then reported immediately, and new rows have no BookingSeat so guests cannot cancel."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+    "line": 71,
+    "title": "Guest-email blacklist is case-sensitive, bypassing the filter",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Blacklist is lowercased but comparison is case-sensitive, allowing uppercase variants (e.g., Spam@Evil.com) to bypass the filter and be added as attendees."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+    "line": 46,
+    "title": "isTeamAdminOrOwner uses && which reduces to owner-only",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "ANDing isTeamAdmin (ADMIN or OWNER) with isTeamOwner (OWNER only) narrows the result to OWNER, contradicting the variable name and blocking team admins."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings/addGuests.schema.ts",
+    "line": 5,
+    "title": "Server schema doesn't enforce uniqueness its error message claims",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Uniqueness is validated only client-side. Direct tRPC calls with duplicate emails pass validation and create multiple identical attendee rows with duplicate invites."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+    "line": 55,
+    "title": "you_do_not_have_permission translation key is missing",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "The error key was not added to locales/en/common.json, so unauthorized users see the raw key \"you_do_not_have_permission\" instead of a translated message."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+    "line": 168,
+    "title": "Existing attendees get fresh scheduled invite instead of add-guests notice",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Handler passes raw guests input instead of filtered uniqueGuests, so already-invited attendees are matched and re-sent full AttendeeScheduledEmail with REQUEST ICS instead of AttendeeAddGuestsEmail."
+  },
+  {
+    "file": "apps/web/components/dialog/AddGuestsDialog.tsx",
+    "line": 33,
+    "title": "isInvalidEmail is never cleared except on Cancel",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "After a failed validation, the error flag persists after successful submission or dismissal via Esc/overlay, showing stale error state when the dialog is reopened."
+  }
+]

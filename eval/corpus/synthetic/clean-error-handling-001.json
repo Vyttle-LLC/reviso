@@ -1,0 +1,17 @@
+{
+  "id": "clean-error-handling-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add file upload handler with validation",
+    "description": "Implements a robust file upload handler that validates file type, size, and content before persisting to the configured storage backend. Includes cleanup logic to remove partially written files on failure."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/services/file-upload.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,68 @@\n+import { writeFile, unlink, stat } from \"fs/promises\";\n+import { join, extname } from \"path\";\n+import { randomUUID } from \"crypto\";\n+\n+interface UploadResult {\n+  fileId: string;\n+  filename: string;\n+  size: number;\n+  mimeType: string;\n+}\n+\n+var ALLOWED_EXTENSIONS = new Set([\".png\", \".jpg\", \".jpeg\", \".gif\", \".pdf\", \".docx\"]);\n+var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB\n+var UPLOAD_DIR = \"/var/data/uploads\";\n+\n+export async function handleFileUpload(\n+  fileBuffer: Buffer,\n+  originalName: string,\n+  mimeType: string\n+): Promise<UploadResult> {\n+  if (!fileBuffer || fileBuffer.length === 0) {\n+    throw new Error(\"File buffer is empty\");\n+  }\n+\n+  if (!originalName || originalName.trim().length === 0) {\n+    throw new Error(\"Original filename is required\");\n+  }\n+\n+  var extension = extname(originalName).toLowerCase();\n+  if (!ALLOWED_EXTENSIONS.has(extension)) {\n+    throw new Error(\n+      \"File type not allowed: \" + extension + \". Accepted: \" + Array.from(ALLOWED_EXTENSIONS).join(\", \")\n+    );\n+  }\n+\n+  if (fileBuffer.length > MAX_FILE_SIZE) {\n+    throw new Error(\n+      \"File exceeds maximum size of \" + (MAX_FILE_SIZE / 1024 / 1024) + \" MB\"\n+    );\n+  }\n+\n+  var fileId = randomUUID();\n+  var storedName = fileId + extension;\n+  var filePath = join(UPLOAD_DIR, storedName);\n+\n+  try {\n+    await writeFile(filePath, fileBuffer);\n+\n+    var fileStats = await stat(filePath);\n+\n+    return {\n+      fileId: fileId,\n+      filename: storedName,\n+      size: fileStats.size,\n+      mimeType: mimeType,\n+    };\n+  } catch (err) {\n+    try {\n+      await unlink(filePath);\n+    } catch {\n+      // cleanup is best-effort; the file may not have been written\n+    }\n+\n+    throw new Error(\n+      \"Failed to write file: \" + (err instanceof Error ? err.message : \"unknown error\")\n+    );\n+  }\n+}"
+    }
+  ]
+}

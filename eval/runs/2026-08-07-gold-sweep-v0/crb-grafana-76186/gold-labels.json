@@ -1,0 +1,20 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "The ContextualLoggerMiddleware methods (QueryData, CallResource, CheckHealth, CollectMetrics) panic when a nil request i",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The ContextualLoggerMiddleware methods (QueryData, CallResource, CheckHealth, CollectMetrics) panic when a nil request is received. This occurs because they directly access req.PluginContext (via the instrumentContext function) without first checking if req is nil. This is a regression, as previous middleware layers gracefully handled nil requests."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "The traceID is no longer logged for plugin requests. During a refactoring, the tracing import and the logic to extract a",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The traceID is no longer logged for plugin requests. During a refactoring, the tracing import and the logic to extract and add traceID from the context to log parameters were removed from the LoggerMiddleware. The newly introduced ContextualLoggerMiddleware does not add this information, resulting in missing traceID in plugin request logs and impacting debugging and request tracing capabilities."
+  }
+]

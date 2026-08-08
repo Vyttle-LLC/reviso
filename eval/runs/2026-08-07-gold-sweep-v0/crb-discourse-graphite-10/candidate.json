@@ -1,0 +1,50 @@
+[
+  {
+    "file": "db/migrate/20150818190757_create_embeddable_hosts.rb",
+    "line": 11,
+    "title": "Migration aborts on every site that never set `embed_category`",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "`execute(...)[0]['id']` indexes row 0 unconditionally. `embed_category` defaults to `''` and is only persisted when overridden, so the `INNER JOIN` returns zero rows for almost every install. `PG::Result#[]` raises `IndexError`, aborting the migration. Line 15 has the same issue. Fix: guard both queries with `if rows.cmd_tuples > 0`, defaulting to `0`."
+  },
+  {
+    "file": "db/migrate/20150818190757_create_embeddable_hosts.rb",
+    "line": 25,
+    "title": "Migration copies host values verbatim, migrated hosts never match new lookup",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Migration inserts raw SQL, bypassing the `before_validation` callback that strips schemes/paths. Rows land as `http://discourse.org` but `EmbeddableHost.record_for_host` compares against `URI(referer).host` (`discourse.org`), so no match. Values with `'` also break the interpolated INSERT. Fix: normalize in Ruby before inserting with `h.sub(/\\Ahttps?:\\/\\//, '').sub(/\\/.*\\z/, '').strip` and use `quote(h)`."
+  },
+  {
+    "file": "app/models/embeddable_host.rb",
+    "line": 17,
+    "title": "`lower(host) = ?` never downcases the parameter",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`URI#host` preserves case, so mixed-case hosts in Referer headers never match the lowercase query. The parameter itself is never downcased despite `lower()` in SQL. Fix: `where(\"lower(host) = ?\", host.downcase).first`."
+  },
+  {
+    "file": "spec/fabricators/category_fabricator.rb",
+    "line": 1,
+    "title": "Fabricator file contents are swapped",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "`category_fabricator.rb` contains only `Fabricator(:embeddable_host)`, while `embeddable_host_fabricator.rb` contains all category fabricators. Tests pass due to directory loading, but editing a category fabricator opens the wrong file. Fix: swap the two files' contents back."
+  },
+  {
+    "file": "app/models/embeddable_host.rb",
+    "line": 6,
+    "title": "Admin host endpoints 500 on missing params or unknown id",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "`before_validation` calls `self.host.sub!` with no nil guard; `POST` without `host` param raises `NoMethodError` and returns 500. `embeddable_hosts_controller.rb:16` calls `host.destroy` on `where(id: ...).first` with no presence check, so `DELETE` with stale id 500s. Fix: use `self.host = host.to_s.sub(...)` and guard lookups with presence checks."
+  },
+  {
+    "file": "app/controllers/admin/embedding_controller.rb",
+    "line": 9,
+    "title": "`PUT /admin/customize/embedding` and `saveChanges` action are no-ops",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "`#update` re-renders `@embedding` without writing anything; `admin-embedding.js.es6:5` calls `.update({})` against it. Route reads as a working save endpoint but does nothing. Fix: drop `saveChanges`, `EmbeddingController#update`, and the `put \"customize/embedding\"` route until there is state to save."
+  }
+]

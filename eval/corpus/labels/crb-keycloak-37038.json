@@ -1,0 +1,27 @@
+{
+  "case": "crb-keycloak-37038",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/keycloak/keycloak/pull/37038",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Incorrect permission check in canManage() method",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Incorrect permission check in canManage() method"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "In getGroupIdsWithViewPermission, hasPermission is called with groupResource.getId() and the same groupResource.getId() ",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "In getGroupIdsWithViewPermission, hasPermission is called with groupResource.getId() and the same groupResource.getId() is added to granted, but hasPermission resolves resources by name (treating the argument as a group id) and the GroupPermissionEvaluator contract says this method returns group IDs that are later used as UserModel.GROUPS and in getUsersCount group filters. This mismatch means per-group VIEW_MEMBERS/MANAGE_MEMBERS permissions may not yield the expected group IDs for filtering and counts, and evaluation may effectively only look at the type-level 'all-groups' resource; consider revisiting whether this should operate on the underlying group ids (resource names) instead so it aligns with the JPA queries and the interface contract."
+    }
+  ]
+}

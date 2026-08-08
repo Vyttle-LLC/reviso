@@ -1,0 +1,11 @@
+[
+  {
+    "file": "src/routes/user-roles.ts",
+    "line": 25,
+    "title": "Argument order mismatch: `updateUserRole(userId, role)` on line 25 passes arguments in the wrong order. The service func",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Argument order mismatch: `updateUserRole(userId, role)` on line 25 passes arguments in the wrong order. The service function signature is `updateUserRole(role: string, userId: string)` (role first, userId second), but the handler passes userId first and role second. Since both parameters are strings, TypeScript does not catch this. The result is that the role validation will check the userId value and the database query will use the role string as the user ID, causing either incorrect errors or silent data corruption."
+  }
+]

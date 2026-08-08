@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used ",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used in the corresponding test setup.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "public/app/plugins/datasource/loki/querySplitting.ts",
+      "line": 299,
+      "title": "Ad hoc filters are now applied twice (three times under shard splitting), duplicating label filters",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "applyTemplateVariables is not idempotent when request.filters is non-empty; it is called multiple times through the call chain (runSplitQuery → runSplitGroupedQueries → datasource.runQuery → DataSourceWithBackend.query), causing duplicate label filters in the final Loki query. With shardQuerySplitting enabled, this occurs three times. Fix: interpolate for split decisions without re-interpolating in downstream layers, either by keeping request.targets raw or by passing a skipTemplateVariables marker."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}

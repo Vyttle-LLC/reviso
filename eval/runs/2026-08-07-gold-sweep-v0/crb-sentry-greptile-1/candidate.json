@@ -1,0 +1,34 @@
+[
+  {
+    "file": "src/sentry/api/endpoints/organization_auditlogs.py",
+    "line": 71,
+    "title": "`enable_advanced` gate grants unintended pagination to every caller",
+    "severity": "P0",
+    "category": "bugs / conventions",
+    "description": "`has_global_access` means 'sees all teams' (true for every member), not 'is admin'. Superuser check bypasses elevated session requirement. Unguarded `.has_global_access` access on potentially-None `organization_context.member` causes AttributeError for non-member tokens."
+  },
+  {
+    "file": "src/sentry/api/paginator.py",
+    "line": 838,
+    "title": "`OptimizedCursorPaginator` uses integer key semantics on datetime column",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "`math.ceil(<datetime>)` raises TypeError. `value_from_cursor` returns int instead of datetime, emitting `WHERE datetime <= <int>` comparison. Endpoint 500s on any audit row. Should subclass `DateTimePaginator` instead."
+  },
+  {
+    "file": "src/sentry/api/paginator.py",
+    "line": 877,
+    "title": "Negative-offset slicing raises ValueError; comment claims opposite",
+    "severity": "P1",
+    "category": "bugs / comments",
+    "description": "Django's QuerySet raises ValueError on negative slice bounds, but comment falsely claims 'Django properly handles negative slicing automatically'. Feature is entirely non-functional."
+  },
+  {
+    "file": "src/sentry/api/paginator.py",
+    "line": 821,
+    "title": "`OptimizedCursorPaginator.get_result` duplicates base with misaligned comments",
+    "severity": "P2",
+    "category": "slop / comments",
+    "description": "Lines 845–911 verbatim copy of BasePaginator.get_result; future base fixes are silently missed. Comment at 179–181 says 'allow negative offsets' directly above code that rejects them. Narrative comments restate code without adding information."
+  }
+]

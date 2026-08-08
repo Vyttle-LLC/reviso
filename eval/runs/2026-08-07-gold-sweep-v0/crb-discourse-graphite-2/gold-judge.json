@@ -1,0 +1,58 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "logic: Potential nil pointer exception - if no TopicUser record exists, tu will be nil and calling methods on it will cr",
+        "severity": "high",
+        "category": "robustness",
+        "crb_category": "error-handling",
+        "description": "logic: Potential nil pointer exception - if no TopicUser record exists, tu will be nil and calling methods on it will crash",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "app/controllers/topics_controller.rb",
+        "line": 105,
+        "title": "`unsubscribe` writes `topic_users` directly instead of going through `TopicUser.change`",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "Bypassing TopicUser.change causes: (a) NoMethodError/500 when TopicUser.find_by returns nil for user with no topic row; (b) missing notifications_reason_id/notifications_changed_at fields causing silent re-subscription via auto_track; (c) missing MessageBus.publish for cross-tab sync"
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Typo in property name: 'stopNotificiationsText' should be 'stopNotificationsText' (missing 'n' in 'Notifications')",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Typo in property name: 'stopNotificiationsText' should be 'stopNotificationsText' (missing 'n' in 'Notifications')",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "app/assets/javascripts/discourse/templates/topic/unsubscribe.hbs",
+      "line": 3,
+      "title": "Unsubscribe page claims notifications stop, but only drops watching → regular",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "UI claims user will stop receiving notifications but server only changes level from watching to regular, not muted. PostAlerter only suppresses notifications at muted level, so user still receives emails for replies/mentions"
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 50
+  }
+}

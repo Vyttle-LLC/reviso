@@ -109,6 +109,25 @@ history/conventions lenses see a bare repo. Parity tooling skips
 synthetics. Cheap to include, and the clean-* ones are the best
 silence-discipline smoke tests we have.
 
+## Task 1.1 audit record (2026-08-06)
+
+- **Identity**: all 50 CRB fixtures carry a full PR URL in `source_id`
+  (upstream repos for cal.com/grafana/keycloak/sentry; the
+  graphite/greptile sets live in `ai-code-review-evaluation/*` mirror
+  repos as real open PRs). 9/9 sampled across every repo family resolve
+  to base/head SHAs via `gh pr view`.
+- **Category → harness mapping** (original kept as `crb_category`):
+  `bug` → `correctness`, `security` → `security`, `error-handling` →
+  `robustness`, `performance` → `efficiency`. Under the judge's tiering,
+  the first three land correctness-tier, `efficiency` lands cleanup-tier —
+  no `CLEANUP_RE` change needed.
+- **Anchor quality**: gold `file` is often `*` (map → null) and `line`
+  often null (map → 0); matching is root-cause-based so this is
+  acceptable, but per-line anchor metrics are off the table.
+- **Expected-clean**: zero CRB cases are expected-clean (the suite's 24
+  clean cases were synthetic/OWASP). Spec amended: the parity subset drops
+  the ≥2-clean clause; clean discipline lives in gold mode's synthetics.
+
 ## Risks / Trade-offs
 
 - [CRB gold labels may be incomplete or stale relative to what a modern

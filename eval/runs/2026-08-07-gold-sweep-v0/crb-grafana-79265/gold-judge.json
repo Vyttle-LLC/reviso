@@ -1,0 +1,101 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Race condition: Multiple concurrent requests could pass the device count check simultaneously and create devices beyond ",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Race condition: Multiple concurrent requests could pass the device count check simultaneously and create devices beyond the limit. Consider using a database transaction or lock.",
+      "tier": "correctness"
+    },
+    {
+      "file": "pkg/services/anonymous/anonimpl/client.go",
+      "line": 0,
+      "title": "Anonymous authentication now fails entirely if anonDeviceService.TagDevice returns ErrDeviceLimitReached. Previously, de",
+      "severity": "medium",
+      "category": "security",
+      "crb_category": "security",
+      "description": "Anonymous authentication now fails entirely if anonDeviceService.TagDevice returns ErrDeviceLimitReached. Previously, device tagging was asynchronous and non-blocking. This change prevents anonymous users from authenticating when the device limit is reached.",
+      "tier": "correctness"
+    },
+    {
+      "file": "pkg/services/anonymous/anonimpl/anonstore/database.go",
+      "line": 0,
+      "title": "This call won’t compile: dbSession.Exec(args...) is given a []interface{} where the first element is the query, but Exec",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "This call won’t compile: dbSession.Exec(args...) is given a []interface{} where the first element is the query, but Exec’s signature requires a first parameter of type string (not an interface{} splat).",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Returning ErrDeviceLimitReached when no rows were updated is misleading; the device might not exist.",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Returning ErrDeviceLimitReached when no rows were updated is misleading; the device might not exist.",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Time window calculation inconsistency: Using device.UpdatedAt.UTC().Add(-anonymousDeviceExpiration) as the lower bound b",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Time window calculation inconsistency: Using device.UpdatedAt.UTC().Add(-anonymousDeviceExpiration) as the lower bound but device.UpdatedAt as the current time may not match the intended logic. Consider using time.Now().UTC() consistently.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "pkg/services/anonymous/anonimpl/impl.go",
+      "line": 147,
+      "title": "Device limit is bypassed on every request after the first rejection",
+      "severity": "P0",
+      "category": "bugs",
+      "description": "tagDeviceUI writes cache entry before store call, so ErrDeviceLimitReached results in the device being cached. First request from over-limit device gets 401; subsequent requests hit cache short-circuit and authenticate normally without ever being written to anon_device, never counting toward limit."
+    },
+    {
+      "file": "pkg/services/anonymous/anonimpl/impl.go",
+      "line": 43,
+      "title": "Store is no longer injectable; wire registration is now dead and unbuildable",
+      "severity": "P1",
+      "category": "conventions",
+      "description": "ProvideAnonymousDeviceService now constructs anonstore.ProvideAnonDBStore internally instead of receiving anonstore.AnonStore, but pkg/server/wire.go still registers it. New deviceLimit int64 parameter has no provider in the graph, causing wire to fail when anything asks for anonstore.AnonStore."
+    },
+    {
+      "file": "pkg/setting/setting.go",
+      "line": 1654,
+      "title": "New `device_limit` ini option is undocumented",
+      "severity": "P2",
+      "category": "conventions",
+      "description": "PR checklist requires configuration changes to update conf/defaults.ini, conf/sample.ini, and configuration docs. None were touched. Operators have no way to discover the limit exists or that 0 means unlimited."
+    },
+    {
+      "file": "packages/grafana-runtime/src/config.ts",
+      "line": 97,
+      "title": "`anonymousDeviceLimit` is typed `undefined`, not `number | undefined`",
+      "severity": "P2",
+      "category": "slop",
+      "description": "Un-annotated class field initialized to undefined infers type `undefined` under strict mode. Consumers writing `config.anonymousDeviceLimit > 0` get type errors, though getFrontendSettings always sends an int64."
+    }
+  ],
+  "metrics": {
+    "gold_count": 5,
+    "gold_correctness_count": 5,
+    "candidate_count": 4,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}

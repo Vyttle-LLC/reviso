@@ -1,0 +1,58 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Returning null from getSubGroupsCount() violates the GroupModel contract (Javadoc says it never returns null) and may le",
+        "severity": "high",
+        "category": "robustness",
+        "crb_category": "error-handling",
+        "description": "Returning null from getSubGroupsCount() violates the GroupModel contract (Javadoc says it never returns null) and may lead to NPEs in callers that expect a non-null count.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "model/infinispan/src/main/java/org/keycloak/models/cache/infinispan/GroupAdapter.java",
+        "line": 275,
+        "title": "getSubGroupsCount() now returns null, contradicting the interface's documented 'Never returns null'",
+        "severity": "P2",
+        "category": "contract",
+        "description": "Method returns null for concurrently-deleted groups, violating the documented interface contract. Causes null check failures in callers and incorrect rendering of deleted groups as expandable in admin UI."
+      }
+    },
+    {
+      "gold": {
+        "file": "tests/base/src/test/java/org/keycloak/tests/admin/group/GroupTest.java",
+        "line": 0,
+        "title": "The reader thread isn’t waited for; flipping deletedAll to true and asserting immediately can race and miss exceptions a",
+        "severity": "medium",
+        "category": "robustness",
+        "crb_category": "error-handling",
+        "description": "The reader thread isn’t waited for; flipping deletedAll to true and asserting immediately can race and miss exceptions added just after the flag change, making this test flaky.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "tests/base/src/test/java/org/keycloak/tests/admin/group/GroupTest.java",
+        "line": 155,
+        "title": "Regression test asserts before joining the reader thread, so it can miss the very NPE it guards",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "Test has a race condition where assertion executes before reader thread completes, allowing it to miss the NPE it guards. The caughtExceptions list is read as empty before the reader thread adds the exception. Thread is also never joined, outliving the test method."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

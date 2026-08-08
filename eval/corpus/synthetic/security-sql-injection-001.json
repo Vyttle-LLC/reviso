@@ -1,0 +1,17 @@
+{
+  "id": "security-sql-injection-001",
+  "language": "java",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add user search endpoint to admin panel",
+    "description": "Implements a servlet that allows admins to search for users by username. Queries the database and returns matching user records as JSON."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/main/java/com/example/admin/UserSearchServlet.java",
+      "status": "added",
+      "patch": "@@ -0,0 +1,58 @@\n+package com.example.admin;\n+\n+import java.io.IOException;\n+import java.sql.Connection;\n+import java.sql.DriverManager;\n+import java.sql.ResultSet;\n+import java.sql.Statement;\n+import java.util.ArrayList;\n+import java.util.List;\n+import javax.servlet.ServletException;\n+import javax.servlet.annotation.WebServlet;\n+import javax.servlet.http.HttpServlet;\n+import javax.servlet.http.HttpServletRequest;\n+import javax.servlet.http.HttpServletResponse;\n+import com.google.gson.Gson;\n+\n+@WebServlet(value = \"/api/admin/users/search\")\n+public class UserSearchServlet extends HttpServlet {\n+\n+    private static final long serialVersionUID = 1L;\n+    private static final String DB_URL = \"jdbc:postgresql://localhost:5432/appdb\";\n+    private final Gson gson = new Gson();\n+\n+    @Override\n+    public void doGet(HttpServletRequest request, HttpServletResponse response)\n+            throws ServletException, IOException {\n+        response.setContentType(\"application/json;charset=UTF-8\");\n+\n+        String username = request.getParameter(\"username\");\n+        if (username == null || username.isEmpty()) {\n+            response.setStatus(400);\n+            response.getWriter().println(\"{\\\"error\\\": \\\"username parameter is required\\\"}\");\n+            return;\n+        }\n+\n+        List<String> results = new ArrayList<>();\n+\n+        try (Connection conn = DriverManager.getConnection(DB_URL, \"app_user\", \"app_pass\")) {\n+            Statement stmt = conn.createStatement();\n+            String query = \"SELECT id, username, email, created_at FROM users WHERE username LIKE '%\" + username + \"%'\";\n+            ResultSet rs = stmt.executeQuery(query);\n+\n+            while (rs.next()) {\n+                String row = rs.getInt(\"id\") + \",\" + rs.getString(\"username\") + \",\" + rs.getString(\"email\");\n+                results.add(row);\n+            }\n+\n+            rs.close();\n+            stmt.close();\n+        } catch (Exception e) {\n+            response.setStatus(500);\n+            response.getWriter().println(\"{\\\"error\\\": \\\"Database query failed\\\"}\");\n+            return;\n+        }\n+\n+        response.getWriter().println(gson.toJson(results));\n+    }\n+}"
+    }
+  ]
+}

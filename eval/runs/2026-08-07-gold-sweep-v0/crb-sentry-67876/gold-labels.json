@@ -1,0 +1,29 @@
+[
+  {
+    "file": "src/sentry/integrations/github/integration.py",
+    "line": 0,
+    "title": "Null reference if github_authenticated_user state is missing",
+    "severity": "medium",
+    "category": "security",
+    "crb_category": "security",
+    "description": "Null reference if github_authenticated_user state is missing"
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "OAuth state uses pipeline.signature (static) instead of a per-request random value",
+    "severity": "medium",
+    "category": "security",
+    "crb_category": "security",
+    "description": "OAuth state uses pipeline.signature (static) instead of a per-request random value"
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "The code attempts to access integration.metadata[sender][login] without checking for the existence of the sender key. Th",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The code attempts to access integration.metadata[sender][login] without checking for the existence of the sender key. This causes a KeyError for integrations where the sender metadata was not set during creation"
+  }
+]

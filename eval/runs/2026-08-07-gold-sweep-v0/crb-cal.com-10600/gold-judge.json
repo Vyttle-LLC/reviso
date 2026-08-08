@@ -1,0 +1,103 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "apps/web/components/auth/BackupCode.tsx",
+        "line": 0,
+        "title": "The exported function TwoFactor handles backup codes and is in BackupCode.tsx. Inconsistent naming.",
+        "severity": "low",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The exported function TwoFactor handles backup codes and is in BackupCode.tsx. Inconsistent naming.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "apps/web/components/auth/BackupCode.tsx",
+        "line": 7,
+        "title": "New backup-code component is named `TwoFactor`",
+        "severity": "P2",
+        "category": "slop",
+        "description": "Component exports `function TwoFactor()` (leftover from copy-paste). Both this and the real TwoFactor are imported side-by-side, so React DevTools and stack traces show duplicate names, causing debugging confusion."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Error message mentions 'backup code login' but this is a disable endpoint, not login",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Error message mentions 'backup code login' but this is a disable endpoint, not login",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Backup code validation is case-sensitive due to the use of indexOf(). This causes validation to fail if a user enters up",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Backup code validation is case-sensitive due to the use of indexOf(). This causes validation to fail if a user enters uppercase hex characters, as backup codes should be case-insensitive for a better user experience.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Because backupCodes are decrypted and mutated in memory before being written back, two concurrent login requests using t",
+      "severity": "high",
+      "category": "efficiency",
+      "crb_category": "performance",
+      "description": "Because backupCodes are decrypted and mutated in memory before being written back, two concurrent login requests using the same backupCode could both pass this check and update, so a single backup code may effectively be accepted more than once if used concurrently, weakening the intended one-time-use semantics.",
+      "tier": "cleanup"
+    }
+  ],
+  "promotion_candidates": [
+    {
+      "file": "packages/features/auth/lib/next-auth-options.ts",
+      "line": 131,
+      "title": "Backup-code login skips the password check entirely",
+      "severity": "P0",
+      "category": "bugs",
+      "description": "Password verification at line 121 is gated on `!credentials.totpCode`, and backup-code branch at line 131 runs before TOTP and never re-checks password. Attacker can post empty password with totpCode and backupCode to bypass password verification, turning a second factor into a single-factor credential."
+    },
+    {
+      "file": "apps/web/components/settings/EnableTwoFactorModal.tsx",
+      "line": 135,
+      "title": "Dismissing the backup-codes dialog destroys the only copy of the codes",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Escape key or outside-click during DisplayBackupCodes step closes modal without calling onEnable(), losing codes permanently with no regenerate endpoint. Also skips invalidation, leaving settings switch reading Disabled while 2FA is on until page reload."
+    },
+    {
+      "file": "apps/web/public/static/locales/en/common.json",
+      "line": 2019,
+      "title": "`missing_backup_codes` tells users to do something the UI doesn't offer",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "Error message directs users to generate codes in settings, but setup.ts returns TwoFactorAlreadyEnabled for users with existing 2FA. No regenerate endpoint exists, leaving locked-out users in a dead-end loop."
+    },
+    {
+      "file": "apps/web/components/settings/EnableTwoFactorModal.tsx",
+      "line": 71,
+      "title": "`resetState()` leaves backup codes and their blob URL alive for the tab's lifetime",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "resetState() clears password and step but not backupCodes or backupCodesUrl. Plaintext codes remain in React state and object URL stays fetchable by any page script (including XSS on unrelated routes) until full navigation."
+    }
+  ],
+  "metrics": {
+    "gold_count": 4,
+    "gold_correctness_count": 3,
+    "candidate_count": 5,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 33,
+    "precision_proxy_pct": 20
+  }
+}

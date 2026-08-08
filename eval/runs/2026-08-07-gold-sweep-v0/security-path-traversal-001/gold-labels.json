@@ -1,0 +1,11 @@
+[
+  {
+    "file": "src/routes/downloads.py",
+    "line": 22,
+    "title": "Path traversal vulnerability: the `filename` URL parameter is passed directly to `os.path.join(UPLOAD_DIR, filename)` on",
+    "severity": "high",
+    "category": "security",
+    "crb_category": "security",
+    "description": "Path traversal vulnerability: the `filename` URL parameter is passed directly to `os.path.join(UPLOAD_DIR, filename)` on line 22 without sanitizing path traversal sequences. An attacker can supply `../../../etc/passwd` to read arbitrary files outside the uploads directory. Validate that the resolved path starts with UPLOAD_DIR using `os.path.realpath()` or use Flask's `safe_join()` utility."
+  }
+]

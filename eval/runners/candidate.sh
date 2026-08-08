@@ -15,19 +15,50 @@ mkdir -p "$OUT"
 git -C "$WD" fetch -q origin "$BASE_SHA" "$HEAD_SHA" 2>/dev/null || true
 git -C "$WD" checkout -q --detach "$HEAD_SHA"
 
+# Report-only invariant baseline. A gold-mode synthetic case arrives with
+# its diff as deliberate uncommitted changes, so "tree must end clean"
+# would false-positive; the invariant is "the run changed nothing", so
+# snapshot state before and compare after. For dirty-by-design trees the
+# porcelain list alone can't see edits to untracked files — hash them too.
+PRE_STATUS=$(git -C "$WD" status --porcelain -uall)
+PRE_HASH=""
+if [ -n "$PRE_STATUS" ]; then
+  PRE_HASH=$( (cd "$WD" && git status --porcelain -uall | cut -c4- \
+    | while read -r f; do [ -f "$f" ] && shasum "$f" || :; done) )
+fi
+
 # Clean context: project/local settings only — no user-level CLAUDE.md,
 # memory, or plugins. The candidate is this plugin, not this machine.
+# The detector suite is pre-approved by absolute path — headless, its
+# Bash call is otherwise denied and the deterministic lens silently
+# drops out of the review (observed in the 2026-08-07 gold sweep).
 (cd "$WD" && claude --plugin-dir "$PLUGIN_DIR" \
     -p "/reviso:review --base $BASE_SHA" --output-format json \
     --setting-sources project,local \
+    --allowedTools "Bash(sh $PLUGIN_DIR/skills/reviso/detectors/run.sh:*)" \
     ${CANDIDATE_CLAUDE_FLAGS:-}) > "$OUT/candidate-raw.json"
+
+# An API-level failure (rate limit, auth, outage) is not a review — fail
+# with the actual message, not a downstream parse error.
+if jq -e '.is_error == true' "$OUT/candidate-raw.json" >/dev/null 2>&1; then
+  echo "candidate.sh: claude run errored: $(jq -r '.result // "unknown error"' "$OUT/candidate-raw.json")" >&2
+  exit 1
+fi
 jq -r '.result' "$OUT/candidate-raw.json" > "$OUT/candidate-report.md"
 sh "$HERE/extract.sh" "$OUT/candidate-report.md" > "$OUT/candidate.json"
 
-# Report-only invariant check: the eval clone must be untouched by the run.
-if [ -n "$(git -C "$WD" status --porcelain)" ]; then
-  echo "candidate.sh: REPORT-ONLY VIOLATION — review run left the tree dirty:" >&2
-  git -C "$WD" status --porcelain >&2
+# Report-only invariant check: the run must not have changed the tree —
+# compared against the pre-run snapshot, so dirty-by-design gold-mode
+# trees pass as long as the review touched nothing.
+POST_STATUS=$(git -C "$WD" status --porcelain -uall)
+POST_HASH=""
+if [ -n "$POST_STATUS" ]; then
+  POST_HASH=$( (cd "$WD" && git status --porcelain -uall | cut -c4- \
+    | while read -r f; do [ -f "$f" ] && shasum "$f" || :; done) )
+fi
+if [ "$PRE_STATUS" != "$POST_STATUS" ] || [ "$PRE_HASH" != "$POST_HASH" ]; then
+  echo "candidate.sh: REPORT-ONLY VIOLATION — review run changed the tree:" >&2
+  printf 'before:\n%s\nafter:\n%s\n' "$PRE_STATUS" "$POST_STATUS" >&2
   exit 1
 fi
 

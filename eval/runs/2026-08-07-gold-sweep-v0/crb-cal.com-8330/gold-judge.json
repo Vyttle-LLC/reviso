@@ -1,0 +1,66 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "packages/trpc/server/routers/viewer/slots.ts",
+        "line": 0,
+        "title": "Incorrect end time calculation using slotStartTime instead of slotEndTime",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Incorrect end time calculation using slotStartTime instead of slotEndTime",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/slots.ts",
+        "line": 139,
+        "title": "New working-hours guard rejects every slot for split or UTC-midnight-crossing schedules",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Working hours rejection logic fails for split shifts and UTC-midnight-crossing schedules because it rejects if ANY range excludes the slot, instead of requiring inclusion in at least one range. Same pattern at line 106. End bound incorrectly copied from start allows slots overrunning endTime. Fix: invert to '.some(inside at least one range)' and use slot's end time properly."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Using === for dayjs object comparison will always return false as it compares object references, not values. Use .isSame",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Using === for dayjs object comparison will always return false as it compares object references, not values. Use .isSame() method instead: dayjs(date.start).add(utcOffset, 'minutes').isSame(dayjs(date.end).add(utcOffset, minutes))",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/trpc/server/routers/viewer/slots.ts",
+      "line": 133,
+      "title": "Busy times are skipped entirely on any day that has a date override",
+      "severity": "P0",
+      "category": "bugs",
+      "description": "Function returns true when date override exists before checking busy times, enabling double-booking. User with override (09:00-17:00) and conflicting busy time (10:00-11:00) on same day will see conflicting slot offered. Fix: remove early return and let control fall through to busy check."
+    },
+    {
+      "file": "packages/trpc/server/routers/viewer/slots.ts",
+      "line": 110,
+      "title": "Override day comparison mixes server-local and UTC calendar days",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Day string comparison uses server-local timezone for date.start but UTC for slotStartTime, mismatching on non-UTC deployments near midnight boundary. Overrides silently fail to apply. Fix: use dayjs.utc(date.start).add(utcOffset, 'minutes') for both sides."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 33
+  }
+}

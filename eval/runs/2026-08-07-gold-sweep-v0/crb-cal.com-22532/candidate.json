@@ -1,0 +1,58 @@
+[
+  {
+    "file": "packages/features/apps/components/CredentialActionsDropdown.tsx",
+    "line": 71,
+    "title": "\"Delete cached data\" is exposed on surfaces that explicitly disable connection modification",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "hasCache computed independently of disableConnectionModification; cache deletion action shown on surfaces that should prohibit connection changes. Also lacks onSettled invalidation on deleteCacheMutation."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/calendars/connectedCalendars.handler.ts",
+    "line": 28,
+    "title": "Cache reads/deletes bypass CalendarCache.init() feature-flag factory, making the mock dead code",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Direct CalendarCacheRepository instantiation bypasses feature-flag factory; mock for disabled flag is unreachable. deleteCache.handler also uses raw Prisma instead of repository pattern."
+  },
+  {
+    "file": "packages/app-store/googlecalendar/lib/CalendarService.ts",
+    "line": 1024,
+    "title": "Dead SelectedCalendar.updatedAt plumbing writes on every webhook-driven cache refresh",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Unconditional UPDATE across all SelectedCalendar rows on each webhook with unused results. Semantically incorrect; bumps rows not in refreshed set."
+  },
+  {
+    "file": "scripts/test-gcal-webhooks.sh",
+    "line": 5,
+    "title": "Dev script writes .env outside the repo and exits 0 on failure",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "ENV_FILE path resolves to parent directory instead of repo root; cleanup() exits 0 on errors; sed -i '' is BSD-only and fails on Linux."
+  },
+  {
+    "file": "packages/features/apps/components/CredentialActionsDropdown.tsx",
+    "line": 89,
+    "title": "Cache timestamp is hardcoded to en-US inside a localized component",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Intl.DateTimeFormat hardcoded to en-US ignores user locale; non-English users see US date/time format with translated labels."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/calendars/deleteCache.handler.ts",
+    "line": 25,
+    "title": "Authorization denial in deleteCache throws a bare Error, surfacing as a 500",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Plain Error instead of TRPCError for authorization denial; coerced to INTERNAL_SERVER_ERROR instead of proper 4xx response. Triggers alerts on routine authz rejections."
+  },
+  {
+    "file": "packages/features/apps/components/CredentialActionsDropdown.tsx",
+    "line": 86,
+    "title": "Raw Tailwind gray classes instead of semantic tokens, flattening dark-mode hierarchy",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Uses raw gray-900/gray-500 instead of semantic tokens (text-emphasis/text-subtle); dark:text-white override erases contrast between heading and secondary text."
+  }
+]

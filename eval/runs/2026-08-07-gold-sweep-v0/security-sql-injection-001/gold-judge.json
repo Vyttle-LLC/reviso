@@ -1,0 +1,55 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+        "line": 40,
+        "title": "SQL injection vulnerability: the `username` request parameter is concatenated directly into the SQL query string on line",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "SQL injection vulnerability: the `username` request parameter is concatenated directly into the SQL query string on line 40 without sanitization or parameterization. An attacker can inject arbitrary SQL (e.g., `' OR '1'='1' --`) to dump or modify data. Use a PreparedStatement with parameterized queries instead.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+        "line": 40,
+        "title": "SQL injection: request parameter concatenated into the query string",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "username parameter from request.getParameter is spliced into Statement query with no escaping. Allows injection attacks like ?username=%25' UNION SELECT to break out of LIKE literal and dump arbitrary table contents."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+      "line": 38,
+      "title": "Database credentials hardcoded in source",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "app_user and app_pass are literal strings compiled into artifact and committed to git. Production DB credentials exposed to anyone with repo access or built WAR; rotation requires code change and redeploy."
+    },
+    {
+      "file": "src/main/java/com/example/admin/UserSearchServlet.java",
+      "line": 17,
+      "title": "Admin endpoint performs no authorization check",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Servlet at /api/admin/users/search returns user IDs and emails but never checks session, role, or token. Any unauthenticated caller can enumerate full user table."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 33
+  }
+}

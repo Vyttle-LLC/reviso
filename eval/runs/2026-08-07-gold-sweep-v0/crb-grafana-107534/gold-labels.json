@@ -1,0 +1,11 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used ",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used in the corresponding test setup."
+  }
+]

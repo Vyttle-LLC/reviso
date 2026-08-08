@@ -1,0 +1,34 @@
+[
+  {
+    "file": "packages/app-store/index.ts",
+    "line": 3,
+    "title": "import() in object literal runs eagerly instead of being deferred",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "import() calls are invoked when the module is evaluated, not when keys are read, defeating the stated goal of async import. All 28 app packages are loaded on every request. Unhandled promises at module scope can cause unhandledRejection errors on Node ≥15."
+  },
+  {
+    "file": "packages/trpc/server/routers/viewer/bookings.tsx",
+    "line": 553,
+    "title": "forEach(async …) leaves deletions floating and breaks error handling",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "forEach discards returned promises, so calendar/video deletions are not initiated before response. On serverless runtimes that freeze after response, stale events are never removed. The enclosing try/catch becomes dead code."
+  },
+  {
+    "file": "packages/app-store/vital/lib/reschedule.ts",
+    "line": 125,
+    "title": "forEach(async …) leaves deletions floating and breaks error handling",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "forEach discards returned promises, so calendar/video deletions are not initiated before response. On serverless runtimes that freeze after response, stale events are never removed. The enclosing try/catch at line 124 becomes dead code."
+  },
+  {
+    "file": "packages/app-store/wipemycalother/lib/reschedule.ts",
+    "line": 125,
+    "title": "forEach(async …) leaves deletions floating and breaks error handling",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "forEach discards returned promises, so calendar/video deletions are not initiated before response. On serverless runtimes that freeze after response, stale events are never removed. The enclosing try/catch at line 124 becomes dead code."
+  }
+]

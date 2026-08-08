@@ -1,0 +1,45 @@
+{
+  "case": "crb-keycloak-37634",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/keycloak/keycloak/pull/37634",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Wrong parameter in null check (grantType vs. rawTokenId)",
+      "severity": "high",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "Wrong parameter in null check (grantType vs. rawTokenId)"
+    },
+    {
+      "file": "testsuite/integration-arquillian/tests/base/src/test/java/org/keycloak/testsuite/AssertEvents.java",
+      "line": 0,
+      "title": "In isAccessTokenId, the substring for the grant shortcut and the equality check look inverted: the grant shortcut occupi",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "In isAccessTokenId, the substring for the grant shortcut and the equality check look inverted: the grant shortcut occupies indices 4–5 (substring(4,6)), and a match should return true (combined with UUID check), not false."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Javadoc mentions \"usually like 3-letters shortcut\" but some implementations use 2-letter shortcuts (\"ac\", \"cc\", \"rt\", \"t",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Javadoc mentions \"usually like 3-letters shortcut\" but some implementations use 2-letter shortcuts (\"ac\", \"cc\", \"rt\", \"te\", \"pc\", \"ci\", \"ro\"). Consider updating documentation to reflect actual usage pattern."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": " Catching generic RuntimeException is too broad. The implementation throws IllegalArgumentException specifically - catch",
+      "severity": "low",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": " Catching generic RuntimeException is too broad. The implementation throws IllegalArgumentException specifically - catch that instead for more precise testing."
+    }
+  ]
+}

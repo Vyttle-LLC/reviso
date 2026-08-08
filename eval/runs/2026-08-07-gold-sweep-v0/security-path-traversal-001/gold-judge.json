@@ -1,0 +1,38 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/routes/downloads.py",
+        "line": 22,
+        "title": "Path traversal vulnerability: the `filename` URL parameter is passed directly to `os.path.join(UPLOAD_DIR, filename)` on",
+        "severity": "high",
+        "category": "security",
+        "crb_category": "security",
+        "description": "Path traversal vulnerability: the `filename` URL parameter is passed directly to `os.path.join(UPLOAD_DIR, filename)` on line 22 without sanitizing path traversal sequences. An attacker can supply `../../../etc/passwd` to read arbitrary files outside the uploads directory. Validate that the resolved path starts with UPLOAD_DIR using `os.path.realpath()` or use Flask's `safe_join()` utility.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/routes/downloads.py",
+        "line": 22,
+        "title": "Path traversal — user-controlled path joined to UPLOAD_DIR with no containment check",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "The route uses the `<path:filename>` converter, allowing `filename` to contain `/` and `..` segments. os.path.join(UPLOAD_DIR, filename) resolves outside the uploads directory without containment checks; any authenticated user can read arbitrary files (secrets, source, keys) at web process privileges via paths like `../../etc/passwd` or `../../.env`."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

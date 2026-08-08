@@ -1,0 +1,18 @@
+[
+  {
+    "file": "common/src/main/java/org/keycloak/common/crypto/CryptoIntegration.java",
+    "line": 57,
+    "title": "Removing the multi-provider guard makes an ambiguous crypto classpath silently pick a provider instead of failing",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Removing multi-provider guard causes ambiguous crypto provider selection to silently pick a provider based on jar order instead of failing. FIPS deployment that accidentally includes keycloak-crypto-default now boots on non-FIPS BouncyCastle instead of failing at startup as intended."
+  },
+  {
+    "file": "authz/client/src/main/java/org/keycloak/authorization/client/util/crypto/AuthzClientCryptoProvider.java",
+    "line": 114,
+    "title": "Dead code: two ASN.1 encoders are built and discarded",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Lines 114–115 create two ASN1Encoder instances, write values into them, and discard results; return statement constructs four fresh encoders and does the real work. Harmless at runtime but invites future misuse."
+  }
+]

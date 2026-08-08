@@ -1,0 +1,42 @@
+[
+  {
+    "file": "app/views/embed/best.html.erb",
+    "line": 6,
+    "title": "Stray `if` in `<%- end if %>` makes the embed template fail to compile",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "ERB emits `end if` followed by output, so `end` closes the `posts.present?` conditional and bare `if` opens a new one never closed. Template raises `SyntaxError: unexpected end-of-input, expecting keyword_end` at compile time, causing 500 on GET /embed/best for embed URLs with topics. Fix: `<%- end %>` on line 6."
+  },
+  {
+    "file": "app/jobs/scheduled/poll_feed.rb",
+    "line": 35,
+    "title": "`poll_feed` crashes on plain RSS 2.0 feeds and the job never retries",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`i.content` is only populated for Atom feeds; RSS 2.0 uses `<description>`, so `nil.scrub` raises `NoMethodError`. No per-item rescue and `retry: false` means first bad item aborts entire poll. Fix: handle both `i.content || i.description` and wrap per-item logic in begin/rescue."
+  },
+  {
+    "file": "app/models/topic_embed.rb",
+    "line": 64,
+    "title": "`absolutize_urls` corrupts protocol-relative URLs and skips path-relative ones",
+    "severity": "P2",
+    "category": "comments",
+    "description": "`href.sub(/^/+/, '')` strips all leading slashes, converting `//cdn.example.com/img.png` to broken `http://blog.example.com/cdn.example.com/img.png`. Path-relative URLs like `images/wat.jpg` remain relative. Fix: use `URI.join(url, href).to_s` guarded by rescue."
+  },
+  {
+    "file": "lib/tasks/disqus.thor",
+    "line": 148,
+    "title": "Disqus importer silently drops thread dates and categories, and one dead link aborts the run",
+    "severity": "P2",
+    "category": "history",
+    "description": "`TopicEmbed.import_remote` drops `created_at` and `category_id` that original `PostCreator.new` passed, stamping imported topics as \"now\" while replies keep historical dates. `open(url).read` with no rescue means one 404/timeout aborts entire import. Fix: pass fields through import chain and rescue per-thread calls."
+  },
+  {
+    "file": "app/jobs/regular/retrieve_topic.rb",
+    "line": 1,
+    "title": "Unused `require_dependency 'email/sender'` in the retrieve-topic job",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Job touches `User` and `TopicRetriever` only; mail require is copy-paste that unnecessarily loads mail stack on every worker boot. Fix: delete line 1, keep `require_dependency 'topic_retriever'`."
+  }
+]

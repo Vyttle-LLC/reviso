@@ -1,0 +1,66 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "pkg/services/authz/rbac/service.go",
+        "line": 0,
+        "title": "The test comment says the cached permissions 'allow access', but the map stores false for dashboards:uid:dash1, so check",
+        "severity": "low",
+        "category": "efficiency",
+        "crb_category": "performance",
+        "description": "The test comment says the cached permissions 'allow access', but the map stores false for dashboards:uid:dash1, so checkPermission will still treat this scope as not allowed.",
+        "tier": "cleanup"
+      },
+      "candidate": {
+        "file": "pkg/services/authz/rbac/service_test.go",
+        "line": 982,
+        "title": "Should deny on explicit cache deny entry passes with the denial cache removed",
+        "severity": "P2",
+        "category": "bugs",
+        "description": "Test seeded scope map has false values that grant nothing, not the true values needed to test the cache deny short-circuit. Test passes even with denial cache removed, so Check's denial cache short-circuit at service.go:117 is untested."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The Check operation exhibits asymmetric cache trust logic: cached permission grants are trusted and returned immediately",
+      "severity": "high",
+      "category": "security",
+      "crb_category": "security",
+      "description": "The Check operation exhibits asymmetric cache trust logic: cached permission grants are trusted and returned immediately, but cached denials from the same permission cache are ignored, leading to a fresh database lookup. This allows stale cached grants to provide access to revoked resources, posing a security risk. ",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "pkg/services/authz/rbac/cache.go",
+      "line": 30,
+      "title": "Denial cache key omits identity type — anonymous:0 and render:0 collide",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Denial cache key lacks identity type field. Anonymous users and render service both get identifier \"0\", causing cache collisions. Anonymous denied dashboards:read poisons render service's read check within 30s, breaking image rendering for restricted dashboards; reverse also holds for write."
+    },
+    {
+      "file": "pkg/services/authz/rbac/service_test.go",
+      "line": 337,
+      "title": "Dead cacheHit scaffolding left in TestService_getUserPermissions",
+      "severity": "P2",
+      "category": "slop",
+      "description": "cacheHit field is false in both remaining test cases; seeding block (lines 367–369) and assertion (lines 388–390) are unreachable. Cached path is no longer tested but future readers will assume it is."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 1,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 33
+  }
+}

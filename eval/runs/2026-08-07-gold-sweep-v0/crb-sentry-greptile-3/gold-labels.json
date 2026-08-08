@@ -1,0 +1,29 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "sample_rate = 0.0 is falsy and skipped",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "sample_rate = 0.0 is falsy and skipped"
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Using Python’s built-in hash() to build cache keys is non-deterministic across processes (hash randomization), so keys w",
+    "severity": "low",
+    "category": "efficiency",
+    "crb_category": "performance",
+    "description": "Using Python’s built-in hash() to build cache keys is non-deterministic across processes (hash randomization), so keys won’t match across workers and invalidate_upsampling_cache may fail to delete them. Use a deterministic serialization of project_ids for the cache key."
+  },
+  {
+    "file": "src/sentry/api/endpoints/organization_events_stats.py",
+    "line": 0,
+    "title": "The upsampling eligibility check passes the outer dataset instead of the actual dataset used by scoped_dataset. In paths",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The upsampling eligibility check passes the outer dataset instead of the actual dataset used by scoped_dataset. In paths where the query ultimately runs against discover (e.g., dashboard split) while the original dataset is metrics, upsampling may be skipped even when all projects are allowlisted."
+  }
+]

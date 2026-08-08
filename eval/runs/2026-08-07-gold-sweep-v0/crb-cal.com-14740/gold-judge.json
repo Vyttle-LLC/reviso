@@ -1,0 +1,134 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "Case sensitivity bypass in email blacklist",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Case sensitivity bypass in email blacklist",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+        "line": 71,
+        "title": "Guest-email blacklist is case-sensitive, bypassing the filter",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "Blacklist is lowercased but comparison is case-sensitive, allowing uppercase variants (e.g., Spam@Evil.com) to bypass the filter and be added as attendees."
+      }
+    },
+    {
+      "gold": {
+        "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+        "line": 0,
+        "title": "The logic for checking team admin/owner permissions is incorrect. This condition uses AND (&&) which requires both isTea",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "The logic for checking team admin/owner permissions is incorrect. This condition uses AND (&&) which requires both isTeamAdmin AND isTeamOwner to be true, but it should use OR (||) since a user needs to be either an admin OR an owner to have permission.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+        "line": 46,
+        "title": "isTeamAdminOrOwner uses && which reduces to owner-only",
+        "severity": "P2",
+        "category": "bugs",
+        "description": "ANDing isTeamAdmin (ADMIN or OWNER) with isTeamOwner (OWNER only) narrows the result to OWNER, contradicting the variable name and blocking team admins."
+      }
+    },
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "This calls the email sender with the original guests, so existing attendees included in the input will be treated as new",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "This calls the email sender with the original guests, so existing attendees included in the input will be treated as new when sending notifications, leading to incorrect emails.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+        "line": 168,
+        "title": "Existing attendees get fresh scheduled invite instead of add-guests notice",
+        "severity": "P2",
+        "category": "bugs",
+        "description": "Handler passes raw guests input instead of filtered uniqueGuests, so already-invited attendees are matched and re-sent full AttendeeScheduledEmail with REQUEST ICS instead of AttendeeAddGuestsEmail."
+      }
+    },
+    {
+      "gold": {
+        "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+        "line": 0,
+        "title": "uniqueGuests filters out existing attendees and blacklisted emails but does not deduplicate duplicates within the input;",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "uniqueGuests filters out existing attendees and blacklisted emails but does not deduplicate duplicates within the input; createMany can insert duplicate attendee rows if the client submits repeated emails.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "packages/trpc/server/routers/viewer/bookings/addGuests.schema.ts",
+        "line": 5,
+        "title": "Server schema doesn't enforce uniqueness its error message claims",
+        "severity": "P2",
+        "category": "bugs",
+        "description": "Uniqueness is validated only client-side. Direct tRPC calls with duplicate emails pass validation and create multiple identical attendee rows with duplicate invites."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Starting with an array containing an empty string may cause validation issues. Consider starting with an empty array [] ",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Starting with an array containing an empty string may cause validation issues. Consider starting with an empty array [] and handling the empty state in the MultiEmail component instead.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+      "line": 95,
+      "title": "Adding guests bypasses the \"seats disable guests\" invariant and inflates seat counts",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "New endpoint has no seatsPerTimeSlot guard, allowing attendees to create unlimited attendee rows on seated bookings. Over-capacity is then reported immediately, and new rows have no BookingSeat so guests cannot cancel."
+    },
+    {
+      "file": "packages/trpc/server/routers/viewer/bookings/addGuests.handler.ts",
+      "line": 55,
+      "title": "you_do_not_have_permission translation key is missing",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "The error key was not added to locales/en/common.json, so unauthorized users see the raw key \"you_do_not_have_permission\" instead of a translated message."
+    },
+    {
+      "file": "apps/web/components/dialog/AddGuestsDialog.tsx",
+      "line": 33,
+      "title": "isInvalidEmail is never cleared except on Cancel",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "After a failed validation, the error flag persists after successful submission or dismissal via Esc/overlay, showing stale error state when the dialog is reopened."
+    }
+  ],
+  "metrics": {
+    "gold_count": 5,
+    "gold_correctness_count": 5,
+    "candidate_count": 7,
+    "matched_count": 4,
+    "matched_correctness_count": 4,
+    "gold_recall_correctness": 80,
+    "precision_proxy_pct": 57
+  }
+}

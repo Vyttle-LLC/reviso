@@ -1,0 +1,27 @@
+{
+  "case": "crb-discourse-graphite-5",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/ai-code-review-evaluation/discourse-graphite/pull/5",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Mixing float: left with flexbox causes layout issues. Further this PR removes the float-based right alignment for .d-hea",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Mixing float: left with flexbox causes layout issues. Further this PR removes the float-based right alignment for .d-header .panel, which may cause the login panel in the non-Ember/noscript header (where .panel is nested inside .row and not a flex item) to stack under the title instead of remaining right-aligned."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "-ms-align-items never existed in any version of IE/Edge; the correct legacy property is -ms-flex-align.",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "-ms-align-items never existed in any version of IE/Edge; the correct legacy property is -ms-flex-align."
+    }
+  ]
+}

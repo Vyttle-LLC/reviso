@@ -1,0 +1,22 @@
+{
+  "id": "bug-multifile-api-001",
+  "language": "typescript",
+  "difficulty": "hard",
+  "pr": {
+    "title": "Add user role update endpoint",
+    "description": "Implements a REST endpoint for updating a user's role. The handler validates the request, extracts parameters, and delegates to the user service for the actual database update."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/services/user-service.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,36 @@\n+import { db } from \"../db/connection\";\n+\n+var VALID_ROLES = [\"viewer\", \"editor\", \"admin\", \"owner\"];\n+\n+interface UpdateResult {\n+  success: boolean;\n+  previousRole: string;\n+  newRole: string;\n+}\n+\n+export async function updateUserRole(\n+  role: string,\n+  userId: string\n+): Promise<UpdateResult> {\n+  if (!VALID_ROLES.includes(role)) {\n+    throw new Error(\"Invalid role: \" + role);\n+  }\n+\n+  var currentUser = await db.query(\n+    \"SELECT id, role FROM users WHERE id = $1\",\n+    [userId]\n+  );\n+\n+  if (currentUser.rows.length === 0) {\n+    throw new Error(\"User not found: \" + userId);\n+  }\n+\n+  var previousRole = currentUser.rows[0].role;\n+\n+  await db.query(\n+    \"UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2\",\n+    [role, userId]\n+  );\n+\n+  return { success: true, previousRole: previousRole, newRole: role };\n+}"
+    },
+    {
+      "filename": "src/routes/user-roles.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,41 @@\n+import { Hono } from \"hono\";\n+import { updateUserRole } from \"../services/user-service\";\n+\n+var app = new Hono();\n+\n+app.put(\"/api/users/:userId/role\", async function (c) {\n+  var userId = c.req.param(\"userId\");\n+  if (!userId) {\n+    return c.json({ error: \"userId is required\" }, 400);\n+  }\n+\n+  var body: { role?: string };\n+  try {\n+    body = await c.req.json();\n+  } catch {\n+    return c.json({ error: \"Invalid JSON body\" }, 400);\n+  }\n+\n+  var role = body.role;\n+  if (!role || typeof role !== \"string\") {\n+    return c.json({ error: \"role is required and must be a string\" }, 400);\n+  }\n+\n+  try {\n+    var result = await updateUserRole(userId, role);\n+    return c.json({\n+      message: \"Role updated successfully\",\n+      userId: userId,\n+      previousRole: result.previousRole,\n+      newRole: result.newRole,\n+    });\n+  } catch (err) {\n+    var message = err instanceof Error ? err.message : \"Unknown error\";\n+    if (message.startsWith(\"User not found\") || message.startsWith(\"Invalid role\")) {\n+      return c.json({ error: message }, 400);\n+    }\n+    return c.json({ error: \"Internal server error\" }, 500);\n+  }\n+});\n+\n+export default app;"
+    }
+  ]
+}

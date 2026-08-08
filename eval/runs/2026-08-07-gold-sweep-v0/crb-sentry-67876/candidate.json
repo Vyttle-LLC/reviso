@@ -1,0 +1,34 @@
+[
+  {
+    "file": "src/sentry/integrations/github/integration.py",
+    "line": 402,
+    "title": "OAuth `state` is `pipeline.signature`, a global constant — the CSRF check is decorative",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "Pipeline.signature is an md5 hash of constant pipeline view class names, identical for all users and stable across deploys. Attacker can exploit by installing the GitHub App on a controlled org, then luring a Sentry admin to `/extensions/github/setup/?code=<attacker_code>&state=<constant>`, causing the victim's pipeline to bind the attacker's GitHub user and connect their installation to the victim's org."
+  },
+  {
+    "file": "src/sentry/integrations/github/integration.py",
+    "line": 503,
+    "title": "`integration.metadata[\"sender\"]` raises `KeyError` for pipeline-created integrations",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "The `sender` key in metadata only exists for webhook-created integrations, not pipeline-created ones. Re-installing after disconnection hits unhandled KeyError at line 503 instead of showing the failure dialog."
+  },
+  {
+    "file": "tests/sentry/integrations/github/test_integration.py",
+    "line": 379,
+    "title": "`test_installation_not_found` no longer tests installation-not-found",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Test uses incorrect state parameter that doesn't match pipeline.signature, causing request to error at state check before reaching `build_integration`. The installation-not-found error path is now uncovered."
+  },
+  {
+    "file": "src/sentry/integrations/github/integration.py",
+    "line": 494,
+    "title": "`Integration` fetched twice for the same `external_id`",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Integration is queried twice: at line 478 without status filter, then at line 494 with ACTIVE status filter. Redundant round-trip, and status condition split across blocks causes non-ACTIVE integrations to silently take the generic error path."
+  }
+]

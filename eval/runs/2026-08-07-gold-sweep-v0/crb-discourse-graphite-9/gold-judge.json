@@ -1,0 +1,63 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": "lib/freedom_patches/translate_accelerator.rb",
+      "line": 0,
+      "title": "Thread-safety issue with lazy @loaded_locales",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Thread-safety issue with lazy @loaded_locales",
+      "tier": "correctness"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Consider normalizing the input locale (e.g., to a symbol) when checking/loading here to avoid double-loading if the same",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Consider normalizing the input locale (e.g., to a symbol) when checking/loading here to avoid double-loading if the same locale is passed as a String vs Symbol (also applies to other locations in the PR).",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "app/controllers/application_controller.rb",
+      "line": 159,
+      "title": "Fallbacks are inert outside the web request path",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "I18n.fallbacks.ensure_loaded! is called only from ApplicationController#set_locale. In Sidekiq jobs and other contexts (post_alerter, post_destroyer, db.rake) where I18n.locale is set without ensure_loaded!, fallback locales are never loaded. On non-English default_locale sites, translation keys that exist only in :en resolve to MissingTranslation in emails and notifications."
+    },
+    {
+      "file": "config/initializers/i18n.rb",
+      "line": 17,
+      "title": "Translation LRU cache key doesn't include the site's default_locale",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Cache key is key + config.locale + backend.object_id, omitting SiteSetting.default_locale which is per-site and mutable. Multisite: two sites with different default_locales can poison the LRU and serve each other wrong translations. Single-site: an admin changing default_locale leaves stale fallback entries cached until process restart."
+    },
+    {
+      "file": "config/initializers/i18n.rb",
+      "line": 13,
+      "title": "Uncached fallback list runs a SiteSetting lookup on every translate",
+      "severity": "P2",
+      "category": "slop, comments",
+      "description": "FallbackLocaleList#[] recomputes [locale, SiteSetting.default_locale.to_sym, :en] on every call instead of memoizing. I18n.Backend.Fallbacks#translate calls it on every backend lookup, and every interpolated I18n.t(key, count: n) bypasses the LRU cache. Stock implementation memoizes to avoid this overhead."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 3,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "clean-foreach-optional-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add notification preference aggregator",
+    "description": "Implements a utility that aggregates user notification preferences from multiple sources (database, defaults, overrides) and produces a merged configuration. Uses forEach for iteration and ternary expressions for defaults."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/services/notification-preferences.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,62 @@\n+interface NotificationChannel {\n+  type: \"email\" | \"sms\" | \"push\" | \"slack\";\n+  enabled: boolean;\n+  frequency: \"immediate\" | \"hourly\" | \"daily\";\n+}\n+\n+interface UserPreferences {\n+  userId: string;\n+  channels: NotificationChannel[];\n+  quietHoursStart: number | undefined;\n+  quietHoursEnd: number | undefined;\n+  timezone: string;\n+}\n+\n+var DEFAULT_CHANNELS: NotificationChannel[] = [\n+  { type: \"email\", enabled: true, frequency: \"immediate\" },\n+  { type: \"push\", enabled: true, frequency: \"immediate\" },\n+  { type: \"sms\", enabled: false, frequency: \"daily\" },\n+  { type: \"slack\", enabled: false, frequency: \"hourly\" },\n+];\n+\n+export function mergePreferences(\n+  saved: Partial<UserPreferences> | undefined,\n+  overrides: Partial<UserPreferences> | undefined\n+): UserPreferences {\n+  var userId = saved?.userId ?? overrides?.userId ?? \"unknown\";\n+  var timezone = overrides?.timezone ?? saved?.timezone ?? \"UTC\";\n+\n+  var channelMap = new Map<string, NotificationChannel>();\n+\n+  DEFAULT_CHANNELS.forEach(function (ch) {\n+    channelMap.set(ch.type, { ...ch });\n+  });\n+\n+  if (saved !== undefined && saved.channels !== undefined) {\n+    saved.channels.forEach(function (ch) {\n+      channelMap.set(ch.type, { ...ch });\n+    });\n+  }\n+\n+  if (overrides !== undefined && overrides.channels !== undefined) {\n+    overrides.channels.forEach(function (ch) {\n+      var existing = channelMap.get(ch.type);\n+      channelMap.set(ch.type, existing ? { ...existing, ...ch } : { ...ch });\n+    });\n+  }\n+\n+  var quietStart = overrides?.quietHoursStart !== undefined\n+    ? overrides.quietHoursStart\n+    : saved?.quietHoursStart;\n+  var quietEnd = overrides?.quietHoursEnd !== undefined\n+    ? overrides.quietHoursEnd\n+    : saved?.quietHoursEnd;\n+\n+  return {\n+    userId: userId,\n+    channels: Array.from(channelMap.values()),\n+    quietHoursStart: quietStart,\n+    quietHoursEnd: quietEnd,\n+    timezone: timezone,\n+  };\n+}"
+    }
+  ]
+}

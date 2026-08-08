@@ -1,0 +1,38 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/utils/pagination.ts",
+        "line": 29,
+        "title": "Off-by-one error in the loop condition: `i <= startIndex + pageSize` iterates pageSize + 1 times instead of pageSize tim",
+        "severity": "high",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "Off-by-one error in the loop condition: `i <= startIndex + pageSize` iterates pageSize + 1 times instead of pageSize times. The condition should be `i < startIndex + pageSize`. This causes each page to return one extra element (stealing the first item from the next page), breaking pagination boundaries and producing inconsistent results across pages.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/utils/pagination.ts",
+        "line": 29,
+        "title": "Pagination loop is off by one — returns pageSize + 1 items and overlaps adjacent pages",
+        "severity": "P0",
+        "category": "bugs",
+        "description": "Loop iterates pageSize + 1 times using `i <= startIndex + pageSize`. Causes duplicate items at page boundaries (e.g., paginate(['a','b','c','d','e'], 1, 2) returns 3 items instead of 2, with 'c' appearing in both page 1 and page 2). Page boundary items duplicated across pages; items.length never matches advertised pageSize. Fix: use const items = data.slice(startIndex, startIndex + pageSize)."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

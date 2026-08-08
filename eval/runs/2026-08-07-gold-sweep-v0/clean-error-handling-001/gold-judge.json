@@ -1,0 +1,6 @@
+{
+  "mode": "gold",
+  "expected_clean": true,
+  "clean_case_fp_count": 0,
+  "false_positives": []
+}

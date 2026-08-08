@@ -1,0 +1,49 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": null,
+        "line": 0,
+        "title": "BlockedEmail.should_block_email? method has side effects during a read operation - it updates statistics even when just ",
+        "severity": "medium",
+        "category": "correctness",
+        "crb_category": "bug",
+        "description": "BlockedEmail.should_block_email? method has side effects during a read operation - it updates statistics even when just checking if an email should be blocked. This could cause race conditions in concurrent environments and makes the method name misleading.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "lib/validators/email_validator.rb",
+        "line": 13,
+        "title": "Blocked-email match stats are rolled back by the enclosing save transaction",
+        "severity": "P1",
+        "category": "bugs",
+        "description": "BlockedEmail.should_block? writes match_count/last_match_at from inside a validator, but the write is rolled back when validation fails because validations run inside the transaction that gets rolled back on error. This contradicts the feature's intent to track blocked email stats and is never caught by tests because the signup path accidentally records via a separate should_block? call outside the transaction."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Regex pattern @(#{domains}) only matches domain suffixes, not full domains. evil.example.com would match whitelist entry",
+      "severity": "medium",
+      "category": "robustness",
+      "crb_category": "error-handling",
+      "description": "Regex pattern @(#{domains}) only matches domain suffixes, not full domains. evil.example.com would match whitelist entry example.com.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 50,
+    "precision_proxy_pct": 100
+  }
+}

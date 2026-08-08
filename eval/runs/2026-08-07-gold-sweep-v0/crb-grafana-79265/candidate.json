@@ -1,0 +1,34 @@
+[
+  {
+    "file": "pkg/services/anonymous/anonimpl/impl.go",
+    "line": 147,
+    "title": "Device limit is bypassed on every request after the first rejection",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "tagDeviceUI writes cache entry before store call, so ErrDeviceLimitReached results in the device being cached. First request from over-limit device gets 401; subsequent requests hit cache short-circuit and authenticate normally without ever being written to anon_device, never counting toward limit."
+  },
+  {
+    "file": "pkg/services/anonymous/anonimpl/impl.go",
+    "line": 43,
+    "title": "Store is no longer injectable; wire registration is now dead and unbuildable",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "ProvideAnonymousDeviceService now constructs anonstore.ProvideAnonDBStore internally instead of receiving anonstore.AnonStore, but pkg/server/wire.go still registers it. New deviceLimit int64 parameter has no provider in the graph, causing wire to fail when anything asks for anonstore.AnonStore."
+  },
+  {
+    "file": "pkg/setting/setting.go",
+    "line": 1654,
+    "title": "New `device_limit` ini option is undocumented",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "PR checklist requires configuration changes to update conf/defaults.ini, conf/sample.ini, and configuration docs. None were touched. Operators have no way to discover the limit exists or that 0 means unlimited."
+  },
+  {
+    "file": "packages/grafana-runtime/src/config.ts",
+    "line": 97,
+    "title": "`anonymousDeviceLimit` is typed `undefined`, not `number | undefined`",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Un-annotated class field initialized to undefined infers type `undefined` under strict mode. Consumers writing `config.anonymousDeviceLimit > 0` get type errors, though getFrontendSettings always sends an int64."
+  }
+]

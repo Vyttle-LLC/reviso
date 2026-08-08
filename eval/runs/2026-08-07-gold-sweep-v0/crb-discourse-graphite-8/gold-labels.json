@@ -1,0 +1,29 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": " The findMembers() call is now asynchronous and unhandled. The controller may not have member data immediately available",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": " The findMembers() call is now asynchronous and unhandled. The controller may not have member data immediately available, creating a race condition."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "In the next action, capping the next offset at user_count can produce an empty page (e.g., total equal to limit results ",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "In the next action, capping the next offset at user_count can produce an empty page (e.g., total equal to limit results in offset == total, showing 2/2 with no members). This can cause confusing UX on the last page."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "HTTP method mismatch in .remove_member - test uses PUT but remove_member action expects DELETE",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "HTTP method mismatch in .remove_member - test uses PUT but remove_member action expects DELETE"
+  }
+]

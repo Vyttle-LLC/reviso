@@ -1,0 +1,20 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "Recursive caching call using session instead of delegate",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Recursive caching call using session instead of delegate"
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Cleanup reference uses incorrect alias - should be 'idp-alias-' + i instead of 'alias'.",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Cleanup reference uses incorrect alias - should be 'idp-alias-' + i instead of 'alias'."
+  }
+]

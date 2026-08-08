@@ -1,0 +1,45 @@
+{
+  "case": "crb-discourse-graphite-10",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/ai-code-review-evaluation/discourse-graphite/pull/10",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "NoMethodError before_validation in EmbeddableHost",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "NoMethodError before_validation in EmbeddableHost"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "The update and destroy methods in Admin::EmbeddableHostsController do not validate the existence of the EmbeddableHost r",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The update and destroy methods in Admin::EmbeddableHostsController do not validate the existence of the EmbeddableHost record retrieved by ID. If EmbeddableHost.where(id: params[:id]).first returns nil (i.e., the host does not exist), attempting to call methods on the nil object (e.g., save_host or destroy) will result in a NoMethodError."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "record_for_host compares lower(host) = ? but does not normalize the parameter’s case, so mixed‑case referer hosts may fa",
+      "severity": "medium",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "record_for_host compares lower(host) = ? but does not normalize the parameter’s case, so mixed‑case referer hosts may fail to match even though comparison intends to be case‑insensitive."
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Because this migration inserts embeddable_hosts rows with raw SQL, any existing embeddable_hosts values that include htt",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Because this migration inserts embeddable_hosts rows with raw SQL, any existing embeddable_hosts values that include http:// or /https:// or path segments won’t go through the EmbeddableHost model’s normalization, so the new host lookup (which compares only the bare host) may fail for migrated data. Consider ensuring that migrated hosts are normalized to the same format as newly created EmbeddableHost records so existing embedding configurations keep working."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "file": "packages/lib/server/service/insightsBooking.ts",
+    "line": 68,
+    "title": "`getBaseConditions()` can return an unparenthesized top-level `OR`",
+    "severity": null,
+    "category": "bugs",
+    "description": "getBaseConditions() returns unparenthesized OR, causing SQL precedence issues when composed into WHERE clauses that make filters silently ignored"
+  },
+  {
+    "file": "packages/lib/server/service/insightsBooking.ts",
+    "line": 74,
+    "title": "Three unreachable branches in `getBaseConditions()`",
+    "severity": null,
+    "category": "slop",
+    "description": "authConditions is always truthy, making lines 76-80 unreachable and misleading readers that auth conditions are optional"
+  },
+  {
+    "file": "packages/lib/server/service/__tests__/insightsBooking.integration-test.ts",
+    "line": 292,
+    "title": "Org and team auth SQL lost all execution coverage",
+    "severity": null,
+    "category": "bugs",
+    "description": "Tests assert against hand-written Prisma.sql literals instead of executing against database, losing coverage for org and team authorization scope paths"
+  },
+  {
+    "file": "packages/lib/server/service/insightsBooking.ts",
+    "line": 29,
+    "title": "`InsightsBookingServicePublicOptions` drops the discriminant, turning a compile error into silent no-data",
+    "severity": null,
+    "category": "conventions",
+    "description": "Constructor type widens scope to bare union and makes teamId optional, losing type-safe discriminated union validation so misconfiguration fails silently"
+  }
+]

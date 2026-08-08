@@ -1,0 +1,27 @@
+{
+  "case": "crb-grafana-97529",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/grafana/grafana/pull/97529",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "pkg/storage/unified/search/bleve.go",
+      "line": 0,
+      "title": "A race condition in BuildIndex allows multiple goroutines to concurrently build the same expensive index for the same ke",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "A race condition in BuildIndex allows multiple goroutines to concurrently build the same expensive index for the same key. This is caused by moving the b.cacheMu lock from protecting the entire function to only protecting the final cache assignment. "
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Calling s.search.TotalDocs() here may race with concurrent index creation: TotalDocs iterates b.cache without synchroniz",
+      "severity": "high",
+      "category": "efficiency",
+      "crb_category": "performance",
+      "description": "Calling s.search.TotalDocs() here may race with concurrent index creation: TotalDocs iterates b.cache without synchronization, and the event watcher goroutine started just above could trigger BuildIndex writes concurrently, potentially causing a concurrent map read/write panic."
+    }
+  ]
+}

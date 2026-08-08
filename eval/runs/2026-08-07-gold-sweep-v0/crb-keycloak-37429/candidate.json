@@ -1,0 +1,50 @@
+[
+  {
+    "file": "themes/src/main/resources-community/theme/base/account/messages/messages_lt.properties",
+    "line": 101,
+    "title": "totpStep1 rewritten with wrong-language text in locale bundles",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Lithuanian and Simplified Chinese locale bundles contain wrong-language text (Italian and Traditional Chinese), causing incorrect OTP display to users."
+  },
+  {
+    "file": "js/apps/account-ui/maven-resources/theme/keycloak.v3/account/messages/messages_en.properties",
+    "line": 188,
+    "title": "Java MessageFormat syntax substituted into i18next bundles",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "MessageFormat placeholders {0} and choice syntax used instead of i18next {{0}} syntax, causing literal placeholder rendering in error messages."
+  },
+  {
+    "file": "misc/theme-verifier/src/main/java/org/keycloak/themeverifier/VerifyMessageProperties.java",
+    "line": 111,
+    "title": "Legal HTML flagged as illegal due to serialization differences",
+    "severity": "P2",
+    "category": "bugs, comments",
+    "description": "Checker compares unsanitized source to sanitized output, causing false positives for legal HTML that serializes differently (e.g., <br/> vs <br />)."
+  },
+  {
+    "file": "misc/theme-verifier/src/main/java/org/keycloak/themeverifier/VerifyMessageProperties.java",
+    "line": 157,
+    "title": "Anchor-mismatch errors lack context; key parameter unused",
+    "severity": "P2",
+    "category": "bugs, slop",
+    "description": "Error messages for anchor-mismatch failures omit file and key context, making errors unattributable; key parameter is accepted but never used."
+  },
+  {
+    "file": "misc/theme-verifier/src/main/java/org/keycloak/themeverifier/VerifyMessageProperties.java",
+    "line": 58,
+    "title": "Policy factories and HTML_TAGS are mutable non-static fields",
+    "severity": "P2",
+    "category": "slop, conventions",
+    "description": "POLICY_SOME_HTML, POLICY_NO_HTML, and HTML_TAGS are non-static fields rebuilt for each file instead of being static final constants."
+  },
+  {
+    "file": "misc/theme-verifier/src/test/java/org/keycloak/themeverifier/VerifyMessagePropertiesTest.java",
+    "line": 36,
+    "title": "No test validates that valid bundles produce zero findings",
+    "severity": "P2",
+    "category": "conventions, test-coverage",
+    "description": "Tests only assert that errors are found; no test validates that valid bundles produce empty results, missing false-positive regressions."
+  }
+]

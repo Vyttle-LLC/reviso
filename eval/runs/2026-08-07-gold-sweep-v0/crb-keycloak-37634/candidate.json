@@ -1,0 +1,26 @@
+[
+  {
+    "file": "testsuite/integration-arquillian/tests/base/src/test/java/org/keycloak/testsuite/AssertEvents.java",
+    "line": 483,
+    "title": "`isAccessTokenId` matcher is inverted and off-by-one — it never checks the grant shortcut",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "The encoding is sessionType(2) + tokenType(2) + grantType(2), so the grant shortcut lives at [4,6), not [3,5); and the guard returns false when the substring equals the expected shortcut instead of when it differs. For a real code-to-token id onrtac:<uuid>, substring(3,5) is \"ta\", which never equals \"ac\", so the check falls through and only the UUID part is validated. All four call sites (lines 145, 173, 182, 244) therefore assert nothing about the grant type."
+  },
+  {
+    "file": "server-spi-private/src/main/java/org/keycloak/protocol/oidc/grants/OAuth2GrantTypeFactory.java",
+    "line": 33,
+    "title": "New `getShortcut()` on the `OAuth2GrantTypeFactory` SPI has no `default`, so existing grant-type extensions die at startup",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "DefaultTokenContextEncoderProviderFactory.postInit (line 74) casts and calls gtf.getShortcut() on every registered OAuth2GrantType factory during boot. A third-party grant provider jar compiled against the previous SPI throws AbstractMethodError there, taking down server startup rather than failing only on that grant. The immediately preceding commit on this same SPI added getSupportedMultivaluedRequestParameters() to OAuth2GrantType as a default method for exactly this reason."
+  },
+  {
+    "file": "services/src/main/java/org/keycloak/protocol/oidc/encode/AccessTokenContext.java",
+    "line": 73,
+    "title": "`rawTokenId` null-check is a copy-paste of the `grantType` check, so it validates nothing",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Objects.requireNonNull(grantType, \"Null rawTokenId not allowed\") re-checks grantType. A null rawTokenId passes construction and encodeTokenId then emits a token id of \"onrtac:null\", which round-trips through getTokenContextFromTokenId as the literal string \"null\" instead of failing fast where the constructor claims it does."
+  }
+]

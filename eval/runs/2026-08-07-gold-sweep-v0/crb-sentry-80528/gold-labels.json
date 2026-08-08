@@ -1,0 +1,20 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "The function modifies the config variable to include display values but then returns the original monitor.config instead",
+    "severity": "high",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The function modifies the config variable to include display values but then returns the original monitor.config instead of the modified version."
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "The code fetches MonitorCheckIn objects by ID when the required data already exists in previous_checkins. This creates a",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "The code fetches MonitorCheckIn objects by ID when the required data already exists in previous_checkins. This creates an unnecessary database query."
+  }
+]

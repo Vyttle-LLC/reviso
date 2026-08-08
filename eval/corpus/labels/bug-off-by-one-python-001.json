@@ -1,0 +1,17 @@
+{
+  "case": "bug-off-by-one-python-001",
+  "origin": "synthetic",
+  "imported": "2026-08-06",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/analytics/smoothing.py",
+      "line": 25,
+      "title": "Off-by-one error in range boundary: `range(len(readings) - self.window_size)` produces indices 0 through N-W-1, but the ",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Off-by-one error in range boundary: `range(len(readings) - self.window_size)` produces indices 0 through N-W-1, but the correct range is 0 through N-W (inclusive). The docstring states this should return N - W + 1 values, but it returns N - W values instead, silently dropping the last valid window. Use `range(len(readings) - self.window_size + 1)` to include the final window position."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "case": "crb-discourse-graphite-9",
+  "origin": "code-review-bench",
+  "imported": "2026-08-06",
+  "source_pr": "https://github.com/ai-code-review-evaluation/discourse-graphite/pull/9",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "lib/freedom_patches/translate_accelerator.rb",
+      "line": 0,
+      "title": "Thread-safety issue with lazy @loaded_locales",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Thread-safety issue with lazy @loaded_locales"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "Consider normalizing the input locale (e.g., to a symbol) when checking/loading here to avoid double-loading if the same",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "Consider normalizing the input locale (e.g., to a symbol) when checking/loading here to avoid double-loading if the same locale is passed as a String vs Symbol (also applies to other locations in the PR)."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The queue.shutdown() method with 'immediate=False' parameter may not exist in the standard Python queue module. This cou",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The queue.shutdown() method with 'immediate=False' parameter may not exist in the standard Python queue module. This could cause AttributeError at runtime. Verify the correct API or implement a custom shutdown mechanism.",
+      "tier": "correctness"
+    },
+    {
+      "file": "tests/sentry/uptime/consumers/test_results_consumer.py",
+      "line": 0,
+      "title": "The magic number 50 for max_wait is used repeatedly throughout the tests. Consider extracting this as a named constant t",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The magic number 50 for max_wait is used repeatedly throughout the tests. Consider extracting this as a named constant to improve maintainability.",
+      "tier": "correctness"
+    },
+    {
+      "file": "tests/sentry/uptime/consumers/test_results_consumer.py",
+      "line": 0,
+      "title": "The test test_thread_queue_parallel_error_handling has a docstring that doesn't match the test implementation.",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The test test_thread_queue_parallel_error_handling has a docstring that doesn't match the test implementation.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/sentry/remote_subscriptions/consumers/queue_consumer.py",
+      "line": 338,
+      "title": "Strategy `close()` destroys the factory-owned queue pool — consumer silently drops every message after a rebalance",
+      "severity": "P0",
+      "category": "bugs",
+      "description": "FixedQueuePool is created once and reused for process lifetime, but SimpleQueueProcessingStrategy.close(), terminate(), and join() all call queue_pool.shutdown(). After first rebalance, pool's worker threads exit and queues shutdown. New strategy passes, then every submit() hits queue.ShutDown, which is caught and silently commits offsets, causing permanent data loss."
+    },
+    {
+      "file": "src/sentry/remote_subscriptions/consumers/queue_consumer.py",
+      "line": 253,
+      "title": "\"Natural backpressure\" is claimed but the queues are unbounded and `submit()` never rejects",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "Class docstring guarantees 'Natural backpressure when queues fill up', but queue.Queue() has no maxsize, submit() never raises MessageRejected, and poll() only emits a gauge. On restart against large backlog or stalled processor, queue grows without bound, pinning full Message objects, until OOM."
+    },
+    {
+      "file": "src/sentry/remote_subscriptions/consumers/queue_consumer.py",
+      "line": 231,
+      "title": "`shutdown()` sets the worker stop flag before `q.shutdown(immediate=False)`, so queued items are abandoned",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "shutdown() sets worker.shutdown = True before calling q.shutdown(immediate=False). Each worker's loop re-checks 'while not self.shutdown' after finishing current item and exits immediately, so with queued items, most are dropped. The immediate=False argument is dead."
+    },
+    {
+      "file": "src/sentry/remote_subscriptions/consumers/queue_consumer.py",
+      "line": 31,
+      "title": "Unused `WorkItem.message` field and unused `wait_until_empty` helper",
+      "severity": "P2",
+      "category": "slop",
+      "description": "WorkItem.message is documented for offset tracking but is written and never read. It keeps decoded KafkaPayload alive for entire time item sits in queue, doubling queue memory and worsening backpressure issue. FixedQueuePool.wait_until_empty is likewise never called."
+    }
+  ],
+  "metrics": {
+    "gold_count": 3,
+    "gold_correctness_count": 3,
+    "candidate_count": 4,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}
