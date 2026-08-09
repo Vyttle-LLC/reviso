@@ -10,7 +10,7 @@
         "severity": "medium",
         "category": "duplication",
         "description": "The predicate deciding whether a task name collides — not archived, same project, case-insensitive name equality — is written out separately at seven places across src-tauri/src/lib.rs (2776, 2978, 3900, 5053, 7236) and src-tauri/src/cli_server.rs (967, 2346), most of them added by this PR, including one inside the taken-name closure of the unique-name helper. Three of the sites spell the rule as a wrapped multi-line boolean and vary the receiver, the argument, and which value supplies the project id, so no two are byte-identical. The rule has no single home: a future change to what counts as a collision (say, trimming or Unicode case folding) has to land in all seven at once or they silently disagree. The repository's own reviewer approved the PR but asked for a shared helper on the task list.",
-        "tier": "cleanup"
+        "tier": "correctness"
       },
       "candidate": {
         "file": "src-tauri/src/lib.rs",
@@ -44,11 +44,11 @@
   ],
   "metrics": {
     "gold_count": 1,
-    "gold_correctness_count": 0,
+    "gold_correctness_count": 1,
     "candidate_count": 3,
     "matched_count": 1,
-    "matched_correctness_count": 0,
-    "gold_recall_correctness": null,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
     "precision_proxy_pct": 33
   }
 }

@@ -41,7 +41,7 @@ Two metric families, deliberately not comparable to each other:
 | date | corpus | recall (correctness) | precision proxy | clean cases | artifacts |
 | --- | --- | --- | --- | --- | --- |
 | 2026-08-07 | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
-| 2026-08-08 | `termic-162` only (1 case, duplication lens) | n/a — no correctness-tier gold | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
+| 2026-08-08 | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
 
 The 2026-08-08 row is a single-case acceptance run for the duplication
 lens (0.3.0), not a sweep — do not compare its numbers to the row above.
@@ -51,13 +51,16 @@ naming a helper with signature and proposed home. Recall for this lane had
 never been measured before; the bar's calibration had only ever been
 checked as text.
 
-Two caveats the row makes concrete:
+Two notes on the row:
 
-- **`recall (correctness)` is `n/a` by construction.** `judge.sh` tiers
-  `duplication` as cleanup, so the case contributes zero correctness-tier
-  gold and cannot move the headline metric. A future miss here would
-  report as informational. The tiering predates Reviso shipping
-  duplication findings and should be revisited.
+- **The recall figure required a tiering fix.** As first judged this row
+  read `n/a`: `duplication` sat in the cleanup family, so the case
+  contributed zero in-lane gold and could not move the headline metric —
+  a lens Reviso ships, invisible to the number that tracks it. The tier
+  split is really in-lane vs out-of-lane, so `duplication` left the
+  cleanup list (`eval/runners/tiers.sh`) and the run was **re-judged from
+  its recorded output** — same findings, same recorded matcher verdicts,
+  new tiering. A future miss on this case is now a listed regression.
 - **The 33% precision proxy resolves to one match, one false positive, one
   promotion candidate.** Adjudicated after the run. The FP claimed the GUI
   create path "has no name check at all"; it does — `task_create_sync`

@@ -30,12 +30,10 @@ the duplication lens's seed exemplar and the corpus's **only**
 and the label is our own prose, so nothing upstream is vendored (see
 `labels/PROVENANCE.md`). Gold-only — `active_parity: false`.
 
-Note the tiering consequence: `judge.sh` lists `duplication` among the
-cleanup-family categories, so a miss on this case reports as informational
-rather than counting against `gold_recall_correctness`. The case still earns
-its slot — it stops a correct duplication finding from being scored as an
-unmatched false positive in `precision_proxy_pct`, which is what every
-duplication finding was before this label existed.
+It is an in-lane case: `duplication` is not in the cleanup family
+(`eval/runners/tiers.sh`), so a miss here counts against
+`gold_recall_correctness` and is listed individually rather than reported
+informationally.
 
 ## Imported gold cases (CRB)
 

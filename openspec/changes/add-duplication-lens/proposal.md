@@ -56,6 +56,11 @@ lane; Reviso is silent in it by construction.
   duplication item with its bar and helper-naming fix requirement.
 - `review-command`: the single-pass review's lens list gains the same
   item (the two surfaces must not drift — SKILL.md's shared-material rule).
+- `parity-eval`: the tier split is defined as in-lane vs out-of-lane from
+  one shared list, so a shipped lens leaves the cleanup family; and the
+  private corpus tier becomes runnable rather than merely described.
+- `gold-eval`: judging is separable from the candidate leg, so a recorded
+  run can be re-judged when calibration moves.
 
 ## Impact
 

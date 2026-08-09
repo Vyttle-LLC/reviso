@@ -30,9 +30,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `termic-162` joins the public corpus as the duplication lens's regression
   case — and the corpus's only `duplication` label, which is why every
   duplication finding was previously unmatchable by construction.
+- The private corpus tier is runnable, not just documented: entry-relative
+  paths resolve against the corpus file's own directory, sweeps pass their
+  corpus selection down to per-case runners, and a gold run fails by name on
+  a missing corpus, unknown case, or entry with no labels.
+- `eval/runners/gold-judge.sh` splits judging from the candidate leg, so a
+  recorded run can be re-judged when tiering changes without paying for the
+  review again.
 
 ### Changed
 
+- Eval tiering is now one shared list (`eval/runners/tiers.sh`) instead of a
+  copy in each judge, and it encodes what Reviso *ships* rather than literal
+  correctness. `duplication` left the cleanup family accordingly: a
+  duplication finding the candidate misses is now a listed regression, in
+  gold mode against a label and in parity mode against the built-in.
 - The anti-slop "not reusing existing code" item now demands a search before
   an added block is cleared as original: grep the repo for that block's most
   distinctive identifiers and string literals, not whole lines, which a

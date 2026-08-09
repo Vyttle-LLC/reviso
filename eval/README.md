@@ -27,7 +27,9 @@ corpus entry {repo, pr, base_sha, head_sha}
 
 - **Misses in the correctness tier** are listed individually — each is a P0
   regression, not a percentage. Cleanup-tier baseline findings
-  (simplification, efficiency, reuse, altitude, conventions, test-coverage)
+  (simplification, efficiency, reuse, altitude, conventions, test-coverage,
+  observability, deploy-safety — the list lives in `runners/tiers.sh`;
+  `duplication` left it when the duplication lens shipped in 0.3.0)
   are reported informationally: Reviso gates that tier by design, and a
   "miss" there is the product working as intended. Unknown or missing
   categories resolve to the correctness tier — ambiguity fails loud, toward

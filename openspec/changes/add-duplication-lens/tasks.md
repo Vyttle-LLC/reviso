@@ -45,23 +45,25 @@
 - [x] 4.2 Update corpus counts in `docs/evals.md` (63 → 64 labeled) and
       the CHANGELOG. The dated 2026-08-07 sweep row keeps its 63 — it is a
       historical result, not a description of the corpus.
-- [ ] 4.3 **Not done — the private cases remain unreachable.** `gold.sh`
-      and `sweep.sh` hardcode `CORPUS_FILE` to `public.jsonl` and resolve
-      labels against `eval/corpus/`, and no private entry carries a
-      `labels` field, so `REVISO_EVAL_PRIVATE_CORPUS` is documented but
-      wired to nothing. watchos-202 and sagechat-15 — the above/below-bar
-      exemplars — therefore cannot be swept. Needs: a `labels` field on
-      each private entry, label resolution relative to the corpus file's
-      own directory, and `sweep.sh` honoring the env var.
-- [ ] 4.4 **Not done — a duplication miss is informational, not loud.**
-      `judge.sh`'s `CLEANUP_RE` lists `duplication`, so a miss on
-      termic-162 lands in `missed_informational_cleanup` rather than
-      counting against `gold_recall_correctness`. That tiering predates
-      Reviso shipping duplication findings; now that the lens is in-lane,
-      a miss on a shipped lens should fail loudly. Confirmed empirically
-      by the 2026-08-08 run: `gold_correctness_count: 0` and
-      `gold_recall_correctness: null` on a case the lens passed — the
-      headline metric cannot see this lane at all.
+- [x] 4.3 Private tier made runnable. Entry-relative paths (labels,
+      fixtures) now resolve against the corpus file's own directory, so a
+      corpus outside the repo carries its labels beside it; `sweep.sh`
+      exports its corpus selection so the loop and the per-case runner
+      cannot disagree; `gold.sh` fails by name on a missing corpus file,
+      an unknown case, or an entry with no `labels`. The four private
+      entries gained `labels` fields (that file lives outside the repo).
+      Verified: guards fire, and a private-corpus case resolves its labels
+      beside the corpus file rather than under `eval/corpus/`.
+- [x] 4.4 Duplication is in-lane. The tier list moved to one shared
+      definition (`eval/runners/tiers.sh`, sourced by both `judge.sh` and
+      `gold.sh` — it had been copy-pasted between them, a calibration
+      decision living in two places) and `duplication` left it, since the
+      split encodes what Reviso ships rather than literal correctness.
+      Judging was extracted to `gold-judge.sh` so a recorded run can be
+      re-judged when calibration moves; the 2026-08-08 run was re-judged
+      from its recorded output and recorded matches — no review, no new
+      matcher calls — taking `gold_recall_correctness` from `null` to
+      **100%**. `docs/evals.md` says it was a re-judge.
 
 ## 3. Release (0.3.0)
 
