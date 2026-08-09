@@ -23,8 +23,8 @@
 Two metric families, deliberately not comparable to each other:
 
 - **Gold** (absolute, whole corpus, per release): the candidate alone
-  against labeled ground truth — 63 labeled cases (50 CRB-imported real
-  PRs + 13 synthetics incl. 5 expected-clean). `gold recall
+  against labeled ground truth — 64 labeled cases (50 CRB-imported real
+  PRs + 13 synthetics incl. 5 expected-clean + 1 hand-authored). `gold recall
   (correctness)` = matched correctness-tier gold issues ÷ total;
   `precision proxy` = candidate findings matching any gold issue ÷ all
   candidate findings (unmatched ones may be real-but-unlabeled — they

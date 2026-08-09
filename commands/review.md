@@ -88,10 +88,34 @@ to each hunk as you go:
   ("must hold the lock", "keep in sync with X"): does the change comply?
 - **Anti-slop** (convention-relative, the P0 set only): drift from how this
   codebase already solves the problem; ~3× the lines the job needs;
-  reimplementing a utility that exists (cite it, or it's not a finding);
-  comments that restate code or read as AI bloat — include the tightened
-  rewrite in `suggested_fix`. A deliberate, established style here is
-  never slop.
+  reimplementing a utility that exists (cite it, or it's not a finding —
+  and before you clear an added block as original, grep the repo for that
+  block's most distinctive identifiers and string literals, not whole
+  lines, which a rename dodges); comments that restate code or read as AI
+  bloat — include the tightened rewrite in `suggested_fix`. A deliberate,
+  established style here is never slop.
+  - **Duplication** — the same logic living in more than one place, in
+    either direction: new code copying something the repo already has, or
+    the change copying itself. The unit is a rule-encoding expression or
+    predicate, a declaration or definition, or a verbatim/near-verbatim
+    block; count the new occurrences together with any copies already in
+    the repo, then apply this bar. **4 or more occurrences** ships — the
+    repetition is itself the evidence. **Exactly 3** ships only if the
+    duplicated unit encodes a rule that can change (a predicate, a policy
+    constant, a shared type or contract — something a future edit has to
+    change in every copy at once); three occurrences of incidental
+    similarity, like setup boilerplate or assertion scaffolding, stay
+    silent. **2 or fewer** never ships, **however long the copied block
+    is.** Below the bar, say nothing rather than softening it into a
+    smaller finding. Evidence is text you can quote — no
+    structural similarity scoring. Cite every occurrence by `file:line`; one
+    duplicated thing is one finding, never one per occurrence.
+    `failure_scenario` is the drift risk, concrete ("the rule is encoded
+    in 6 places; the next change lands in one and the other five silently
+    disagree"). `suggested_fix` names the helper — name, signature, and
+    the home it belongs in following this repo's existing layout — plus
+    the rewrite of one call site; no named helper, no finding. P2, or P1
+    only when the copies have already diverged. Test code counts.
 
 Record each candidate per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`).

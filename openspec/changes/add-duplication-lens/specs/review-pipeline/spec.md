@@ -30,17 +30,23 @@ with a concrete failure scenario and a suggested fix or rewrite.
 
 The anti-slop dimension SHALL flag duplication in both directions —
 new code reimplementing something the repository already has, and code
-duplicated within the change itself — only when the diff reaches the bar:
-at least three occurrences of the same rule-encoding expression (new
-occurrences counted with any pre-existing copies), or a verbatim or
-near-verbatim block of roughly eight or more lines duplicated at least
-once. Every shipped duplication finding SHALL cite each occurrence by
+duplicated within the change itself — only when the diff reaches the bar.
+The unit is a rule-encoding expression or predicate, a declaration or
+definition, or a verbatim or near-verbatim block, and new occurrences
+SHALL be counted together with any pre-existing copies. Four or more
+occurrences SHALL ship. Exactly three occurrences SHALL ship only when
+the duplicated unit encodes a rule that can change — a predicate, a
+policy constant, a shared type or contract — and SHALL stay silent when
+the similarity is incidental, such as setup or assertion scaffolding. Two
+or fewer occurrences SHALL NOT ship regardless of how long the copied
+block is. Every shipped duplication finding SHALL cite
+each occurrence by
 `file:line`, state the drift-risk failure scenario concretely, and give a
 `suggested_fix` naming the helper (name, signature, proposed location
 consistent with the repository's layout) plus the rewrite of one call
-site. Below-bar duplication SHALL surface at most in the report's notes
-tier. Before clearing any added block as non-duplicative, the finder
-SHALL search the repository for that block's distinctive identifiers.
+site. Below-bar duplication SHALL NOT be reported at all. Before clearing
+any added block as non-duplicative, the finder SHALL search the
+repository for that block's distinctive identifiers.
 
 #### Scenario: Rule expression repeated across call sites
 
@@ -51,16 +57,32 @@ SHALL search the repository for that block's distinctive identifiers.
 
 #### Scenario: Third verbatim copy of an existing utility
 
-- **WHEN** the diff adds a verbatim copy of a declaration already present
-  in two other files
+- **WHEN** the diff adds a verbatim copy of a shared type declaration
+  already present in two other files
 - **THEN** a duplication finding ships naming the existing copies and the
   shared home the three should adopt
+
+#### Scenario: Three incidental look-alikes stay below the bar
+
+- **WHEN** three added lines coincide only as setup or assertion
+  scaffolding, encoding no rule that a future edit would have to change in
+  every copy
+- **THEN** no duplication finding ships — at exactly three occurrences the
+  duplicated unit must encode a changeable rule
 
 #### Scenario: Two-instance duplication stays below the bar
 
 - **WHEN** the diff contains a helper duplicated exactly twice with no
   prior copies
-- **THEN** no duplication finding ships; at most a notes-tier mention
+- **THEN** no duplication finding ships and the report says nothing about
+  it
+
+#### Scenario: A long block duplicated only once stays below the bar
+
+- **WHEN** the diff contains a line-for-line copy of a sixteen-line
+  function or view skeleton, giving two occurrences in total
+- **THEN** no duplication finding ships — block length is not a route
+  past the occurrence bar
 
 #### Scenario: Severity cap
 

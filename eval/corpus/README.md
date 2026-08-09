@@ -22,6 +22,21 @@ judged against their labels file instead.
 - `notes` says what the case exercises (a known bug it introduced, a slop
   pattern, a clean case that tests the silence discipline).
 
+## Hand-authored gold cases
+
+`termic-162` — [simion/termic#162](https://github.com/simion/termic/pull/162),
+the duplication lens's seed exemplar and the corpus's **only**
+`duplication`-category label. Upstream is AGPL-3.0; the entry is a pointer
+and the label is our own prose, so nothing upstream is vendored (see
+`labels/PROVENANCE.md`). Gold-only — `active_parity: false`.
+
+Note the tiering consequence: `judge.sh` lists `duplication` among the
+cleanup-family categories, so a miss on this case reports as informational
+rather than counting against `gold_recall_correctness`. The case still earns
+its slot — it stops a correct duplication finding from being scored as an
+unmatched false positive in `precision_proxy_pct`, which is what every
+duplication finding was before this label existed.
+
 ## Imported gold cases (CRB)
 
 50 entries came from `withmartian/code-review-benchmark` via
