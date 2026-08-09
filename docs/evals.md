@@ -58,11 +58,16 @@ Two caveats the row makes concrete:
   gold and cannot move the headline metric. A future miss here would
   report as informational. The tiering predates Reviso shipping
   duplication findings and should be revisited.
-- **`precision proxy` of 33% is not two false positives.** The two
-  unmatched findings are `promotion_candidates` — a GUI path that can
-  still mint duplicate task names, and a coverage test not extended to the
-  new verb. Both look real and neither is in the label file, which is the
-  documented behavior of an under-labeled case, not a precision problem.
+- **The 33% precision proxy resolves to one match, one false positive, one
+  promotion candidate.** Adjudicated after the run. The FP claimed the GUI
+  create path "has no name check at all"; it does — `task_create_sync`
+  refuses a colliding name at `lib.rs:3093` ("a worktree already lives at
+  … — pick a different name"), since same-name tasks in a project slugify
+  to the same worktree path. The finding reached its conclusion by
+  reasoning about the guard's *shape* (path-based, not name-based) instead
+  of its *effect*, which is the enforcement-vs-claim lens inverted on
+  itself. The remaining unmatched finding — a coverage test not extended
+  to the new verb — stands as a promotion candidate.
 
 Cost: $2.10, 5m23s, `claude-opus-5`, CLI 2.1.226.
 
