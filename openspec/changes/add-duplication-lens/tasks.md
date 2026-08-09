@@ -20,7 +20,13 @@
       ship), sagechat-15 (dups must stay silent); pass/fail recorded in
       design.md. Done as a text-level pass over the labels rather than
       live `/reviso:review` runs — it corrected the bar (design D1) before
-      any spend. Recall remains unmeasured; a gold sweep still owed.
+      any spend.
+- [x] 2.3 Recall measured. `gold.sh termic-162` (2026-08-08): the lens
+      matched its gold label **1/1**, finding all seven occurrences,
+      citing each, and naming a helper with signature and home. Artifacts
+      in `eval/runs/2026-08-08-gold-termic-162/`; published in
+      `docs/evals.md`. The above/below-bar exemplars stay unmeasured until
+      4.3 lands.
 - [x] 2.2 Evaluated the deterministic duplicate-run assist (design D4) by
       prototyping it against the termic-162 diff: it misses the seed
       exemplar and emits only test-scaffolding noise, so it fails its own
@@ -52,7 +58,10 @@
       termic-162 lands in `missed_informational_cleanup` rather than
       counting against `gold_recall_correctness`. That tiering predates
       Reviso shipping duplication findings; now that the lens is in-lane,
-      a miss on a shipped lens should fail loudly.
+      a miss on a shipped lens should fail loudly. Confirmed empirically
+      by the 2026-08-08 run: `gold_correctness_count: 0` and
+      `gold_recall_correctness: null` on a case the lens passed — the
+      headline metric cannot see this lane at all.
 
 ## 3. Release (0.3.0)
 

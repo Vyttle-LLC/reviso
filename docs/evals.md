@@ -41,6 +41,30 @@ Two metric families, deliberately not comparable to each other:
 | date | corpus | recall (correctness) | precision proxy | clean cases | artifacts |
 | --- | --- | --- | --- | --- | --- |
 | 2026-08-07 | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
+| 2026-08-08 | `termic-162` only (1 case, duplication lens) | n/a — no correctness-tier gold | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
+
+The 2026-08-08 row is a single-case acceptance run for the duplication
+lens (0.3.0), not a sweep — do not compare its numbers to the row above.
+What it establishes: the lens **matched its gold label 1/1**, locating all
+seven occurrences of the collision rule, citing each by `file:line`, and
+naming a helper with signature and proposed home. Recall for this lane had
+never been measured before; the bar's calibration had only ever been
+checked as text.
+
+Two caveats the row makes concrete:
+
+- **`recall (correctness)` is `n/a` by construction.** `judge.sh` tiers
+  `duplication` as cleanup, so the case contributes zero correctness-tier
+  gold and cannot move the headline metric. A future miss here would
+  report as informational. The tiering predates Reviso shipping
+  duplication findings and should be revisited.
+- **`precision proxy` of 33% is not two false positives.** The two
+  unmatched findings are `promotion_candidates` — a GUI path that can
+  still mint duplicate task names, and a coverage test not extended to the
+  new verb. Both look real and neither is in the label file, which is the
+  documented behavior of an under-labeled case, not a precision problem.
+
+Cost: $2.10, 5m23s, `claude-opus-5`, CLI 2.1.226.
 
 First-sweep notes — the aggregate is a **floor**, for reasons the
 artifacts document case by case:
