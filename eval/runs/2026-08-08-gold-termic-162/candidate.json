@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src-tauri/src/lib.rs",
+    "line": 2776,
+    "title": "The \"live same-project duplicate\" rule is hand-inlined in 7 places",
+    "severity": "P2",
+    "category": "duplication",
+    "description": "Duplicate name-collision check exists in 7 locations (lib.rs 2776, 2978, 3900, 5053, 7236; cli_server.rs 2346, 967) with message re-spelled in multiple copies. Future policy changes will apply to only some copies, causing inconsistency in name validation across operations."
+  },
+  {
+    "file": "src-tauri/src/lib.rs",
+    "line": 2661,
+    "title": "GUI New Task dialog can create duplicate task names",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "task_create_sync has no name check; only guards by directory path. Repo-root and imported-worktree tasks have no directory guard. GUI dialog lacks client-side validation (NewTaskDialog.tsx:915), allowing duplicate names in same project."
+  },
+  {
+    "file": "termic-cli/src/lib.rs",
+    "line": 2156,
+    "title": "Test machine_help_covers_the_surface missing rename command",
+    "severity": "P2",
+    "category": "test-coverage",
+    "description": "Expected-verb list does not include \"rename\". Test will not catch if rename command is dropped from subcommand tree or machine_help output in future refactors."
+  }
+]

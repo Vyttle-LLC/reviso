@@ -23,8 +23,8 @@ you open the PR. The local alternative, `/code-review`, is a different and
 weaker review that misses things `/review` catches.
 
 And neither of them reviews for **slop**: dead code, comments that restate the
-code, verbose AI-written prose, reinvented utilities, three times the lines the
-job needed.
+code, verbose AI-written prose, reinvented utilities, the same rule copy-pasted
+across five call sites, three times the lines the job needed.
 
 Reviso is the missing review. Two commands, both local, both report-only:
 

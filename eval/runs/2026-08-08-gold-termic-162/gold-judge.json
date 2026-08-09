@@ -1,0 +1,54 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src-tauri/src/lib.rs",
+        "line": 2776,
+        "title": "Task-collision rule (not archived + same project + case-insensitive name match) is re-encoded at seven sites across two f",
+        "severity": "medium",
+        "category": "duplication",
+        "description": "The predicate deciding whether a task name collides — not archived, same project, case-insensitive name equality — is written out separately at seven places across src-tauri/src/lib.rs (2776, 2978, 3900, 5053, 7236) and src-tauri/src/cli_server.rs (967, 2346), most of them added by this PR, including one inside the taken-name closure of the unique-name helper. Three of the sites spell the rule as a wrapped multi-line boolean and vary the receiver, the argument, and which value supplies the project id, so no two are byte-identical. The rule has no single home: a future change to what counts as a collision (say, trimming or Unicode case folding) has to land in all seven at once or they silently disagree. The repository's own reviewer approved the PR but asked for a shared helper on the task list.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src-tauri/src/lib.rs",
+        "line": 2776,
+        "title": "The \"live same-project duplicate\" rule is hand-inlined in 7 places",
+        "severity": "P2",
+        "category": "duplication",
+        "description": "Duplicate name-collision check exists in 7 locations (lib.rs 2776, 2978, 3900, 5053, 7236; cli_server.rs 2346, 967) with message re-spelled in multiple copies. Future policy changes will apply to only some copies, causing inconsistency in name validation across operations."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src-tauri/src/lib.rs",
+      "line": 2661,
+      "title": "GUI New Task dialog can create duplicate task names",
+      "severity": "P2",
+      "category": "bugs",
+      "description": "task_create_sync has no name check; only guards by directory path. Repo-root and imported-worktree tasks have no directory guard. GUI dialog lacks client-side validation (NewTaskDialog.tsx:915), allowing duplicate names in same project."
+    },
+    {
+      "file": "termic-cli/src/lib.rs",
+      "line": 2156,
+      "title": "Test machine_help_covers_the_surface missing rename command",
+      "severity": "P2",
+      "category": "test-coverage",
+      "description": "Expected-verb list does not include \"rename\". Test will not catch if rename command is dropped from subcommand tree or machine_help output in future refactors."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 33
+  }
+}

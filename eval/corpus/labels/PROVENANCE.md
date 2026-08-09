@@ -14,3 +14,13 @@ are pointers (repo, PR, SHAs).
 
 Hand-authored labels (origin `"hand"`) may be added beside imported ones;
 the `origin` field distinguishes them.
+
+## Hand-authored labels
+
+- `termic-162.json` — [simion/termic#162](https://github.com/simion/termic/pull/162),
+  authored 2026-08-08 from the upstream reviewer's own public review of the
+  PR. Upstream is **AGPL-3.0**; nothing from it is vendored here. The corpus
+  entry is a pointer (repo, PR, SHAs) and the label is our own description of
+  the duplication, so no upstream code is copied or redistributed — the same
+  pointer-only posture the imported cases use. It is the corpus's only
+  `duplication`-category label.

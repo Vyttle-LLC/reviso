@@ -10,7 +10,11 @@
 #   quietly — they are gold-mode-only by spec.
 #
 # Env: CORPUS_FILE (default eval/corpus/public.jsonl) plus everything the
-# per-case runners honor.
+# per-case runners honor. To sweep the private tier:
+#   CORPUS_FILE="$REVISO_EVAL_PRIVATE_CORPUS" sh sweep.sh gold eval/runs/private/<name>
+# Entry-relative paths (labels, fixture) resolve against the corpus file's own
+# directory, so a private corpus carries its labels beside it. Keep private
+# output under eval/runs/private/ — that path is gitignored.
 set -eu
 MODE="${1:?usage: sweep.sh <gold|parity> <outroot> [case-id]}"
 OUTROOT="${2:?usage: sweep.sh <gold|parity> <outroot> [case-id]}"
@@ -18,6 +22,12 @@ ONLY="${3:-}"
 HERE=$(cd "$(dirname "$0")" && pwd)
 CORPUS_DIR=$(cd "$HERE/../corpus" && pwd)
 CORPUS_FILE="${CORPUS_FILE:-$CORPUS_DIR/public.jsonl}"
+[ -f "$CORPUS_FILE" ] || { echo "sweep.sh: corpus file not found: $CORPUS_FILE" >&2; exit 1; }
+# Export so the per-case runners read the SAME corpus this loop iterates.
+# Without it a caller's non-exported CORPUS_FILE would have sweep walking the
+# private corpus while gold.sh resolved ids against the public one — every
+# case failing with "not in <file>" for no visible reason.
+export CORPUS_FILE
 CACHE="$(cd "$HERE/.." && pwd)/.cache/clones"
 mkdir -p "$OUTROOT" "$CACHE"
 

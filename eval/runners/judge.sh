@@ -35,13 +35,11 @@ if [ -f "$BMETA" ] && [ -f "$CMETA" ]; then
   fi
 fi
 
-# Tier the baseline findings (D3). Known cleanup-family categories are
+# Tier the baseline findings (D3). Out-of-lane (cleanup-family) categories are
 # informational; everything else — including unknown slugs — is correctness
 # tier, because ambiguity must fail toward P0 scope, never hide a miss.
-# Expanding this list is a calibration decision (eval/calibration/):
-# observability and deploy-safety were added from the sagechat-15 hand
-# labels (2026-08-06, all such findings ruled out-of-lane).
-CLEANUP_RE='^(simplification|efficiency|reuse|altitude|conventions|test-coverage|duplication|observability|deploy-safety)$'
+# The list itself lives in tiers.sh so parity and gold cannot disagree.
+. "$HERE/tiers.sh"
 jq --arg re "$CLEANUP_RE" 'map(. + {tier: (if (.category // "" | test($re)) then "cleanup" else "correctness" end)})' \
   "$BASELINE" > "$OUT/baseline-tiered.json"
 
@@ -50,7 +48,7 @@ jq --arg re "$CLEANUP_RE" 'map(. + {tier: (if (.category // "" | test($re)) then
 # scope; can make us look worse, never better).
 UNCAT=$(jq '[to_entries[] | select(.value.category == null) | {idx: .key, title: .value.title, description: .value.description}]' "$OUT/baseline-tiered.json")
 if [ "$(printf '%s' "$UNCAT" | jq 'length')" -gt 0 ]; then
-  PROMPT="Classify each code-review finding below as \"correctness\" (a runtime bug, broken behavior, data loss, security or robustness defect) or \"cleanup\" (simplification, duplication/reuse, efficiency, conventions/style, test coverage, maintainability). When genuinely ambiguous, choose \"correctness\".
+  PROMPT="Classify each code-review finding below as \"correctness\" (a runtime bug, broken behavior, data loss, security or robustness defect — and also copy-paste/duplication findings, which Reviso ships) or \"cleanup\" (simplification, reuse, efficiency, conventions/style, test coverage, maintainability). When genuinely ambiguous, choose \"correctness\".
 Findings:
 $UNCAT
 Return ONLY a JSON array (no prose, no code fences): [{\"idx\": 0, \"tier\": \"correctness\"}]. One element per finding, same idx values."

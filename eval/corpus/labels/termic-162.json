@@ -1,0 +1,18 @@
+{
+  "case": "termic-162",
+  "origin": "hand",
+  "imported": "2026-08-08",
+  "source_pr": "https://github.com/simion/termic/pull/162",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src-tauri/src/lib.rs",
+      "line": 2776,
+      "title": "Task-collision rule (not archived + same project + case-insensitive name match) is re-encoded at seven sites across two f",
+      "severity": "medium",
+      "category": "duplication",
+      "description": "The predicate deciding whether a task name collides — not archived, same project, case-insensitive name equality — is written out separately at seven places across src-tauri/src/lib.rs (2776, 2978, 3900, 5053, 7236) and src-tauri/src/cli_server.rs (967, 2346), most of them added by this PR, including one inside the taken-name closure of the unique-name helper. Three of the sites spell the rule as a wrapped multi-line boolean and vary the receiver, the argument, and which value supplies the project id, so no two are byte-identical. The rule has no single home: a future change to what counts as a collision (say, trimming or Unicode case folding) has to land in all seven at once or they silently disagree. The repository's own reviewer approved the PR but asked for a shared helper on the task list."
+    }
+  ],
+  "notes": "Hand-authored duplication label. Seed exemplar for the duplication lens's calibrated bar (>=4 occurrences ships on count alone). This is the only duplication-category case in the public corpus; every other public label is correctness, security, robustness, or efficiency."
+}

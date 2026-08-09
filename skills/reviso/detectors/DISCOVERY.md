@@ -22,6 +22,7 @@ swept over recent Vyttle repo history (see Validation below).
 | Debug prints (`console.log`, `print`) | ✗ | Deliberate in CLIs/scripts; linter territory where unwanted. |
 | `debugger;` statements | ✗ | `no-debugger` is an eslint default; exclusion list says skip. |
 | TODO without ticket | ✗ → conventions finder | Team-convention dependent; only a finding if CLAUDE.md says so. |
+| Duplicate-run assist (hint channel, not a finding source) | ✗ → slop finder item 5 | Normalized added lines recurring ≥3× in the diff. Prototyped against the duplication lens's own seed case (2026-08-08): missed the target predicate — 7 occurrences, only 2 byte-identical, the rest differing by receiver/argument or wrapped mid-expression — while emitting 9 hints that were all test scaffolding. Duplication worth extracting is similar *under renaming*, a token-level property; line matching sees only the least interesting instances. The finder's distinctive-identifier grep protocol covers it instead. A token-n-gram version is the one that could clear the bar. |
 
 ## Validation
 

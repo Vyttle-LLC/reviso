@@ -23,8 +23,8 @@
 Two metric families, deliberately not comparable to each other:
 
 - **Gold** (absolute, whole corpus, per release): the candidate alone
-  against labeled ground truth — 63 labeled cases (50 CRB-imported real
-  PRs + 13 synthetics incl. 5 expected-clean). `gold recall
+  against labeled ground truth — 64 labeled cases (50 CRB-imported real
+  PRs + 13 synthetics incl. 5 expected-clean + 1 hand-authored). `gold recall
   (correctness)` = matched correctness-tier gold issues ÷ total;
   `precision proxy` = candidate findings matching any gold issue ÷ all
   candidate findings (unmatched ones may be real-but-unlabeled — they
@@ -41,6 +41,38 @@ Two metric families, deliberately not comparable to each other:
 | date | corpus | recall (correctness) | precision proxy | clean cases | artifacts |
 | --- | --- | --- | --- | --- | --- |
 | 2026-08-07 | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
+| 2026-08-08 | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
+
+The 2026-08-08 row is a single-case acceptance run for the duplication
+lens (0.3.0), not a sweep — do not compare its numbers to the row above.
+What it establishes: the lens **matched its gold label 1/1**, locating all
+seven occurrences of the collision rule, citing each by `file:line`, and
+naming a helper with signature and proposed home. Recall for this lane had
+never been measured before; the bar's calibration had only ever been
+checked as text.
+
+Two notes on the row:
+
+- **The recall figure required a tiering fix.** As first judged this row
+  read `n/a`: `duplication` sat in the cleanup family, so the case
+  contributed zero in-lane gold and could not move the headline metric —
+  a lens Reviso ships, invisible to the number that tracks it. The tier
+  split is really in-lane vs out-of-lane, so `duplication` left the
+  cleanup list (`eval/runners/tiers.sh`) and the run was **re-judged from
+  its recorded output** — same findings, same recorded matcher verdicts,
+  new tiering. A future miss on this case is now a listed regression.
+- **The 33% precision proxy resolves to one match, one false positive, one
+  promotion candidate.** Adjudicated after the run. The FP claimed the GUI
+  create path "has no name check at all"; it does — `task_create_sync`
+  refuses a colliding name at `lib.rs:3093` ("a worktree already lives at
+  … — pick a different name"), since same-name tasks in a project slugify
+  to the same worktree path. The finding reached its conclusion by
+  reasoning about the guard's *shape* (path-based, not name-based) instead
+  of its *effect*, which is the enforcement-vs-claim lens inverted on
+  itself. The remaining unmatched finding — a coverage test not extended
+  to the new verb — stands as a promotion candidate.
+
+Cost: $2.10, 5m23s, `claude-opus-5`, CLI 2.1.226.
 
 First-sweep notes — the aggregate is a **floor**, for reasons the
 artifacts document case by case:

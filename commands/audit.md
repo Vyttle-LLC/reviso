@@ -97,7 +97,8 @@ through your own context is what blows it up. The finders:
 4. `reviso-finder-prior-reviews` — recurring feedback from prior PRs (if a
    GitHub remote exists; otherwise it degrades to commit-message history)
 5. `reviso-finder-comments` — compliance with guidance in code comments
-6. `reviso-finder-slop` — the anti-slop lens (P0 slop set, convention-relative)
+6. `reviso-finder-slop` — the anti-slop lens (P0 slop set,
+   convention-relative), including duplication above the calibrated bar
 
 Each returns structured candidates per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`); every
