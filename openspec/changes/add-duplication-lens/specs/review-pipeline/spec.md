@@ -39,8 +39,7 @@ the duplicated unit encodes a rule that can change — a predicate, a
 policy constant, a shared type or contract — and SHALL stay silent when
 the similarity is incidental, such as setup or assertion scaffolding. Two
 or fewer occurrences SHALL NOT ship regardless of how long the copied
-block is. Every shipped duplication finding SHALL cite
-each occurrence by
+block is. Every shipped duplication finding SHALL cite each occurrence by
 `file:line`, state the drift-risk failure scenario concretely, and give a
 `suggested_fix` naming the helper (name, signature, proposed location
 consistent with the repository's layout) plus the rewrite of one call
