@@ -34,5 +34,13 @@ Return ONLY this JSON object — your final message is consumed by an
 orchestrator, not a human:
 
 ```json
-{"confidence": 0, "verdict": "one sentence: why this score", "severity_check": "P0|P1|P2 — corrected severity if the finder's was wrong, else the original"}
+{"confidence": 0, "drop_reason": "exclusion-list | pre-existing | rubric-score | none", "verdict": "one sentence: why this score", "severity_check": "P0|P1|P2 — corrected severity if the finder's was wrong, else the original"}
 ```
+
+`drop_reason` names which step above gated the finding, in the order you
+performed them: `exclusion-list` for a step-2 match, `pre-existing` for
+step 3, `rubric-score` for a finding that survived both and still scored
+below 80, and `none` for one that cleared the gate. Those four are the
+whole set — do not invent a fifth. The orchestrator counts these, so the
+value is read by machine; it does not replace `verdict`, which you write
+either way.
