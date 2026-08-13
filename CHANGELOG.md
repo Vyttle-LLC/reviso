@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `--explain`, on both commands. Off by default; when passed, the report
+  gains one labelled diagnostic section after the findings, carrying the
+  per-lens ledger with candidate counts and every candidate considered
+  before the confidence gate with its score and why it was dropped. The
+  findings section is byte-identical with and without the flag, and the
+  section follows the report to the same sink — terminal, plus `--out`
+  when the user asked for a file. Nothing new is written, and neither
+  command's `allowed-tools` gained an entry.
+- The verifier returns a structured `drop_reason` alongside its score —
+  `exclusion-list`, `pre-existing`, `rubric-score`, or `none` — so the
+  orchestrator can count why candidates were gated instead of parsing the
+  verdict prose. A return that omits it is read as `rubric-score` below 80
+  and `none` at or above, so an older verifier degrades rather than stalls.
+
+### Changed
+
+- **The coverage line is derived, not printed from a literal.** Both
+  commands hardcoded `Checked: conventions, bugs, history, …` — the same
+  string whether every lens ran clean or none of them ran at all, which
+  made a genuinely clean report and a silently broken pipeline
+  byte-identical. Each lens now records an outcome as it resolves
+  (`returned`, including an empty findings array, versus `no result` or
+  `skipped`), `Checked:` names only the lenses that returned, and a
+  `Not checked:` line names the rest with their reasons. That line is
+  emitted only when there is something to say, so a healthy run reads as
+  it did before. A zero-finding report can now explain its zero.
+- A declined permission prompt on the deterministic detector script is
+  recorded as `no result` for that lens. Previously the report still
+  listed `deterministic` among the lenses it had checked.
+
 ## [0.3.0] — 2026-08-08
 
 ### Added

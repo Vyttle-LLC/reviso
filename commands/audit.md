@@ -1,6 +1,6 @@
 ---
 description: Deep multi-agent review of base..HEAD + uncommitted changes — the pre-PR gate; report-only
-argument-hint: "[--base <ref>] [--out <path>]"
+argument-hint: "[--base <ref>] [--out <path>] [--explain]"
 model: sonnet
 allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
 ---
@@ -18,11 +18,32 @@ it runs. The only write this command may ever request is the report file
 when the user explicitly passed `--out`.
 
 Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; default is
-the repository's default branch) and `--out <path>` (also write the report
-to that file; terminal-only otherwise). Ignore unknown flags with a one-line
-note.
+the repository's default branch), `--out <path>` (also write the report
+to that file; terminal-only otherwise), and `--explain` (append the
+pipeline diagnostics described in Stage 6; off by default). Ignore unknown
+flags with a one-line note.
 
 Follow these steps precisely. Make a todo list first.
+
+## The coverage ledger (maintained throughout, reported in Stage 6)
+
+Every lens this run touches gets exactly one ledger row, recorded the
+moment that lens resolves — not reconstructed at report time. A row is:
+lens name, outcome, candidate count. There are exactly three outcomes:
+
+- **returned** — the lens ran and handed you a findings array. An empty
+  array is `returned`: the lens looked and found nothing, which is a
+  result. Record the count, zero included.
+- **no result** — the lens handed you nothing usable: the agent never
+  returned, it errored, or its output was not a findings array.
+- **skipped** — the lens had nothing in scope (prior reviews in a repo
+  with no GitHub remote, say). Note the reason.
+
+A lens you recorded no row for is `no result`. Never assume a silent lens
+was clean: "found nothing" and "produced nothing" are different facts, and
+a report that cannot tell them apart is the failure this ledger exists to
+prevent. Stage 6 reports from these rows and may not name a lens it has no
+row for.
 
 ## Stage 0 — Assemble the mock PR (deterministic; run these yourself, no agents)
 
@@ -71,6 +92,11 @@ not pre-approved above, so the user may be prompted once; that is expected.)
 Collect its findings. They use the shared finding schema, are tagged
 `deterministic`, bypass Stage 4 verification, and report at confidence 100.
 
+Record the `deterministic` ledger row now: `returned` with the finding
+count if the suite ran, `no result` if the permission prompt was declined
+or the script failed. A declined prompt is not a clean detector pass, and
+the report must not claim it was.
+
 ## Stage 2 — Triage
 
 Launch one `reviso-triage` agent (Haiku) with the diff and changed-file list.
@@ -104,14 +130,30 @@ Each returns structured candidates per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`); every
 candidate must carry a concrete failure scenario and a suggested fix.
 
+As each finder resolves, record its ledger row before you move on — six
+finders, six rows, written here rather than inferred later. A finder that
+returns `[]` is `returned` with a count of zero; a finder whose Task never
+came back, errored, or returned prose instead of a findings array is `no
+result`. If you reach Stage 4 with fewer than six rows, the missing ones
+are `no result`, not silence you may read as clean.
+
 ## Stage 4 — Verify (the trust gate)
 
 For every LLM candidate (not deterministic findings), launch a parallel
 `reviso-verifier` agent (Haiku). Give each: the candidate, the relevant
 diff hunks, and the conventions file paths. It re-examines the code,
-applies the rubric as written, and returns a score.
-**Silently drop every finding scoring below 80.** Never mention dropped
-findings. If nothing survives and Stage 1 found nothing, skip to the report.
+applies the rubric as written, and returns a score and a `drop_reason`
+(`exclusion-list`, `pre-existing`, `rubric-score`, or `none`).
+**Silently drop every finding scoring below 80.** Never mention a dropped
+finding in the report itself — the one place it may appear is the
+`--explain` section, and only when the user passed that flag. If nothing
+survives and Stage 1 found nothing, skip to the report.
+
+Keep, for every candidate: its lens, its `file:line`, its score, and its
+disposition — reported, or dropped with the reason. That record is what
+`--explain` prints; without the flag it stays yours. A verifier return
+that omits `drop_reason` counts as `rubric-score` below 80 and `none` at
+or above — degrade, don't stall.
 
 ## Stage 5 — Reconcile
 
@@ -136,16 +178,57 @@ Found <k> issues:
 
 ...
 
-Checked: conventions, bugs, history, prior reviews, comments, slop, deterministic.
+Checked: <lenses whose ledger row says returned>.
+Not checked: <each no-result or skipped lens, with its reason>.
 Skipped: <skip-tier files, or "nothing">.
 ```
 
+The coverage block is derived from the ledger, every run:
+
+- `Checked:` names the lenses with a `returned` row and only those. There
+  is no fixed list to fall back on — if you have no row for a lens, you
+  may not name it as checked.
+- `Not checked:` names each `no result` or `skipped` lens with its reason
+  — "history (no result)", "prior reviews (no GitHub remote)". **Emit the
+  line only when there is at least one such lens.** A run where every lens
+  returned prints no `Not checked:` line at all.
+- No per-lens candidate counts here. Counts are `--explain`'s job; a count
+  in the default report tells the user findings were withheld.
+- `Skipped:` is unchanged and unrelated: it lists skip-tier *files* from
+  Stage 2, never lenses. Do not merge the two lines.
+
 If no findings survived: report exactly the header line, then "No issues
-found.", then the Checked/Skipped lines — nothing else.
+found.", then the coverage block — nothing else. That block is the only
+thing separating a clean run from a broken one, so derive it here exactly
+as above. A zero-finding report that cannot explain its zero is the
+failure this command is instrumented to prevent.
+
+### `--explain` (only when the user passed the flag)
+
+Append one section after the findings, in this shape:
+
+```text
+--- explain: pipeline diagnostics (not review findings) ---
+Finders: conventions 3, bugs 2, history 0, prior-reviews no result,
+comments 0, slop 1.
+Candidates before the gate (6):
+  [slop]        cli_server.rs:2257  score 88  reported
+  [conventions] shell_env.rs:453    score 72  dropped: rubric-score
+  [bugs]        shell_env.rs:50     score  0  dropped: pre-existing
+```
+
+The ledger with counts, then every candidate you kept a record of in Stage
+4 — one line each, with its score and disposition. Rules: it goes after
+the findings, never among them; every line in it is a diagnostic, never a
+finding; and the findings section above it is identical whether or not the
+flag was passed. Without `--explain`, none of this appears — no dropped
+candidate, no score, no reason.
 
 Sink: print to the terminal. If `--out <path>` was given, additionally write
 the same report to that path (this triggers a permission prompt — correct
 behavior; approve applies only to that file). Never write anywhere else.
+The `--explain` section follows the report to the same sink and adds no
+write of its own.
 
 Keep the report brief. No emojis. Cite `file:line` for every finding.
 
