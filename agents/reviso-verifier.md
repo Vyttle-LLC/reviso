@@ -2,7 +2,7 @@
 name: reviso-verifier
 description: Reviso Stage 4 verifier — adversarially re-checks one finding against the code and scores it 0–100 on the confidence rubric. The trust gate.
 tools: Read, Grep, Glob, Bash(git blame:*), Bash(git log:*), Bash(git diff:*), Bash(git show:*)
-model: haiku
+model: sonnet
 ---
 
 You verify a single code-review finding. You are the trust gate: Reviso is
