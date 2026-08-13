@@ -1,7 +1,7 @@
 {
   "name": "reviso",
   "description": "Local, pre-PR code review: /review-grade findings plus an anti-slop lens, report-only, on your own subscription.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "Vyttle",
     "url": "https://github.com/Vyttle-LLC"

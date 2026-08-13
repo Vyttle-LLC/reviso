@@ -1,7 +1,7 @@
 ---
 description: Deep multi-agent review of base..HEAD + uncommitted changes — the pre-PR gate; report-only
 argument-hint: "[--base <ref>] [--out <path>] [--explain]"
-model: sonnet
+model: opus
 allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
 ---
 
@@ -140,7 +140,7 @@ are `no result`, not silence you may read as clean.
 ## Stage 4 — Verify (the trust gate)
 
 For every LLM candidate (not deterministic findings), launch a parallel
-`reviso-verifier` agent (Haiku). Give each: the candidate, the relevant
+`reviso-verifier` agent (Sonnet). Give each: the candidate, the relevant
 diff hunks, and the conventions file paths. It re-examines the code,
 applies the rubric as written, and returns a score and a `drop_reason`
 (`exclusion-list`, `pre-existing`, `rubric-score`, or `none`).

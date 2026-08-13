@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.4.0] — 2026-08-13
 
 ### Added
 
@@ -38,6 +38,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A declined permission prompt on the deterministic detector script is
   recorded as `no result` for that lens. Previously the report still
   listed `deterministic` among the lenses it had checked.
+- **The verifier runs on Sonnet, and the audit orchestrator on Opus.** The
+  gate was the cheapest model in the pipeline and held veto power over
+  everything six Sonnet finders produced — nothing shipped unless Haiku
+  could independently re-derive it. The asymmetry is what makes that
+  wrong: a weak candidate costs a little compute and dies at the gate, but
+  a wrong veto costs the whole finding, silently. The audit orchestrator
+  was Sonnet while the single-pass `/reviso:review` is Opus, so the deep
+  pre-PR tier coordinated on a weaker model than the fast inner-loop tier
+  reviews on. Both tiers were inherited from the upstream recipe, whose
+  cost function is a bot reviewing every PR forever — not a gate a user
+  invokes deliberately. The published 3-way run already measured what
+  depth is worth here: same diff, same architecture, Opus found 5 findings
+  to Sonnet's 1. Triage stays on Haiku; tagging hunks is the one job in
+  the pipeline that is genuinely cheap.
 
 ## [0.3.0] — 2026-08-08
 
