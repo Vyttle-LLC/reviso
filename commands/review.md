@@ -108,7 +108,10 @@ to each hunk as you go:
 - **History** — where a change looks suspicious, check `git blame` /
   `git log`: does it silently revert a deliberate fix or break an invariant
   an older commit established? Branch commit messages state intent — an
-  intended regression is not a finding.
+  intended regression is not a finding. Only the change's own past counts:
+  a commit that is not an ancestor of HEAD, or a PR merged after it, is
+  inadmissible evidence — see
+  `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`.
 - **Code comments** — invariant notes and warnings near the changed lines
   ("must hold the lock", "keep in sync with X"): does the change comply?
 - **Anti-slop** (convention-relative, the P0 set only): drift from how this

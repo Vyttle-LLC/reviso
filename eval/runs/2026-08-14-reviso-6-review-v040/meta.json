@@ -1,0 +1,10 @@
+{
+  "cli_version": "2.1.232",
+  "tier": "review",
+  "command": "/reviso:review --base cb3f63a4b945d81fd506e06102ea551976fd924b --explain",
+  "base_sha": "cb3f63a4b945d81fd506e06102ea551976fd924b",
+  "head_sha": "e76eda949fbd7b66ef5fd4cb42a309e643d33025",
+  "models": [
+    "claude-opus-5"
+  ]
+}

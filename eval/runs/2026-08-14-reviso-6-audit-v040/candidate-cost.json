@@ -1,0 +1,12 @@
+{
+  "cost": 6.418346150000001,
+  "duration_ms": 22813,
+  "duration_api_ms": 2047713,
+  "num_turns": 1,
+  "models": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5",
+    "claude-opus-5[1m]",
+    "claude-sonnet-5"
+  ]
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "file": "agents/reviso-verifier.md",
+    "line": 4,
+    "title": "Three subagents grant bare Bash, violating read-only tool restriction",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "Bare Bash grant violates spec's read-only requirement. Also affects agents/reviso-finder-history.md:4 and agents/reviso-finder-prior-reviews.md:4. Prose restriction only; under --dangerously-skip-permissions, nothing prevents writes. Fix: scope each agent's Bash grants to specific read-only commands—Bash(git blame:*), Bash(git log:*), Bash(git diff:*), Bash(git show:*) for verifier and history; add Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*) for prior-reviews."
+  },
+  {
+    "file": "eval/runners/baseline.sh",
+    "line": 16,
+    "title": "Baseline runner produces empty baselines on corpus PR runs",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Baseline invokes /review on closed (merged) corpus PRs. Recipe aborts with [] on closed PRs—extract.sh treats [] as success. Violates eval/README.md:25 promise that silent reduction cannot happen. Fix: either drive against local checkout of base_sha..head_sha instead of live PR, or fail when baseline lacks recipe report header (### Code review)."
+  },
+  {
+    "file": "commands/review.md",
+    "line": 124,
+    "title": "Report coverage line hardcodes dimensions that may not have run",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "Stage 6 hardcodes 'Checked: conventions, bugs, history, prior reviews, comments, slop, deterministic.' even if Stage 3 finders error or never launch. User cannot distinguish 'found nothing' from 'never checked'. Spec requires reporting which dimensions actually ran. Fix: have Stage 3/4 record dimension outcomes; derive Checked: line from actual results and list unresolved dimensions on separate 'Not checked:' line with reason."
+  },
+  {
+    "file": "CLAUDE.md",
+    "line": 43,
+    "title": "Documentation claims plugin is unimplemented despite change adding all components",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Scope section still says 'The plugin itself... is not here yet' despite change adding commands/, agents/, skills/, and eval/. Directs reader to grep TODO(plugin), now returns CLAUDE.md plus planning docs. Also affects docs/evals.md:7 which references old '/reviso review' command (renamed to '/reviso:review'). Fix: replace Scope with shipped components; update docs/evals.md:7 command name; point remaining TODO(plugin) to docs/ci.md:4 (real leftover)."
+  }
+]

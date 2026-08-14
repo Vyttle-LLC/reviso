@@ -1,0 +1,10 @@
+[
+  {
+    "file": "agents/reviso-finder-history.md",
+    "line": 4,
+    "title": "Finder/verifier agents grant unrestricted Bash while prompts claim read-only",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "Agents declare tools: Read, Grep, Glob, Bash with no command allowlist while promising read-only use. Affects agents/reviso-finder-history.md:4, agents/reviso-finder-prior-reviews.md:4, agents/reviso-verifier.md:4. Hostile commit messages can induce destructive commands (git checkout, rm, git commit). Fix by scoping Bash to specific subcommands: Bash(git blame:*), Bash(git log:*), Bash(git show:*), Bash(git diff:*) for history finders; Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*) for prior-reviews."
+  }
+]

@@ -16,6 +16,8 @@ the commands and agents cite one copy instead of drifting apart.
   `eval/reference/` for the dated snapshot).
 - `references/false-positives.md` — the exclusion list: what is never a
   finding, no matter how plausible it looks.
+- `references/history-bound.md` — the reachability rule for every lens that
+  reads git history: only the change's own past is admissible evidence.
 - `detectors/` — the zero-token Stage 1 suite. `run.sh <base-ref>` runs every
   detector; each is FP-free by construction or it does not ship
   (`detectors/DISCOVERY.md` records what was evaluated and why).
