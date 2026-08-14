@@ -1,0 +1,43 @@
+{
+  "cli_version": "2.1.232",
+  "plugin_version": "0.4.0",
+  "tier": "audit",
+  "case": "reviso-6",
+  "base_sha": "cb3f63a4b945d81fd506e06102ea551976fd924b",
+  "head_sha": "e76eda949fbd7b66ef5fd4cb42a309e643d33025",
+  "command": "/reviso:audit --explain --base cb3f63a4",
+  "models": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5",
+    "claude-opus-5[1m]",
+    "claude-sonnet-5"
+  ],
+  "provenance": "hand-produced",
+  "provenance_notes": [
+    "Produced by hand, not by eval/runners/candidate.sh: that runner hardcodes /reviso:review and cannot invoke the audit tier. Making it able to is the measure-the-audit-tier change; this run is the baseline that change records.",
+    "The tier, case, and SHA fields were written by hand rather than emitted by a runner. Treat them as an assertion about how the run was made, not as machine-recorded identity.",
+    "Clean context was preserved as candidate.sh does it: --setting-sources project,local, so no user-level CLAUDE.md, memory, or installed plugins participated.",
+    "The reviewed worktree was a detached checkout of head_sha from this repository's own object store, which also contains commits made after head_sha. The run's report flags that its history and prior-reviews lenses reached them; those lenses' candidate counts here are inflated and must not be read as recall.",
+    "Two of thirteen verifier agents reported permission denied reading confidence-rubric.md and false-positives.md at the plugin root and scored without them. One recovered only because the repository under review is Reviso and carries its own copies.",
+    "CLI 2.1.232 is outside the 2.1.219-2.1.223 range fingerprinted in eval/reference/builtin-skill-notes.md. No upstream baseline was invoked here, so that does not affect this run, but a parity re-baseline is outstanding."
+  ],
+  "candidates_before_gate": 13,
+  "reported": 3,
+  "reported_after_merge": 2,
+  "gate_threshold": 80,
+  "candidate_scores": {
+    "reported": [90, 88, 85],
+    "dropped_rubric_score": [68, 60, 52, 40, 40],
+    "dropped_exclusion_list": [20, 10, 0],
+    "dropped_pre_existing": [5, 5]
+  },
+  "finder_yield": {
+    "prior-reviews": 7,
+    "bugs": 2,
+    "conventions": 2,
+    "history": 1,
+    "slop": 1,
+    "comments": 0,
+    "deterministic": 0
+  }
+}

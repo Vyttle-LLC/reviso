@@ -1,0 +1,18 @@
+[
+  {
+    "file": "agents/reviso-verifier.md",
+    "line": 4,
+    "title": "Report-only invariant is not enforced by tool grants",
+    "severity": "P0",
+    "category": null,
+    "description": "Bare, unscoped Bash grants in agents/reviso-verifier.md:4, agents/reviso-finder-history.md:4, agents/reviso-finder-prior-reviews.md:4, and commands/review.md:4 allow subagents to run arbitrary commands (git commit, rm, curl, etc.), violating the report-only invariant. Pre-approves Bash(git branch:*) which permits destructive writes. Violates SECURITY.md requirements for handling untrusted diff/message input."
+  },
+  {
+    "file": "skills/reviso/detectors/run.sh",
+    "line": 13,
+    "title": "Untracked-file findings anchor to wrong path",
+    "severity": "P2",
+    "category": null,
+    "description": "Script does not cd to repo root. git diff -U0 emits repo-root-relative paths but git ls-files --others and git diff --no-index emit cwd-relative paths. Invoking from subdirectory causes untracked file hits to report unresolvable paths while tracked files resolve correctly. Fix: add cd to git root before computing MB."
+  }
+]
