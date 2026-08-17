@@ -17,6 +17,18 @@
 > change. **The runs below predate the re-aim** (see each run dir's
 > `SUPERSEDED.md`) — their numbers are internally consistent but not
 > comparable with re-aimed runs.
+>
+> **Tier attribution (2026-08-14).** Reviso ships two review tiers, and
+> until now the harness could only run one of them. **Every number
+> published on this page below the audit-tier row measures
+> `/reviso:review`, the single-pass inner-loop tier** — the candidate
+> runner hardcoded that command, so `/reviso:audit` never ran in any of
+> them. The 48% correctness recall is the *review tier's* recall, not
+> "Reviso's". The candidate leg now names its tier explicitly
+> (`REVISO_TIER=review|audit`, no default), every new run records it, and
+> the judge refuses comparisons that cross tiers. **Runs recorded before
+> that carry no tier field and are therefore non-comparable under the new
+> rule** — see `eval/README.md`.
 
 ## Metrics glossary
 
@@ -38,10 +50,14 @@ Two metric families, deliberately not comparable to each other:
 
 ## Runs (gold)
 
-| date | corpus | recall (correctness) | precision proxy | clean cases | artifacts |
-| --- | --- | --- | --- | --- | --- |
-| 2026-08-07 | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
-| 2026-08-08 | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
+| date | tier | corpus | recall (correctness) | precision proxy | clean cases | artifacts |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2026-08-07 | `review` | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
+| 2026-08-08 | `review` | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
+
+Both rows measure `/reviso:review`. The tier column is attributed
+retroactively: neither run recorded a tier, because the runner had only
+one to record.
 
 The 2026-08-08 row is a single-case acceptance run for the duplication
 lens (0.3.0), not a sweep — do not compare its numbers to the row above.
@@ -97,6 +113,62 @@ artifacts document case by case:
 - Matcher calibration at this scale is still the spot-check +
   sagechat-15 sample; treat per-case numbers as screening, not verdicts.
 
+## Runs (audit tier)
+
+The deep tier's first recorded measurement. Not a gold row: `reviso-6`
+carries no labels file, so there is no recall figure to report — what this
+run establishes is the score distribution and the per-lens yield, which
+are within-run facts.
+
+| date | tier | case | candidates → reported | cost | artifacts |
+| --- | --- | --- | --- | --- | --- |
+| 2026-08-13 | `audit` | `reviso-6` @ v0.4.0, hand-produced | 13 → 3 (merged to 2) | $9.73 | [runs/2026-08-13-reviso-6-audit-v040](../eval/runs/2026-08-13-reviso-6-audit-v040/) |
+| 2026-08-14 | `audit` | `reviso-6` @ v0.4.0, **runner-produced** | 5 → 1 | $6.42 | [runs/2026-08-14-reviso-6-audit-v040](../eval/runs/2026-08-14-reviso-6-audit-v040/) |
+| 2026-08-14 | `review` | `reviso-6` @ v0.4.0 (bound check) | 10 → 4 | $2.04 | [runs/2026-08-14-reviso-6-review-v040](../eval/runs/2026-08-14-reviso-6-review-v040/) |
+
+The 2026-08-14 audit run is now the tier's comparison anchor: same case,
+same SHAs, same CLI, but produced by `eval/runners/candidate.sh` with the
+identity fields machine-recorded, and with the history bound in place. The
+hand-produced row stays in the tree as what it was.
+
+Scores as `--explain` printed them:
+
+| run | reported | rubric-dropped | exclusion | pre-existing |
+| --- | --- | --- | --- | --- |
+| 2026-08-13 (hand) | 90, 88, 85 | 68, 60, 52, 40, 40 | 20, 10, 0 | 5, 5 |
+| 2026-08-14 (runner) | 90 | 55, 50 | — | — |
+
+Per-lens yield moved with it: prior-reviews **7 → 0**, history **1 → 0**,
+slop 1 → 0, comments 0 → 1, bugs 2 → 2, conventions 2 → 2.
+
+What the two audit rows establish, each covered in full by the run
+directories' READMEs:
+
+- **The history bound works, and cost nothing.** `prior-reviews` and
+  `history` had reached commits after the case's head and cited the very
+  commits that later fixed what they flagged — 7 of the 13 candidates in
+  the hand run. Under the bound both return zero, and the run's own report
+  names what it excluded (PR #6, not an ancestor of `e76eda9`) and why the
+  history lens dropped its own conclusion (its only evidence was a
+  non-ancestor commit). The finding survived anyway at 90, reached by the
+  `bugs` lens from in-branch files. Contaminated evidence excluded, no
+  reported finding lost.
+- **The rest of the gap is run-to-run variance, not this change.** The
+  `slop` lens yielded 1 then 0, which is the whole reason the hand run's
+  second reported finding has no counterpart; `comments` moved the other
+  way. One run against one run cannot separate a real effect from the
+  variance floor this page already records elsewhere.
+- **The gate dropped two confirmed-real findings** in the hand run, at 68
+  and 40, both from the enforcement-vs-claim class. Nothing scored 75–79,
+  so moving the threshold to 75 would have changed nothing. What to do
+  about that is `recalibrate-the-confidence-rubric`'s business.
+- **Report-only held on the deep tier**, checked by the runner's pre/post
+  worktree comparison for the first time — eight agents, zero writes.
+- **`duration_ms` cannot time this tier.** The runner recorded 22.8s and 1
+  turn for a run that took ~8 minutes; those fields see only the
+  orchestrator's own turn, not its fan-out. `duration_api_ms` (34 min
+  aggregated) is now recorded alongside. On the review tier the two agree.
+
 ## Runs (superseded protocol — pre-2026-08-06)
 
 | date | corpus case | version | parity | misses | cost vs `/review` | artifacts |
@@ -105,6 +177,12 @@ artifacts document case by case:
 | 2026-08-04 | `reviso-6` | v0.3 (single-pass, D10 split) | **25%** (2/8) | 6 | **1.42×** ✅ | [runs/2026-08-04-reviso-6-v03](../eval/runs/2026-08-04-reviso-6-v03/) |
 | 2026-08-04 | `reviso-6` @ current head | v0.3 **opus** (3-way) | 12% (1/8) | 7 | **1.09×** ✅ | [runs/2026-08-04-reviso-6-3way](../eval/runs/2026-08-04-reviso-6-3way/) |
 | 2026-08-04 | `reviso-6` @ current head | v0.3 **sonnet** (3-way) | 0% (0/8) | 8 | 0.62× | same |
+
+The 2026-08-03 row predates the D10 split, when the multi-agent pipeline
+was what `/reviso:review` ran; every row after it measures the single-pass
+tier. None of them recorded a tier — the field did not exist — so all four
+are non-comparable under the current judge rule as well as the superseded
+baseline protocol.
 
 v0.3 notes: first run after the architecture split (single-pass `review`,
 pipeline moved to `audit`) — cost bar cleared on the first attempt, parity

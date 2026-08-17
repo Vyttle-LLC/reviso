@@ -18,7 +18,7 @@ corpus entry {repo, pr, base_sha, head_sha}
   ├─ runners/baseline.sh   3 headless "/code-review medium" runs on the
   │                        real PR, subagent fan-out allowed
   │                        → majority baseline (findings in ≥2 of 3 runs)
-  ├─ runners/candidate.sh  checkout head_sha, /reviso:review --base base_sha
+  ├─ runners/candidate.sh  checkout head_sha, $REVISO_TIER --base base_sha
   │                        → candidate findings from the report
   └─ runners/judge.sh      tier baseline findings (correctness vs cleanup),
                            conservative root-cause matching →
@@ -51,18 +51,63 @@ corpus entry {repo, pr, base_sha, head_sha}
   intact) and verifies the reported level matches the pinned one. Prose
   extraction (`extract.sh`) is the fallback.
 
+## The candidate leg names a tier
+
+Reviso ships two review tiers, and they are two different products:
+`/reviso:review` is the single-pass inner-loop review, `/reviso:audit` the
+deep multi-agent pipeline. Every runner that invokes the candidate leg
+requires **`REVISO_TIER`** (`review` or `audit`). There is no default:
+
+```sh
+REVISO_TIER=review sh runners/gold.sh crb-cal.com-8087 eval/runs/…
+REVISO_TIER=audit  sh runners/gold.sh reviso-6         eval/runs/…
+```
+
+An absent or unrecognized value exits with an error naming the accepted
+ones, exactly as `REVIEW_CMD` refuses an unpinned upstream level. The
+reason is the defect a default caused: `candidate.sh` hardcoded
+`/reviso:review`, every caller inherited it, no artifact recorded it, and
+so the 48% figure from the 2026-08-07 sweep was read for a week as
+"Reviso's recall" when it only ever described the single-pass tier.
+
+- **Cost.** A review-tier case runs ~$2–3; an audit-tier case ran **$9.73**
+  on `reviso-6` at v0.4.0 — roughly 3×. A 63-case audit sweep is therefore
+  not a routine operation.
+- **Which subset.** Full-corpus sweeps stay on the review tier; audit-tier
+  sweeps run on a named subset (`REVISO_SWEEP_SUBSET=<name>`).
+  `summary.json` records `subset.case_ids`, how many labeled cases the
+  corpus holds, and `subset.covers_full_corpus` — so a partial sweep can
+  never be read as a full one.
+- **Metrics never pool tiers.** `summary.json` keys recall,
+  precision-proxy, and clean-case counts under `by_tier`. Cases whose
+  `meta.json` predates the tier field land in a visible `unrecorded`
+  bucket rather than being absorbed into a real tier's numbers.
+
+**Pre-existing artifacts carry no tier.** Every run recorded before this
+landed — including `2026-08-07-gold-sweep-v0` and the 2026-08-03/04 parity
+runs — has no `tier` field in its `meta.json`, so `judge.sh` refuses them
+as non-comparable. That is by design, not a bug to route around: an
+artifact that cannot say which pipeline produced it cannot be compared to
+one that can. `JUDGE_ALLOW_TIER_MISMATCH=1` downgrades the refusal to a
+`non_comparable` label when an archived run genuinely needs re-judging.
+The one exception is the hand-produced
+`runs/2026-08-13-reviso-6-audit-v040/`, whose `tier` was written by hand
+and is labelled as asserted rather than machine-recorded.
+
 ## Gold mode
 
 Parity answers "do we match upstream?"; gold mode answers "are we right?"
 — the candidate alone against hand- or benchmark-labeled ground truth, no
-upstream invocation anywhere. Per case it costs one `/reviso:review` run
-plus matcher calls (~10× cheaper than a parity case's three baseline
-runs), which makes it the sweep you run on every meaningful pipeline
-change; parity runs on the `active_parity` subset at re-baseline events.
+upstream invocation anywhere. Per case it costs one candidate run at the
+named tier plus matcher calls (on the review tier, ~10× cheaper than a
+parity case's three baseline runs), which makes it the sweep you run on
+every meaningful pipeline change; parity runs on the `active_parity`
+subset at re-baseline events.
 
 ```text
-runners/gold.sh <case-id> <outdir>     one case
-runners/sweep.sh gold <outroot>        every labeled case + summary.json
+REVISO_TIER=<review|audit> runners/gold.sh <case-id> <outdir>   one case
+REVISO_TIER=<review|audit> runners/sweep.sh gold <outroot>      every
+                                        labeled case + summary.json
 ```
 
 - **Metrics**: `gold_recall_correctness` (matched correctness-tier gold
@@ -89,8 +134,10 @@ runners/sweep.sh gold <outroot>        every labeled case + summary.json
   lives outside the repo, referenced by `REVISO_EVAL_PRIVATE_CORPUS`.
 - `runners/` — `baseline.sh`, `candidate.sh`, `judge.sh`, `gold.sh`,
   `sweep.sh`, plus shared `report-findings.sh` (transcript → findings
-  JSON), `extract.sh` (review text → findings JSON) and `match.sh` (the
-  LLM matcher everything builds on).
+  JSON), `extract.sh` (review text → findings JSON), `match.sh` (the
+  LLM matcher everything builds on), and `review-tier.sh` (resolves
+  `REVISO_TIER` — the *product* under test; `tiers.sh` is the unrelated
+  correctness/cleanup split of *findings*).
 - `runs/` — run artifacts (raw output + parsed findings + per-run
   `meta.json` + judge reports). `runs/private/` is gitignored; only
   public-tier runs are committed.
@@ -106,20 +153,26 @@ runners/sweep.sh gold <outroot>        every labeled case + summary.json
 Baseline runs consume real `/code-review` invocations; candidate runs need
 this plugin loadable via `--plugin-dir`.
 
-Environment: `REVIEW_CMD` (default `/code-review medium`; it must name a
-level — the runner refuses an unpinned command), `BASELINE_MODEL` (default
-`opus`), `JUDGE_MODEL` (matcher model override), `REVISO_PLUGIN_DIR`
-(default: this repo), and `*_CLAUDE_FLAGS` pass-throughs per script — see
-script headers.
+Environment: `REVISO_TIER` (**required**, `review`|`audit` — no default),
+`REVIEW_CMD` (default `/code-review medium`; it must name a level — the
+runner refuses an unpinned command), `REVISO_SWEEP_SUBSET` (names a
+deliberate partial sweep), `BASELINE_MODEL` (default `opus`), `JUDGE_MODEL`
+(matcher model override), `REVISO_PLUGIN_DIR` (default: this repo),
+`JUDGE_ALLOW_VERSION_MISMATCH` / `JUDGE_ALLOW_TIER_MISMATCH` (downgrade a
+comparability refusal to a `non_comparable` label), and `*_CLAUDE_FLAGS`
+pass-throughs per script — see script headers.
 
 **Runs carry their identity.** Each baseline run records the CLI version,
-the pinned level, and the resolved model IDs in `meta.json`; the three runs
-behind a majority baseline must agree on all three, and `judge.sh` refuses
-baseline/candidate comparisons across CLI versions
-(`JUDGE_ALLOW_VERSION_MISMATCH=1` downgrades the refusal to a
-`non_comparable` label). The built-in review ships inside the CLI, so **a
-CLI version roll is a re-baseline event** — re-run the corpus, diff, re-tune
-— exactly as a model-tier roll is:
+the pinned level, and the resolved model IDs in `meta.json`; each candidate
+run records the CLI version, the **review tier**, and the resolved model
+IDs. The three runs behind a majority baseline must agree on all three, and
+`judge.sh` refuses baseline/candidate comparisons across CLI versions
+(`JUDGE_ALLOW_VERSION_MISMATCH=1`) or across review tiers, including a
+candidate with no recorded tier (`JUDGE_ALLOW_TIER_MISMATCH=1`) — either
+downgrades the refusal to a `non_comparable` label. The built-in review
+ships inside the CLI, so **a CLI version roll is a re-baseline event** —
+re-run the corpus, diff, re-tune — exactly as a tier roll or a model-tier
+roll is:
 
 **Models are tiers, not versions.** The plugin pins aliases (`opus`,
 `sonnet`, `haiku`) and the baseline defaults to the `opus` alias — both

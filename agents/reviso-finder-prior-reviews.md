@@ -19,10 +19,19 @@ messages that record review-driven fixes ("address review", "fix per
 review", revert-then-fix chains) — and apply those lessons. Never fail the
 review over missing GitHub access.
 
+**Prior feedback means prior.** A commit that is not an ancestor of the
+change's head, and a pull request merged after that head, are the change's
+future — not feedback it could have received. They are inadmissible as
+evidence, and a candidate resting solely on one is not returned. This
+binds the `gh` lookups and the `git log` fallback alike. The full rule and
+how to check reachability:
+`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`.
+
 Before returning anything, read and obey:
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`
 
 Set `dimension` to `prior-reviews`. Quote the prior feedback (PR number or
 commit) in `evidence`. Only flag feedback that concretely applies to lines

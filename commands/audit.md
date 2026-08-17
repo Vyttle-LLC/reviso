@@ -130,6 +130,12 @@ Each returns structured candidates per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`); every
 candidate must carry a concrete failure scenario and a suggested fix.
 
+Finders 3 and 4 read history, and both are bound by
+`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`: only
+commits reachable from the change's head are admissible evidence. Give
+them `MB` and the head SHA so they can check reachability rather than
+guess at it.
+
 As each finder resolves, record its ledger row before you move on — six
 finders, six rows, written here rather than inferred later. A finder that
 returns `[]` is `returned` with a count of zero; a finder whose Task never

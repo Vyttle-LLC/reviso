@@ -35,6 +35,36 @@ if [ -f "$BMETA" ] && [ -f "$CMETA" ]; then
   fi
 fi
 
+# Review-tier gate, on the same footing. /reviso:review and /reviso:audit
+# are different pipelines at different costs; a parity figure spanning them
+# describes neither, and a candidate that does not say which one it ran is
+# not comparable to anything — that silence is what let a review-tier
+# recall figure be published as "Reviso's recall". A tier roll is a
+# re-baseline event, not a comparison. Artifacts recorded before the tier
+# field existed carry no tier and are refused here by design;
+# JUDGE_ALLOW_TIER_MISMATCH=1 downgrades both refusals to a non_comparable
+# label so an archived run can still be re-judged.
+BTIER=""; CTIER=""
+[ -f "$BMETA" ] && BTIER=$(jq -r '.tier // ""' "$BMETA" 2>/dev/null) || BTIER=""
+[ -f "$CMETA" ] && CTIER=$(jq -r '.tier // ""' "$CMETA" 2>/dev/null) || CTIER=""
+TIER_PROBLEM=""
+if [ -z "$CTIER" ]; then
+  TIER_PROBLEM="the candidate records no review tier ($CMETA)"
+elif [ -n "$BTIER" ] && [ "$BTIER" != "$CTIER" ]; then
+  # The upstream baseline is not a Reviso run and records no tier — only a
+  # comparison whose OTHER side is itself a Reviso run can mismatch here.
+  TIER_PROBLEM="review tiers differ (comparison side '$BTIER' vs candidate '$CTIER')"
+fi
+if [ -n "$TIER_PROBLEM" ]; then
+  if [ "${JUDGE_ALLOW_TIER_MISMATCH:-}" = "1" ]; then
+    NON_COMPARABLE=true
+    echo "judge.sh: WARNING — $TIER_PROBLEM; report labeled non_comparable" >&2
+  else
+    echo "judge.sh: refusing comparison — $TIER_PROBLEM. Re-run both sides on the same Reviso tier, or set JUDGE_ALLOW_TIER_MISMATCH=1 to label the result non-comparable." >&2
+    exit 1
+  fi
+fi
+
 # Tier the baseline findings (D3). Out-of-lane (cleanup-family) categories are
 # informational; everything else — including unknown slugs — is correctness
 # tier, because ambiguity must fail toward P0 scope, never hide a miss.
@@ -73,11 +103,13 @@ jq -n \
   --slurpfile b "$OUT/baseline-tiered.json" \
   --slurpfile c "$CANDIDATE" \
   --slurpfile m "$OUT/match-bc.json" \
-  --argjson nc "$NON_COMPARABLE" '
+  --argjson nc "$NON_COMPARABLE" \
+  --arg ct "$CTIER" '
   ($b[0]) as $b | ($c[0]) as $c | ($m[0]) as $m |
   ($m | map(.a_idx)) as $bm | ($m | map(.b_idx)) as $cm |
   ($b | to_entries | map(select(.value.tier == "correctness"))) as $bcorr |
   {
+    candidate_review_tier: (if $ct == "" then null else $ct end),
     non_comparable: $nc,
     matched: [ $m[] | {baseline: $b[.a_idx], candidate: $c[.b_idx]} ],
     missed_P0_regressions: [ $b | to_entries[]
@@ -113,7 +145,7 @@ if [ -f "$BC" ] && [ -f "$CC" ]; then
     "$OUT/judge.json" > "$OUT/judge.tmp" && mv "$OUT/judge.tmp" "$OUT/judge.json"
 fi
 
-jq -r '"parity (correctness tier): \(.metrics.parity_pct // "n/a (no correctness-tier baseline)")%  matched: \(.metrics.matched_correctness_count)/\(.metrics.baseline_correctness_count) correctness (+\(.metrics.matched_count - .metrics.matched_correctness_count) cleanup)  misses(P0): \(.missed_P0_regressions | length)  cleanup misses (informational): \(.missed_informational_cleanup | length)  claimed wins (unverified): \(.claimed_wins_unverified | length)  cost: \(.metrics.cost_ratio // "n/a")x baseline (target <=1.5x)\(if .non_comparable then "  [NON-COMPARABLE: CLI version mismatch]" else "" end)"' "$OUT/judge.json" >&2
+jq -r '"parity (correctness tier): \(.metrics.parity_pct // "n/a (no correctness-tier baseline)")%  matched: \(.metrics.matched_correctness_count)/\(.metrics.baseline_correctness_count) correctness (+\(.metrics.matched_count - .metrics.matched_correctness_count) cleanup)  misses(P0): \(.missed_P0_regressions | length)  cleanup misses (informational): \(.missed_informational_cleanup | length)  claimed wins (unverified): \(.claimed_wins_unverified | length)  cost: \(.metrics.cost_ratio // "n/a")x baseline (target <=1.5x)\(if .non_comparable then "  [NON-COMPARABLE — see the warning above]" else "" end)"' "$OUT/judge.json" >&2
 if jq -e '.missed_P0_regressions | length > 0' "$OUT/judge.json" >/dev/null; then
   echo "MISSES (each is a P0 regression):" >&2
   jq -r '.missed_P0_regressions[] | "  - \(.title) (\(.file // "?"):\(.line // 0))"' "$OUT/judge.json" >&2

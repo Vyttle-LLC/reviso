@@ -17,10 +17,18 @@ established, and patterns this codebase already abandoned for a stated
 reason. The commit messages of the current branch state intent — an
 apparent regression the branch explicitly intends is not a finding.
 
+**You may only see the change's own past.** A commit that is not an
+ancestor of the change's head — a sibling branch, a later commit on this
+one, anything `git log --all` reaches that the change cannot — is
+inadmissible evidence, and a candidate resting solely on such a commit is
+not returned. The full rule and how to check reachability:
+`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`.
+
 Before returning anything, read and obey:
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`
 
 Set `dimension` to `history`. Cite the historical commits in `evidence`
 (short SHA + subject). Every candidate needs a concrete failure scenario and

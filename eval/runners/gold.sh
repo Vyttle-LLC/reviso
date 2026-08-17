@@ -10,7 +10,8 @@
 # files are full-content "added" patches) as uncommitted changes on an
 # empty base commit, then review that.
 #
-# Env: CORPUS_FILE (default eval/corpus/public.jsonl; set it to
+# Env: REVISO_TIER (required: review|audit — which product is under test),
+# CORPUS_FILE (default eval/corpus/public.jsonl; set it to
 # "$REVISO_EVAL_PRIVATE_CORPUS" to run a private-tier case — send those runs
 # to eval/runs/private/, which is gitignored), plus everything
 # candidate.sh honors.
@@ -18,6 +19,10 @@ set -eu
 CASE="${1:?usage: gold.sh <case-id> <outdir>}"
 OUT="${2:?usage: gold.sh <case-id> <outdir>}"
 HERE=$(cd "$(dirname "$0")" && pwd)
+# Resolved here, not just in candidate.sh, so an unnamed tier fails before
+# the clone and the checkout rather than after them.
+. "$HERE/review-tier.sh"
+resolve_review_tier
 CORPUS_DIR=$(cd "$HERE/../corpus" && pwd)
 CORPUS_FILE="${CORPUS_FILE:-$CORPUS_DIR/public.jsonl}"
 [ -f "$CORPUS_FILE" ] || { echo "gold.sh: corpus file not found: $CORPUS_FILE" >&2; exit 1; }
@@ -83,14 +88,16 @@ else
   git -C "$CDIR" worktree add -q --detach "$RWD" "$HEAD_SHA"
 fi
 
-sh "$HERE/candidate.sh" "$RWD" "$BASE" "$HEAD_SHA" "$OUT"
+# Tier named explicitly at the call site — never left to whatever the
+# environment happened to carry in.
+REVISO_TIER="$REVIEW_TIER" sh "$HERE/candidate.sh" "$RWD" "$BASE" "$HEAD_SHA" "$OUT"
 
 # Judge against the labels (tiering + metrics live in gold-judge.sh so a
 # recorded run can be re-judged when calibration moves).
 sh "$HERE/gold-judge.sh" "$LABELS" "$OUT/candidate.json" "$OUT"
 
-jq -r 'if .expected_clean then
-    "gold(clean): \(.clean_case_fp_count) false positive(s)"
+jq -r --arg t "$REVIEW_TIER" 'if .expected_clean then
+    "gold[\($t)](clean): \(.clean_case_fp_count) false positive(s)"
   else
-    "gold recall (correctness): \(.metrics.gold_recall_correctness // "n/a")%  (\(.metrics.matched_correctness_count)/\(.metrics.gold_correctness_count))  precision proxy: \(.metrics.precision_proxy_pct // "n/a")%  promotion candidates: \(.promotion_candidates | length)"
+    "gold[\($t)] recall (correctness): \(.metrics.gold_recall_correctness // "n/a")%  (\(.metrics.matched_correctness_count)/\(.metrics.gold_correctness_count))  precision proxy: \(.metrics.precision_proxy_pct // "n/a")%  promotion candidates: \(.promotion_candidates | length)"
   end' "$OUT/gold-judge.json" >&2
