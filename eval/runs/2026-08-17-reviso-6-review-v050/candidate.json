@@ -1,0 +1,74 @@
+[
+  {
+    "file": "agents/reviso-finder-history.md",
+    "line": 4,
+    "title": "Finder/verifier subagents grant unrestricted Bash, breaking structural report-only guarantee",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "tools: Read, Grep, Glob, Bash grants full Bash tool; read-only restriction is prose-only. Prompt-injected diff can make finder run write commands. Fix: scope to Bash(git blame:*), Bash(git log:*), Bash(git show:*), Bash(git diff:*) for history/verifier, plus Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*) for prior-reviews. Same defect at agents/reviso-finder-prior-reviews.md:4 and agents/reviso-verifier.md:4."
+  },
+  {
+    "file": "agents/reviso-finder-prior-reviews.md",
+    "line": 4,
+    "title": "Finder/verifier subagents grant unrestricted Bash, breaking structural report-only guarantee",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "tools: Read, Grep, Glob, Bash grants full Bash tool; read-only restriction is prose-only. See agents/reviso-finder-history.md:4 for fix."
+  },
+  {
+    "file": "agents/reviso-verifier.md",
+    "line": 4,
+    "title": "Finder/verifier subagents grant unrestricted Bash, breaking structural report-only guarantee",
+    "severity": "P1",
+    "category": "conventions",
+    "description": "tools: Read, Grep, Glob, Bash grants full Bash tool; read-only restriction is prose-only. See agents/reviso-finder-history.md:4 for fix."
+  },
+  {
+    "file": "eval/runners/baseline.sh",
+    "line": 47,
+    "title": "Empty /review baseline passes parity gate silently",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Vendored recipe aborts before reviewing closed PRs, yielding zero findings; extract.sh returns [] without triggering cross-check; judge.sh reports zero P0 regressions comparing nothing, violating design.md promise that baseline is never silently reduced. Fix: exit non-zero in baseline.sh if any run yields zero findings; replace null parity branch with non-zero exit when baseline_count == 0 in judge.sh:29."
+  },
+  {
+    "file": "skills/reviso/detectors/detect.awk",
+    "line": 35,
+    "title": "testfocus fires on prose; markdown exclusion not applied",
+    "severity": "P1",
+    "category": "bugs; comments",
+    "description": "is_md computed at line 9 but only consulted by conflict branch. test/README.md satisfies is_test and matches testfocus regex, emitting confidence-100 false positive bypassing Stage 4, violating FP-free guarantee. Also: conflict suppression is markdown-only, so .rst/.adoc/.txt docs still emit P0, contradicting DISCOVERY.md:11. Fix: guard line 35 with if (is_test && !is_md); widen conflict suppression from is_md to is_doc covering md|markdown|mdx|rst|adoc|txt."
+  },
+  {
+    "file": "commands/review.md",
+    "line": 124,
+    "title": "Report's Checked: line is hardcoded, claims stages that never ran",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Stage 6 template prints 'Checked: conventions, bugs, history, prior reviews, comments, slop, deterministic.' unconditionally. If user declines detector permissions or run is headless, detectors never execute but report asserts they did. Committed merge-conflict goes unreported under report claiming deterministic coverage. Fix: record per-stage outcome as each completes; name only stages that ran; list skipped stages with reason."
+  },
+  {
+    "file": "CLAUDE.md",
+    "line": 42,
+    "title": "CLAUDE.md still says plugin isn't in repo",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Scope section reads 'The plugin itself... is not here yet' but this change adds .claude-plugin/, commands/, skills/, agents/, eval/. CLAUDE.md is first file agents read, instructing every contributor-agent that reviewed surface doesn't exist. Fix: rewrite Scope to describe what shipped (commands/review.md orchestrator, agents/ finders/verifier, skills/reviso/ harness/detectors, eval/ parity harness); point remaining TODO(plugin) at docs/ci.md:4."
+  },
+  {
+    "file": "openspec/changes/add-reviso-review/tasks.md",
+    "line": 63,
+    "title": "Task 5.4 checked off but judge omits verified wins and dismissal rate",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Task requires 'metrics report with per-miss P0 listing, parity %, verified wins, dismissal rate' (specs/parity-eval/spec.md:58, design.md D8). judge.sh:25 emits only baseline_count, candidate_count, matched_count, parity_pct; missing verified-wins bucket and dismissal rate, so <10% target has no producer. Fix: add verified-wins and dismissal-rate fields to judge.sh metrics object, or unstick 5.4 and split missing metrics into own task."
+  },
+  {
+    "file": "openspec/changes/add-reviso-review/tasks.md",
+    "line": 3,
+    "title": "Branch bundles whole task stack into one PR, violating one-concern rule",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "CLAUDE.md:26 and CONTRIBUTING.md state 'One concern per PR'; tasks.md:3 says groups map to intended PR stack. Branch delivers groups 1-6 (plugin, assembly, pipeline, detectors, eval, docs) as 44 files in one change. Squash-merged, lands five concerns as one commit; reverting detector suite reverts plugin, eval, docs with it. Fix: split along group boundaries, restacking with git rebase --onto as each lands."
+  }
+]

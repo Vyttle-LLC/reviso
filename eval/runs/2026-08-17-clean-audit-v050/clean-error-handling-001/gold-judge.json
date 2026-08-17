@@ -1,0 +1,15 @@
+{
+  "mode": "gold",
+  "expected_clean": true,
+  "clean_case_fp_count": 1,
+  "false_positives": [
+    {
+      "file": "src/services/file-upload.ts",
+      "line": 49,
+      "title": "stat() failure after a successful write deletes the uploaded file",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "writeFile and stat are in the same try block; if stat throws after a successful write, the catch unconditionally deletes the file. The cleanup comment shows it was designed for write failures only. Fix: scope the delete-on-failure try to writeFile alone and move stat after, or drop stat and use fileBuffer.length instead."
+    }
+  ]
+}

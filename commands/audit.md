@@ -6,8 +6,9 @@ allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bas
 ---
 
 Audit the current branch's changes as if they were a pull request, using the
-full multi-agent pipeline: blind dimension finders in parallel, then a
-per-finding verification gate. This is the deep pass — run it before opening
+full multi-agent pipeline: blind dimension finders in parallel, per-candidate
+evidence gathering, then a single confidence gate you apply yourself with
+the whole change in view. This is the deep pass — run it before opening
 a PR, after `/reviso:review` has handled the inner-loop iterations. Expect
 several minutes and meaningfully more usage than `/reviso:review`.
 
@@ -90,7 +91,8 @@ sh ${CLAUDE_PLUGIN_ROOT}/skills/reviso/detectors/run.sh <base-ref>
 (This script is read-only — it inspects git output and never writes. It is
 not pre-approved above, so the user may be prompted once; that is expected.)
 Collect its findings. They use the shared finding schema, are tagged
-`deterministic`, bypass Stage 4 verification, and report at confidence 100.
+`deterministic`, bypass Stage 4 evidence-gathering and the Stage 5 gate,
+and report at confidence 100.
 
 Record the `deterministic` ledger row now: `returned` with the finding
 count if the suite ran, `no result` if the permission prompt was declined
@@ -143,34 +145,72 @@ came back, errored, or returned prose instead of a findings array is `no
 result`. If you reach Stage 4 with fewer than six rows, the missing ones
 are `no result`, not silence you may read as clean.
 
-## Stage 4 — Verify (the trust gate)
+## Stage 4 — Gather evidence (no filtering here)
 
 For every LLM candidate (not deterministic findings), launch a parallel
-`reviso-verifier` agent (Sonnet). Give each: the candidate, the relevant
-diff hunks, and the conventions file paths. It re-examines the code,
-applies the rubric as written, and returns a score and a `drop_reason`
-(`exclusion-list`, `pre-existing`, `rubric-score`, or `none`).
-**Silently drop every finding scoring below 80.** Never mention a dropped
-finding in the report itself — the one place it may appear is the
-`--explain` section, and only when the user passed that flag. If nothing
-survives and Stage 1 found nothing, skip to the report.
+`reviso-evidence` agent (Sonnet). Give each: the candidate, the relevant
+diff hunks, and the conventions file paths. It re-examines the code and
+returns findings of fact — whether the cited lines are part of this
+change, what guards, callers, and tests bear on the claimed failure
+scenario, whether that scenario reproduces — plus a severity check and a
+one-sentence summary. It returns no score, no drop reason, and no
+verdict, and it filters nothing: every candidate comes back with its
+evidence attached. Judgment happens in Stage 5, and it is yours.
 
-Keep, for every candidate: its lens, its `file:line`, its score, and its
-disposition — reported, or dropped with the reason. That record is what
-`--explain` prints; without the flag it stays yours. A verifier return
-that omits `drop_reason` counts as `rubric-score` below 80 and `none` at
-or above — degrade, don't stall.
+## Stage 5 — Judge (the gate, yours alone), then reconcile
 
-## Stage 5 — Reconcile
+Every filtering decision in the pipeline happens here, once, by you — the
+only stage holding every candidate from every lens and the whole change.
 
-Dedupe: findings sharing an underlying root cause merge into one, keeping the
-strongest evidence and the highest severity. Consolidate: related minor
-findings in the same area become one comment, not several. Prefer silence
-over a maybe — an uncertain finding does not ship.
+Read once:
+
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/confidence-rubric.md`
+
+For every LLM candidate, with its Stage 4 evidence in hand:
+
+1. Exclusion list first — a match scores 0–25.
+2. On lines the change modified? Pre-existing → 0.
+3. Weigh the evidence: does the failure scenario survive the guards,
+   callers, and tests Stage 4 found?
+4. Score 0–100 using the rubric exactly as written — no stricter, no
+   looser. The rubric's comparative bands ("relative to the rest of the
+   change") are judged here and nowhere else, because only you can see
+   the rest of the change: weigh the candidate against every other
+   candidate before settling its score.
+5. **Silently drop everything below 80.** Never mention a dropped
+   candidate in the report itself — the one place it may appear is the
+   `--explain` section, and only when the user passed that flag.
+
+Duplication candidates additionally ship only above the calibrated bar,
+judged from the occurrence count the slop finder reported: four or more
+occurrences ship; exactly three only when the duplicated unit encodes a
+rule that can change; two or fewer never ship.
+
+Keep, for every candidate: its lens, its `file:line`, the score you
+assigned, and its disposition — reported, or dropped with the reason. The
+reason is whichever step above gated it: `exclusion-list` (step 1),
+`pre-existing` (step 2), or `rubric-score` (survived both, still under
+80); `none` marks a candidate that cleared. That record is what
+`--explain` prints; without the flag it stays yours.
+
+If nothing survives and Stage 1 found nothing, skip to the report.
+
+Then reconcile what survived. Dedupe: findings sharing an underlying root
+cause merge into one, keeping the strongest evidence and the highest
+severity. Consolidate: related minor findings in the same area become one
+comment, not several. Prefer silence over a maybe — an uncertain finding
+does not ship.
 
 ## Stage 6 — Report
 
-Order findings most-severe-first (P0 > P1 > P2; ties by confidence). Format:
+Order findings most-severe-first (P0 > P1 > P2; ties by confidence).
+
+Reporting policy — this command's own, since the shared schema carries
+format only: no finding ranking below P2 ships. There is no P3; a nit
+below the bar is dropped, not reported.
+
+Format:
 
 ```text
 ## Reviso audit — <branch> vs <base> (<n> commits, <m> files)
@@ -224,7 +264,7 @@ Candidates before the gate (6):
 ```
 
 The ledger with counts, then every candidate you kept a record of in Stage
-4 — one line each, with its score and disposition. Rules: it goes after
+5 — one line each, with the score you assigned and its disposition. Rules: it goes after
 the findings, never among them; every line in it is a diagnostic, never a
 finding; and the findings section above it is identical whether or not the
 flag was passed. Without `--explain`, none of this appears — no dropped

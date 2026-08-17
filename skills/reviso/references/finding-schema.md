@@ -20,8 +20,12 @@ array if nothing found), and nothing else.
 
 Rules:
 
-- `line` anchors to a line the change touched. Findings on untouched lines
-  are false positives by definition (see the exclusion list).
+- This file defines the wire format every stage speaks, and nothing else.
+  Reporting policy — which findings ship, severity floors, consolidation,
+  any limit on how many findings a report carries — belongs to the command
+  that produces the report, so a stage that merely serializes a candidate
+  cannot thereby suppress it.
+- `line` anchors to a line the change touched.
 - `failure_scenario` is mandatory and concrete, but its shape depends on
   the dimension. For correctness/security: inputs/state → wrong outcome.
   For conventions, docs, and slop: the concrete consequence — who is
@@ -32,9 +36,8 @@ Rules:
   never applies it.
 - Severity: **P0** breaks correctness/security in practice; **P1** a real
   defect or contract violation likely to be hit; **P2** consequential but
-  contained. There is no P3 — a nit that would rank below P2 is not returned.
-- `confidence` is set by the verifier (Stage 4); finders leave it at 0.
-  Deterministic detectors set it to 100.
+  contained.
+- `confidence` is set by the orchestrator when it scores the candidate;
+  finders leave it at 0. Deterministic detectors set it to 100.
 - Brevity is part of the contract: `evidence` ≤ 2 sentences,
-  `failure_scenario` ≤ 2 sentences. A finder returns at most 8 candidates,
-  most severe first — if you have more, the ninth wasn't worth reporting.
+  `failure_scenario` ≤ 2 sentences.

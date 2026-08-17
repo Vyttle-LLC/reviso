@@ -1,8 +1,9 @@
 # Confidence rubric (0–100)
 
 Forked from the official `code-review` plugin (Apache-2.0; dated snapshot in
-`eval/reference/`). Give this rubric to the verifier verbatim. Score each
-issue on a scale from 0–100, indicating your level of confidence:
+`eval/reference/`). This rubric is the orchestrator's input — the one
+stage that judges — and is not required reading for any subagent. Score
+each issue on a scale from 0–100, indicating your level of confidence:
 
 - **0**: Not confident at all. This is a false positive that doesn't stand up
   to light scrutiny, or is a pre-existing issue.

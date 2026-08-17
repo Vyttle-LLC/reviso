@@ -1,0 +1,68 @@
+## Reviso review — HEAD (detached) vs cb3f63a (6 commits, 44 files)
+
+Found 7 issues:
+
+1. **[P1][conf 90] Finder/verifier subagents grant unrestricted `Bash`, breaking the structural report-only guarantee** — agents/reviso-finder-history.md:4
+   Failure: `tools: Read, Grep, Glob, Bash` grants the full Bash tool; the read-only restriction exists only as prose in the body ("use Bash exclusively for read-only git commands"). design.md D3 claims "report-only enforced structurally, not by convention — a write attempt is then a tool-permission failure, not a reviewable behavior", and specs/review-command/spec.md:29 says every subagent "SHALL be restricted to read-only tools" and "MUST NOT include Bash patterns that permit writes". In a session with broad Bash approval or `--dangerously-skip-permissions` (the eval harness runs headless), a prompt-injected diff — SECURITY.md's first in-scope threat — can make the history finder run `rm` or `>`, which SECURITY.md calls "a vulnerability by definition". Same defect at agents/reviso-finder-prior-reviews.md:4 and agents/reviso-verifier.md:4.
+   Fix: scope each to what it needs, as commands/review.md:4 already does — `tools: Read, Grep, Glob, Bash(git blame:*), Bash(git log:*), Bash(git show:*), Bash(git diff:*)` for history/verifier, plus `Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*)` for prior-reviews.
+   (conventions)
+
+2. **[P1][conf 88] An empty `/review` baseline passes the parity gate silently** — eval/runners/baseline.sh:47
+   Failure: the vendored recipe aborts before reviewing when the PR "(a) is closed" (eval/reference/code-review-recipe-2026-08-03.md:11), and corpus entries are historical PRs with pinned base/head SHAs (eval/corpus/README.md:12). All three runs then produce no findings; extract.sh returns `[]` without tripping its cross-check, because the abort text contains no "found N issue" (extract.sh:27); `baseline.json` is `[]`; judge.sh prints `parity: n/a (empty baseline)% matched: 0/0 misses(P0): 0` and exits 0. The gate reports zero P0 regressions having compared nothing — exactly what eval/README.md:26 ("the baseline is never silently reduced") and design.md's risk mitigation promise it can't do.
+   Fix: fail loudly on a degenerate baseline — in baseline.sh, exit non-zero if any of the three runs yields zero findings (and grep the raw text for the eligibility-abort case), and in judge.sh:29 replace the `null` parity branch with a non-zero exit when `baseline_count == 0`.
+   (bugs)
+
+3. **[P1][conf 85] `testfocus` fires on prose: markdown under a test path is not excluded** — skills/reviso/detectors/detect.awk:35
+   Failure: `is_md` is computed at line 9 but only consulted by the conflict branch. `test/README.md` documenting "use `` `it.only(` `` to focus a single spec" satisfies `is_test` (line 10 matches the leading `test/` component) and the line matches the regex at line 36 (the backtick before `it` satisfies `[^A-Za-z0-9_.]`), so run.sh emits a P1 "Focused test committed" at confidence 100 which, per specs/deterministic-detectors/spec.md:38, bypasses Stage 4 entirely. That is a confidence-100 false positive in a detector whose own header comment (detect.awk:3) and shipping bar (DISCOVERY.md:3, D5) are "FP-free by construction". Related gap in the conflict branch: the doc suppression is markdown-only, so an `.rst`/`.adoc`/`.txt` page teaching conflict resolution still emits P0, contradicting DISCOVERY.md:11's claim that "docs teaching conflict resolution are excluded".
+   Fix: guard the block — `if (is_test && !is_md)` at line 35 — and widen the conflict suppression from `is_md` to a `is_doc` covering `md|markdown|mdx|rst|adoc|txt`, updating both DISCOVERY.md tables.
+   (bugs; comments)
+
+4. **[P1][conf 85] The report's `Checked:` line is hardcoded, so it claims stages that never ran** — commands/review.md:124
+   Failure: Stage 6's template prints `Checked: conventions, bugs, history, prior reviews, comments, slop, deterministic.` unconditionally. Stage 1 itself notes the detector script is not in `allowed-tools` and "the user may be prompted"; if the user declines — or the run is headless, as eval/runners/candidate.sh:18 does, where no rule covers `sh …/run.sh` — the detectors never execute, yet the report still asserts they did. A committed merge-conflict marker then goes unreported under a report claiming deterministic coverage, which makes a clean report indistinguishable from a broken run.
+   Fix: derive the line from what actually resolved — record per-stage outcome (ran / no result / skipped, with reason) as each stage completes, name only the stages that ran under `Checked:`, and list the rest with their reason.
+   (bugs)
+
+5. **[P2][conf 88] CLAUDE.md still says the plugin isn't in the repo** — CLAUDE.md:42
+   Failure: the Scope section reads "The plugin itself — `.claude-plugin/`, `commands/`, `skills/`, `agents/`, and the `eval/` corpus — is not here yet. Grep for `TODO(plugin)` to see what's waiting on it." This change adds all five, and commit e76eda9 resolved the `TODO(plugin)` markers in README, CONTRIBUTING and docs/evals.md while leaving CLAUDE.md untouched — only docs/ci.md:4 still carries one. CLAUDE.md is the first file an agent reads in this repo, so it now instructs every future contributor-agent that the surface under review doesn't exist.
+   Fix: rewrite Scope to describe what shipped (`commands/review.md` orchestrator, `agents/` finders and verifier, `skills/reviso/` shared harness plus detectors, `eval/` parity harness) and point the remaining `TODO(plugin)` at docs/ci.md specifically.
+   (conventions)
+
+6. **[P2][conf 85] Task 5.4 is checked off, but the judge emits neither verified wins nor dismissal rate** — openspec/changes/add-reviso-review/tasks.md:63
+   Failure: the task text requires "metrics report with per-miss P0 listing, parity %, verified wins, dismissal rate", and specs/parity-eval/spec.md:58 plus design.md D8 both list the same four. judge.sh:25 emits only `baseline_count`, `candidate_count`, `matched_count` and `parity_pct` — no verified-wins bucket (claimed wins stay unverified with no field to promote them into) and no dismissal rate, so the `<10%` target in design.md's risk table has no producer. The box being ticked means the gap won't resurface in the task sweep.
+   Fix: either add the two fields to judge.sh's `metrics` object (dismissal rate needs an input source — declare it or defer it) or unstick 5.4 and split the missing metrics into their own task.
+   (conventions)
+
+7. **[P2][conf 82] The branch bundles the whole task stack into one PR** — openspec/changes/add-reviso-review/tasks.md:3
+   Failure: CLAUDE.md:26 and CONTRIBUTING.md both state "One concern per PR", and tasks.md:3 says its own groups "map to the intended PR stack (one concern per PR, repo rule)". The branch delivers groups 1–6 — plugin skeleton, assembly, pipeline, detectors, eval harness, docs — as 44 files in one change. Squash-merged, that lands five concerns as one commit, so reverting the detector suite means reverting the plugin, the eval harness and the docs with it.
+   Fix: split along the group boundaries the task list already draws — plugin + command + agents + skill, then detectors, then eval harness, then docs — restacking with `git rebase --onto` per CLAUDE.md:29 as each lands.
+   (conventions)
+
+Checked: bugs, conventions, history, comments, slop, deterministic.
+Skipped: eval/reference/code-review-recipe-2026-08-03.md, eval/reference/code-review-recipe-LICENSE (vendored verbatim; eval/reference/README.md:16 forbids editing them).
+
+```text
+--- explain: pipeline diagnostics (not review findings) ---
+Lenses: bugs 6, conventions 5, history 0, comments 1, slop 2,
+deterministic 0.
+Candidates before the gate (14):
+  [conventions] agents/reviso-finder-history.md:4          score 90  reported
+  [bugs]        eval/runners/baseline.sh:47                 score 88  reported
+  [conventions] CLAUDE.md:42                                score 88  reported
+  [comments]    skills/reviso/detectors/detect.awk:3        score 88  reported (merged into #3)
+  [bugs]        skills/reviso/detectors/detect.awk:35       score 85  reported
+  [bugs]        commands/review.md:124                      score 85  reported
+  [conventions] openspec/.../tasks.md:63                    score 85  reported
+  [conventions] openspec/.../tasks.md:3                     score 82  reported
+  [bugs]        eval/runners/match.sh:30                    score 75  dropped: rubric-score
+  [conventions] openspec/.../deterministic-detectors/spec.md:46  score 75  dropped: rubric-score
+  [bugs]        agents/reviso-finder-bugs.md:21             score 70  dropped: rubric-score
+  [bugs]        skills/reviso/detectors/detect.awk:6        score 60  dropped: rubric-score
+  [slop]        eval/runners/candidate.sh:7                 score 40  dropped: exclusion-list
+  [slop]        agents/reviso-finder-bugs.md:19             score 25  dropped: exclusion-list
+```
+
+Notes on the dropped ones, since you asked for diagnostics: `match.sh:30` validates only that match elements have `a_idx`/`b_idx` keys, not that indices are in range or unique, so a lenient matcher can push `parity_pct` above 100 — real but metric-only. `deterministic-detectors/spec.md:46` uses "a diff-introduced unused import" as its acceptance scenario for a detector DISCOVERY.md:19 explicitly rejected; design.md D5 hedges that final scope is a discovery task, which kept it under the bar. `agents/reviso-finder-bugs.md:21` is `${CLAUDE_PLUGIN_ROOT}` in agent bodies — the four Read/Grep/Glob-only finders have no way to expand a shell variable, but I could not verify from the repo whether Claude Code substitutes it in agent definitions. The two slop candidates (repeated `read and obey` preamble across six agents, repeated `${1:?usage: …}` strings) are single-sourced by design per SKILL.md:22 and a uniform POSIX idiom respectively — deliberate style, not slop. The duplication sub-lens found nothing clearing the 3-or-4-occurrence bar.
+
+Also: `--explain` was honored; no unknown flags were passed.
+
+Wrong about something? Say which finding — I can file feedback (metadata-only by default).

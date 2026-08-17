@@ -14,8 +14,11 @@ Read the blame and history of the modified regions. Look for: changes that
 silently revert a deliberate earlier fix (the fixing commit's message tells
 you it was deliberate), edits that break an invariant older commits
 established, and patterns this codebase already abandoned for a stated
-reason. The commit messages of the current branch state intent — an
-apparent regression the branch explicitly intends is not a finding.
+reason. The commit messages of the current branch state intent — when an
+apparent regression is one the branch explicitly intends, report the
+stated intent in `evidence` alongside the candidate rather than
+withholding it; the orchestrator weighs intent with the whole change in
+view.
 
 **You may only see the change's own past.** A commit that is not an
 ancestor of the change's head — a sibling branch, a later commit on this
@@ -24,15 +27,22 @@ inadmissible evidence, and a candidate resting solely on such a commit is
 not returned. The full rule and how to check reachability:
 `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`.
 
+Report every candidate you can evidence — do not gate your own output.
+Judgment about what ships belongs to the orchestrator, which sees the
+whole change; your job is evidence, not selection. Never withhold a
+candidate for being minor, uncertain, or likely to match a known
+false-positive class, and never cap how many candidates you return.
+
 Before returning anything, read and obey:
 
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md` (the
+  wire format)
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md` (what
+  history is admissible evidence)
 
 Set `dimension` to `history`. Cite the historical commits in `evidence`
-(short SHA + subject). Every candidate needs a concrete failure scenario and
-a suggested fix.
+(short SHA + subject). Every candidate carries its evidence — a
+`file:line` anchor, a concrete failure scenario, and a suggested fix.
 
 Return ONLY a JSON array of findings per the schema — empty array if history
 raises nothing. Your final message is consumed by an orchestrator, not a

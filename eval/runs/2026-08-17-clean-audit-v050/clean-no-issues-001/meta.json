@@ -1,0 +1,12 @@
+{
+  "cli_version": "2.1.233",
+  "tier": "audit",
+  "command": "/reviso:audit --base da078eed1656745d8c659897fc651800d2188efd",
+  "base_sha": "da078eed1656745d8c659897fc651800d2188efd",
+  "head_sha": "da078eed1656745d8c659897fc651800d2188efd",
+  "models": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5",
+    "claude-sonnet-5"
+  ]
+}

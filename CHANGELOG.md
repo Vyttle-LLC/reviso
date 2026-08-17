@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] — 2026-08-17
+
+### Changed
+
+- **Judgment moved to the orchestrator.** The audit pipeline filtered at
+  every layer — six finders each applying the false-positive exclusion
+  list, a candidate cap and severity floor enforced at serialization, and
+  an isolated per-candidate verifier holding veto power — all before the
+  orchestrator saw anything. Every filtering decision now happens once, in
+  the orchestrator, the only stage that holds every candidate and the
+  whole change. Finders report everything they can evidence: the
+  suppression clauses, the 8-candidate cap, the no-P3 rule, and the
+  exclusion-list obedience are gone from all six finder prompts.
+- **Stage 4 returns evidence, not verdicts.** The verifier agent is now
+  `reviso-evidence`: it still reads full context, walks blame, and
+  attempts the failure scenario, but returns findings of fact — whether
+  the cited lines are in the change, what guards/callers/tests bear on the
+  scenario, whether it reproduces — with no score, no drop reason, and no
+  veto. The orchestrator applies the exclusion list and the 0–100 rubric
+  once, with cross-candidate context; the 80 threshold and the default
+  silence about drops are unchanged, and `--explain` now reports the
+  orchestrator's scores.
+- **The shared finding schema carries format only.** Reporting policy —
+  the severity floor, consolidation, any count limit — moved to the
+  commands that produce reports; `/reviso:review` restates the policy it
+  used to inherit, so the single-pass tier behaves exactly as before.
+- The confidence rubric and false-positive exclusion list are inputs to
+  the orchestrator alone — no subagent is asked to read them, so no
+  candidate can be gated against a reference an agent failed to load (two
+  of thirteen verifiers in the 2026-08-13 run scored without their rubric
+  for exactly that reason).
+
 ## [0.4.0] — 2026-08-13
 
 ### Added
