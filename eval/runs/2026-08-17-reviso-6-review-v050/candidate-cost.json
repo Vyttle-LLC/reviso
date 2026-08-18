@@ -1,0 +1,9 @@
+{
+  "cost": 2.492339999999999,
+  "duration_ms": 528359,
+  "duration_api_ms": 526117,
+  "num_turns": 27,
+  "models": [
+    "claude-opus-5"
+  ]
+}

@@ -25,16 +25,21 @@ Two scopes beyond the changed lines are also yours:
   the old form. A doc telling users something that no longer works is a
   conventions violation with a concrete consequence.
 
-Before returning anything, read and obey:
+Report every candidate you can evidence — do not gate your own output.
+Judgment about what ships belongs to the orchestrator, which sees the
+whole change; your job is evidence, not selection. Never withhold a
+candidate for being minor, uncertain, or likely to match a known
+false-positive class, and never cap how many candidates you return.
+
+Before returning anything, read the wire format:
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
-Only flag a conventions violation when the conventions file actually calls
-out that specific thing — quote it in `evidence`. Set `dimension` to
-`conventions`. Every candidate needs a concrete failure scenario (for
-conventions, that is the concrete divergence and its consequence) and a
-suggested fix.
+A conventions candidate rests on what the conventions file actually says —
+quote the specific passage in `evidence`. Set `dimension` to
+`conventions`. Every candidate carries its evidence — a `file:line`
+anchor, a concrete failure scenario (for conventions, that is the concrete
+divergence and its consequence), and a suggested fix.
 
 Return ONLY a JSON array of findings per the schema — empty array if the
 change is compliant. Your final message is consumed by an orchestrator, not

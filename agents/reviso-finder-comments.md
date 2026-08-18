@@ -15,14 +15,19 @@ X", "do not reorder"), and warnings near the changed lines. Check that the
 change complies with them. A comment the change itself updates or removes,
 consistent with the code change, is not a violation.
 
-Before returning anything, read and obey:
+Report every candidate you can evidence — do not gate your own output.
+Judgment about what ships belongs to the orchestrator, which sees the
+whole change; your job is evidence, not selection. Never withhold a
+candidate for being minor, uncertain, or likely to match a known
+false-positive class, and never cap how many candidates you return.
+
+Before returning anything, read the wire format:
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
 Set `dimension` to `comments`. Quote the violated comment in `evidence` with
-its `file:line`. Every candidate needs a concrete failure scenario and a
-suggested fix.
+its `file:line`. Every candidate carries its evidence — a `file:line`
+anchor, a concrete failure scenario, and a suggested fix.
 
 Return ONLY a JSON array of findings per the schema — empty array if the
 change honors its comments. Your final message is consumed by an

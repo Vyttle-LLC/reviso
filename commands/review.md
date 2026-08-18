@@ -179,7 +179,15 @@ above gated it: `exclusion-list` (step 1), `pre-existing` (step 2), or
 Dedupe candidates sharing a root cause (one finding, strongest evidence,
 highest severity; list additional anchors inside that one finding).
 Consolidate related minor findings. Order most-severe-first
-(P0 > P1 > P2; ties by confidence). Format:
+(P0 > P1 > P2; ties by confidence).
+
+Reporting policy — this command's own, since the shared schema carries
+format only: no finding ranking below P2 ships. There is no P3; a nit
+below the bar is dropped, not reported. At most 8 findings ship, most
+severe first — if more survived the gate, the ninth wasn't worth
+reporting.
+
+Format:
 
 ```text
 ## Reviso review — <branch> vs <base> (<n> commits, <m> files)

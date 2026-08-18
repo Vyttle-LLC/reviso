@@ -2,8 +2,9 @@
 
 Forked from the official `code-review` plugin (Apache-2.0; dated snapshot in
 `eval/reference/`), adapted from PR review to local pre-PR review. These are
-never findings, no matter how plausible they look. Finders should not return
-them; verifiers score them 0–25.
+never findings, no matter how plausible they look. This list is the
+orchestrator's input — the one stage that judges — and is not required
+reading for any subagent; the orchestrator scores a match 0–25 at the gate.
 
 - Pre-existing issues — anything already true before this change.
 - Something that looks like a bug but is not actually a bug.

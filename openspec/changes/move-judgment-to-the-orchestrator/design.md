@@ -144,11 +144,16 @@ format changes, so recorded runs stay readable either way.
 - Does the verifier stage stay a per-candidate fan-out, or become
   per-file — several candidates in one file share the reading work, and
   thirteen agents to read four files is waste.
-- What is the right disposition of `7c9c073` ("Sharpen the precision bar")?
-  Its actionability precondition — would this change's author fix it if
-  they knew? — is a sound question badly placed: as a finder-level and
-  verifier-level drop it is another distributed veto, but as an
-  orchestrator-level scoring input it may be exactly right.
+- ~~What is the right disposition of `7c9c073` ("Sharpen the precision
+  bar")?~~ **Decided (2026-08-17): not landed here.** This change moves
+  *where* judgment happens; `7c9c073`'s content — the actionability
+  precondition and three exclusion entries — is rubric and exclusion-list
+  *content*, which `recalibrate-the-confidence-rubric` owns (its task 3.1
+  carries the review of `7c9c073` explicitly). The branch stays held for
+  that change to consume. Nothing needs re-landing as an orchestrator-level
+  input by hand: the rubric and exclusion list are now orchestrator-only
+  inputs, so anything adopted into them is orchestrator-level by
+  construction.
 - Should the orchestrator's per-candidate score remain a 0–100 number at
   all once it is judging comparatively, or become an ordering plus a
   cutoff? Deferred: the eval matcher's calibration currently assumes the

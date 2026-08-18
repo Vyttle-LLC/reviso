@@ -27,16 +27,23 @@ binds the `gh` lookups and the `git log` fallback alike. The full rule and
 how to check reachability:
 `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`.
 
+Report every candidate you can evidence — do not gate your own output.
+Judgment about what ships belongs to the orchestrator, which sees the
+whole change; your job is evidence, not selection. Never withhold a
+candidate for being minor, uncertain, or likely to match a known
+false-positive class, and never cap how many candidates you return.
+
 Before returning anything, read and obey:
 
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md`
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md` (the
+  wire format)
+- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/history-bound.md` (what
+  history is admissible evidence)
 
 Set `dimension` to `prior-reviews`. Quote the prior feedback (PR number or
-commit) in `evidence`. Only flag feedback that concretely applies to lines
-this change touched. Every candidate needs a failure scenario and a
-suggested fix.
+commit) in `evidence`. A candidate applies the prior feedback to lines
+this change touched. Every candidate carries its evidence — a `file:line`
+anchor, a concrete failure scenario, and a suggested fix.
 
 Return ONLY a JSON array of findings per the schema — empty array if nothing
 carries over. Your final message is consumed by an orchestrator, not a human.

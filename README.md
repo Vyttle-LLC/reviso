@@ -33,9 +33,10 @@ Reviso is the missing review. Two commands, both local, both report-only:
   way `/review` does, at comparable cost. Plus the slop lens. Run it as
   often as you commit.
 - **`/reviso:audit`** — the pre-PR gate: parallel blind finders per
-  dimension, then a per-finding verification gate. Slower and heavier, for
-  when the branch is about to become a PR. (Full adversarial multi-skeptic
-  depth lands in P1.)
+  dimension, per-candidate evidence gathering, then a single confidence
+  gate applied by the orchestrator with the whole change in view. Slower
+  and heavier, for when the branch is about to become a PR. (Full
+  adversarial multi-skeptic depth lands in P1.)
 
 The intended rhythm: code → `review` → fix → a few more commits →
 `audit` → open the PR.

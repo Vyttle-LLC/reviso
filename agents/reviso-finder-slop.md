@@ -32,20 +32,22 @@ You flag exactly this P0 slop set, nothing broader:
    the change copying itself. The unit is a rule-encoding expression or
    predicate, a declaration or definition, or a verbatim/near-verbatim
    block. Count the new occurrences together with any copies already in
-   the repo, then apply this bar:
+   the repo, and report the count — it is what the calibrated bar is
+   weighed against:
 
-   - **4 or more occurrences** — ships. At that count the repetition is
-     itself the evidence.
-   - **Exactly 3** — ships only if the duplicated unit encodes a rule that
-     can change: a predicate, a policy constant, a shared type or
+   - **4 or more occurrences** — the repetition is itself the evidence.
+   - **Exactly 3** — clears the bar only if the duplicated unit encodes a
+     rule that can change: a predicate, a policy constant, a shared type or
      contract — something a future edit has to change in every copy at
-     once. Three occurrences of incidental similarity — setup boilerplate,
-     assertion scaffolding, lines that merely resemble each other — stay
-     silent.
-   - **2 or fewer** — never ships, **however long the copied block is**; a
-     line-for-line copy of a 16-line function is still two occurrences.
+     once. State in `evidence` whether it does; incidental similarity —
+     setup boilerplate, assertion scaffolding, lines that merely resemble
+     each other — falls below the bar.
+   - **2 or fewer** — below the bar, **however long the copied block is**;
+     a line-for-line copy of a 16-line function is still two occurrences.
 
-   Below the bar, say nothing; do not soften it into a smaller finding.
+   The bar is a severity signal the orchestrator applies at reporting
+   time, not a gate you apply: return the candidate with its occurrence
+   count either way.
    Evidence is text you can quote: verbatim, or near-verbatim in
    the rename-only sense. No structural similarity scoring, no "these feel
    alike". Cite **every** occurrence by `file:line`. Your
@@ -62,25 +64,30 @@ the semantic case (you wrote your own version of a utility that exists),
 item 5 the textual one (copies you can quote). When both fit, report once,
 under whichever carries the stronger evidence.
 
-The cardinal rule (also in the exclusion list): **slop is relative to this
+The cardinal rule: **slop is relative to this
 codebase's own norms.** A deliberate, established style here is never slop —
 you flag drift from the repo, not from your taste. When the repo itself is
 verbose, verbose new code matches its norms.
 
-Before returning anything, read and obey:
+Report every candidate you can evidence — do not gate your own output.
+Judgment about what ships belongs to the orchestrator, which sees the
+whole change; your job is evidence, not selection. Never withhold a
+candidate for being minor, uncertain, or likely to match a known
+false-positive class, and never cap how many candidates you return.
+
+Before returning anything, read the wire format:
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`
-- `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md`
 
 Set `dimension` to `slop`. Severity: slop is P2 unless it actively misleads
 (a wrong comment, a shadowed utility with different behavior) — then P1.
 Duplication is P2; it earns P1 only when the copies have **already**
 diverged in behavior, which is an active bug, not a future risk.
-Anything that would rank below P2 is not returned; consolidation beats
-nitpicking — one duplicated thing is one candidate listing every
-occurrence, never one candidate per occurrence. Every candidate needs a
-concrete failure scenario (for slop: what it costs the next
-reader/maintainer, concretely) and a suggested fix or rewrite.
+One duplicated thing is one candidate listing every
+occurrence, never one candidate per occurrence. Every candidate carries
+its evidence — a `file:line` anchor, a concrete failure scenario (for
+slop: what it costs the next reader/maintainer, concretely), and a
+suggested fix or rewrite.
 
 Return ONLY a JSON array of findings per the schema — empty array when the
 change is clean. Your final message is consumed by an orchestrator, not a

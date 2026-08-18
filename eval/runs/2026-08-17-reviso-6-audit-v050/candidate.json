@@ -1,0 +1,42 @@
+[
+  {
+    "file": "skills/reviso/detectors/detect.awk",
+    "line": 37,
+    "title": "testfocus regex flags .fit( calls as focused test false positive",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Regex class [^A-Za-z0-9_] matches '.', causing .fit(X_train, y_train) sklearn calls to be flagged as focused tests. Fix: Add '.' to character class."
+  },
+  {
+    "file": "eval/runners/baseline.sh",
+    "line": 43,
+    "title": "Majority-vote baseline double-counts one defect as two",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "jq logic excludes findings only by direct membership, not transitively. When defects match via different paths, both representations land in baseline.json, inflating baseline_count and depressing parity_pct."
+  },
+  {
+    "file": "CLAUDE.md",
+    "line": 42,
+    "title": "CLAUDE.md still says plugin is not here yet but has been added",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Scope section claims plugin doesn't exist, but branch adds .claude-plugin/, commands/, skills/, agents/, and eval/. Stale documentation misleads readers about what is outstanding."
+  },
+  {
+    "file": "eval/runners/match.sh",
+    "line": 30,
+    "title": "match.sh's matches-at-most-once invariant is documented but unenforced",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Validation doesn't enforce that each finding matches at most once. Duplicate a_idx/b_idx pairs can result in parity_pct > 100%."
+  },
+  {
+    "file": "docs/evals.md",
+    "line": 7,
+    "title": "Stale /reviso review (no colon) left after namespace established",
+    "severity": "P2",
+    "category": "conventions",
+    "description": "Line 7 uses /reviso review instead of /reviso:review. Same issue in .github/ISSUE_TEMPLATE/false-positive.yml:53 and bug.yml:36."
+  }
+]
