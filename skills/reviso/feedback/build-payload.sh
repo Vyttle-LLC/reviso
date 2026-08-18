@@ -11,9 +11,9 @@
 # Usage:
 #   build-payload.sh meta  --lens <lens> --severity <P0|P1|P2>
 #                          --confidence <80s|90s|100> --reason <reason>
-#                          --command <review|audit> --model <model-id>
+#                          --command <review|audit|style> --model <model-id>
 #                          [--detector <id>] [--send]
-#   build-payload.sh tier2 --command <review|audit>    (finding text on stdin)
+#   build-payload.sh tier2 --command <review|audit|style>    (finding text on stdin)
 #
 # meta prints the exact title + body; with --send it then posts that exact
 # payload (same deterministic build — what was shown is what is sent).
@@ -96,7 +96,7 @@ while [ $# -gt 0 ]; do
   shift 2
 done
 
-oneof "--command" "$CMD" review audit
+oneof "--command" "$CMD" review audit style
 
 case $MODE in
 meta)

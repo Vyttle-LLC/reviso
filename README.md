@@ -26,7 +26,7 @@ And neither of them reviews for **slop**: dead code, comments that restate the
 code, verbose AI-written prose, reinvented utilities, the same rule copy-pasted
 across five call sites, three times the lines the job needed.
 
-Reviso is the missing review. Two commands, both local, both report-only:
+Reviso is the missing review. Three commands, all local, all report-only:
 
 - **`/reviso:review`** — the inner-loop review: assembles a mock PR
   (`base..HEAD` plus uncommitted work) and reviews it in a single pass, the
@@ -37,9 +37,15 @@ Reviso is the missing review. Two commands, both local, both report-only:
   gate applied by the orchestrator with the whole change in view. Slower
   and heavier, for when the branch is about to become a PR. (Full
   adversarial multi-skeptic depth lands in P1.)
+- **`/reviso:style`** — the style lane: slop, drift from your repo's own
+  conventions, comment and method length, duplication — and nothing else.
+  Every finding is measured against how *your* codebase writes, with the
+  baseline cited; no bug hunting, no absolute thresholds.
 
 The intended rhythm: code → `review` → fix → a few more commits →
-`audit` → open the PR.
+`audit` → open the PR. Reach for `style` when the question is "is this
+clean?" rather than "is this correct?" — a fresh AI-written change, a
+refactor you suspect got verbose, a branch you're about to hand off.
 
 It runs on the Claude subscription you already pay for. There is no account, no
 signup, and no telemetry.
@@ -115,8 +121,9 @@ including the runs we lose — are published in [docs/evals.md](docs/evals.md).
 
 What's here today: `/reviso:review` (single-pass mock-PR review, anti-slop
 lens, deterministic detectors), `/reviso:audit` (the multi-agent
-finder + verify pipeline), the parity eval harness in [eval/](eval/), and
-the assisted false-positive feedback flow under the
+finder + verify pipeline), `/reviso:style` (the single-pass style-only
+lane, calibrated to your repo's own norms), the parity eval harness in
+[eval/](eval/), and the assisted false-positive feedback flow under the
 [docs/feedback.md](docs/feedback.md) privacy contract.
 Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),
 comment humanization (P1), and `.reviso/` team memory — rules and dismissal
