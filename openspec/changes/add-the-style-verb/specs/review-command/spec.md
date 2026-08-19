@@ -1,10 +1,6 @@
-# review-command
+# review-command (delta)
 
-## Purpose
-
-The user-facing review commands: what `/reviso:review`, `/reviso:audit`, and `/reviso:style` cover, their report-only contract, and the shape of every reported finding.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Three verbs — review and style single-pass, audit multi-agent
 
@@ -78,68 +74,17 @@ that permit writes.
 - **THEN** the report is written to exactly that path, and to no path
   otherwise (terminal output is the default sink)
 
-### Requirement: Findings are line-anchored and complete
-
-Every reported finding SHALL include: file and line anchor, severity, a
-concrete failure scenario (inputs/state → wrong outcome), a suggested fix or
-rewrite, and a confidence score. Findings SHALL be ranked most-severe-first
-and consolidated (related nits merged into one comment).
-
-Reporting policy SHALL be an obligation of the command that produces the
-report, not of the shared finding schema. Each command SHALL state the
-severity floor it applies (no finding ranking below P2 ships), the
-consolidation it performs, and any limit on how many findings it reports.
-The shared schema defines the wire format every stage speaks and SHALL NOT
-carry policy, so that a stage which merely serializes a candidate cannot
-thereby suppress it.
-
-A report with no findings SHALL state that no issues were found and SHALL
-report which lenses were checked, derived from the lenses that actually
-ran rather than from a fixed list, naming separately any lens that
-produced no result or was out of scope. A clean report and a report from a
-run whose lenses failed SHALL NOT be identical.
-
-#### Scenario: Finding rendering
-
-- **WHEN** the pipeline reports a confirmed finding
-- **THEN** the report entry shows `file:line`, severity, failure scenario,
-  suggested fix, and confidence — none absent
-
-#### Scenario: Clean review
-
-- **WHEN** no finding survives the confidence gate and every lens ran
-- **THEN** the report states that no issues were found and names the lenses
-  that ran, and nothing else
-
-#### Scenario: Clean review with a broken lens
-
-- **WHEN** no finding survives the confidence gate and one lens produced no
-  result
-- **THEN** the report states that no issues were found, names the lenses
-  that ran, and names the failed lens with its reason — the report differs
-  from the fully-clean report above
-
-#### Scenario: Severity floor is applied by the reporting command
-
-- **WHEN** the single-pass review holds a candidate that ranks below P2
-- **THEN** the command drops it under its own stated policy, and the
-  behaviour is identical to the previous schema-carried rule
-
-#### Scenario: Schema carries no policy
-
-- **WHEN** a finder serializes a candidate per the shared finding schema
-- **THEN** the schema constrains only the format, and imposes no severity
-  floor and no count limit on what the finder may return
+## MODIFIED Requirements
 
 ### Requirement: Opt-in pre-gate diagnostics via `--explain`
 
-Every review command SHALL accept an `--explain` flag, default off. When passed,
-the report SHALL additionally carry one clearly-labelled diagnostic
-section containing the per-lens ledger with candidate counts and every
-candidate considered before the confidence gate, each with its score and
-its disposition (reported, or dropped with the structured drop reason).
-The diagnostic section SHALL be labelled as diagnostics rather than
-findings and SHALL appear after the findings.
+Every review command SHALL accept an `--explain` flag, default off. When
+passed, the report SHALL additionally carry one clearly-labelled
+diagnostic section containing the per-lens ledger with candidate counts
+and every candidate considered before the confidence gate, each with its
+score and its disposition (reported, or dropped with the structured drop
+reason). The diagnostic section SHALL be labelled as diagnostics rather
+than findings and SHALL appear after the findings.
 
 When `--explain` is absent, the report SHALL be exactly what it would be
 without the feature: no candidate below the gate is mentioned, no score of
@@ -178,24 +123,29 @@ entry for it.
 - **THEN** the diagnostics are printed to the terminal only, and no file is
   written
 
-### Requirement: The single-pass review applies the duplication lens identically
+## REMOVED Requirements
 
-`/reviso:review`'s inline anti-slop lens SHALL include the duplication
-item exactly as specified for the pipeline's anti-slop finder (same bar,
-same helper-naming fix requirement, same below-bar silence, same search
-protocol before clearing an added block) — the two surfaces SHALL NOT
-drift in the item's definition or thresholds.
+### Requirement: Two tiers — single-pass review, multi-agent audit
 
-#### Scenario: Same bar in the inner loop
+**Reason**: The command roster grew from two verbs to three; superseded by
+"Three verbs — review and style single-pass, audit multi-agent", which
+carries the original review and audit obligations unchanged.
 
-- **WHEN** `/reviso:review` reviews a diff containing the same predicate
-  added at five call sites
-- **THEN** it ships the same single consolidated duplication finding the
-  audit pipeline would, with every occurrence cited and the helper named
+**Migration**: None for users — `/reviso:review` and `/reviso:audit`
+behave exactly as before; `/reviso:style` is additive.
 
-#### Scenario: Below-bar stays silent
+### Requirement: Both commands review base..HEAD plus uncommitted changes
 
-- **WHEN** `/reviso:review` encounters a two-instance duplication with no
-  prior copies
-- **THEN** the report ships no duplication finding and makes no mention of
-  the duplication
+**Reason**: "Both" no longer names the roster; superseded by "Every
+command reviews base..HEAD plus uncommitted changes", identical in
+substance and now covering `/reviso:style` too.
+
+**Migration**: None — behavior unchanged.
+
+### Requirement: Report-only — neither command mutates the working tree
+
+**Reason**: "Neither" no longer names the roster; superseded by
+"Report-only — no command mutates the working tree", identical in
+substance and now covering `/reviso:style` too.
+
+**Migration**: None — behavior unchanged.

@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] — 2026-08-18
+
+### Added
+
+- **`/reviso:style` — the dedicated style lane.** A third verb: a
+  single-pass, report-only review that applies only the style lenses —
+  the anti-slop P0 set, duplication (same bar as the sibling surfaces),
+  code-shaped conventions, repo-style drift, and outlier length — and
+  hunts no bugs. Every judgment is calibrated against the repo's own
+  norms with the baseline cited in the finding: a drift finding needs two
+  `file:line` examples of the established pattern, a length finding must
+  name the comparable units it was measured against, and absolute
+  thresholds are banned. Style findings cap at P1 — nothing purely
+  stylistic blocks a merge. Same assembly, flags (`--base`, `--out`,
+  `--explain`), deterministic detectors, confidence gate, and reporting
+  policy as `/reviso:review`.
+- The false-positive feedback builder accepts `--command style`.
+
 ## [0.5.0] — 2026-08-17
 
 ### Changed

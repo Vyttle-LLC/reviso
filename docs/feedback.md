@@ -1,7 +1,7 @@
 # Feedback without disclosure
 
 > **This page is a contract first.** The assisted flow below is implemented
-> by `skills/reviso/feedback/build-payload.sh` and offered by both commands
+> by `skills/reviso/feedback/build-payload.sh` and offered by every review command
 > after a report. The contract outranks the code: an implementation change
 > that violates any invariant here is a security bug (see
 > [SECURITY.md](../SECURITY.md)), not a design choice. You can always skip
