@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/report.ts",
+    "line": 11,
+    "title": "includeTotals parameter is accepted but never read",
+    "severity": "P1",
+    "category": "dead weight",
+    "description": "Parameter advertised in signature but ignored in implementation. Callers passing different values get same result, creating confusion about actual behavior."
+  },
+  {
+    "file": "src/report.ts",
+    "line": 17,
+    "title": "exportReportCsv has no caller anywhere in the repo",
+    "severity": "P2",
+    "category": "dead weight",
+    "description": "Dead export ships as maintained surface area. No package.json or entry point establishes it as public API."
+  }
+]

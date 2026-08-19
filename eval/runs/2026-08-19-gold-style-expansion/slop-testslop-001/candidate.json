@@ -1,0 +1,10 @@
+[
+  {
+    "file": "tests/pricing.test.ts",
+    "line": 5,
+    "title": "Test suite never exercises `finalPrice` — neither test can fail",
+    "severity": "P1",
+    "category": "test slop",
+    "description": "First test mocks `finalPrice` and only asserts jest returns its configured mock value, never invoking the real imported function. Second test (line 12) only checks function is defined, which is tautological. Tests stay green even if implementation returns NaN, drops rounding, or ignores taxRate."
+  }
+]

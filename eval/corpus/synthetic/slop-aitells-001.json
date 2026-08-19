@@ -1,0 +1,22 @@
+{
+  "id": "slop-aitells-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add human-readable byte formatting for the usage bar",
+    "description": "Formats byte counts for the storage usage display."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/format.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,21 @@\n+const UNITS = [\"B\", \"KB\", \"MB\", \"GB\", \"TB\"];\n+\n+export function formatBytes(n: number): string {\n+  let value = n;\n+  let unit = 0;\n+  while (value >= 1024 && unit < UNITS.length - 1) {\n+    value /= 1024;\n+    unit += 1;\n+  }\n+  return `${value.toFixed(1)} ${UNITS[unit]}`;\n+}\n+\n+// Enhanced version with better handling of edge cases\n+export function formatBytesEnhanced(n: number): string {\n+  // Fixed bug where negative values were not handled\n+  if (n < 0) {\n+    return `-${formatBytesEnhanced(-n)}`;\n+  }\n+  // In a real implementation, this would use the user's locale settings\n+  return formatBytes(n);\n+}"
+    },
+    {
+      "filename": "src/usage.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,5 @@\n+import { formatBytesEnhanced } from \"./format\";\n+\n+export function usageLine(used: number, quota: number): string {\n+  return `${formatBytesEnhanced(used)} of ${formatBytesEnhanced(quota)} used`;\n+}"
+    }
+  ]
+}

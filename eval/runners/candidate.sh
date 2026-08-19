@@ -3,7 +3,7 @@
 # review tier named by REVISO_TIER on the identical range the PR covered,
 # capture the report, extract findings.
 # <workdir> is a throwaway clone (this script checks out head_sha, detached).
-# Env: REVISO_TIER (required: review|audit — no default, see review-tier.sh),
+# Env: REVISO_TIER (required: review|audit|style — no default, see review-tier.sh),
 # REVISO_CMD_ARGS (extra arguments for the slash command itself, e.g.
 # --explain), REVISO_PLUGIN_DIR (default: this repo root),
 # CANDIDATE_CLAUDE_FLAGS.

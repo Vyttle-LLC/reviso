@@ -1,0 +1,16 @@
+{
+  "case": "slop-testslop-001",
+  "origin": "synthetic",
+  "imported": "2026-08-19",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "tests/pricing.test.ts",
+      "line": 5,
+      "title": "Tests cannot fail: the suite mocks the subject under test and asserts tautologies",
+      "severity": "high",
+      "category": "slop",
+      "description": "The first test replaces finalPrice with jest.fn().mockReturnValue(110) and asserts the mock returned 110 — finalPrice itself is never executed. The second test (line 12) asserts only expect(finalPrice).toBeDefined(), which the import already guarantees. Neither test can catch a behavioral regression; one consolidated finding per the style command reporting policy."
+    }
+  ]
+}

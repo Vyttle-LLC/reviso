@@ -1,0 +1,17 @@
+{
+  "id": "slop-comments-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add cart total calculation",
+    "description": "Adds the cart total helper for the checkout page."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/cart.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,25 @@\n+export interface Item {\n+  name: string;\n+  price: number;\n+}\n+\n+/**\n+ * This function calculates the total price of all items in the cart.\n+ * It takes an array of items as input and returns the total price as\n+ * a number.\n+ *\n+ * First, we initialize the total to zero. Then we loop over each item\n+ * in the array and add its price to the running total. Finally, we\n+ * return the total price to the caller.\n+ */\n+export function cartTotal(items: Item[]): number {\n+  // Initialize the total to zero\n+  let total = 0;\n+  // Loop over each item in the cart\n+  for (const item of items) {\n+    // Add the item's price to the running total\n+    total += item.price;\n+  }\n+  // Return the computed total\n+  return total;\n+}"
+    }
+  ]
+}

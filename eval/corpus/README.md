@@ -35,6 +35,22 @@ It is an in-lane case: `duplication` is not in the cleanup family
 `gold_recall_correctness` and is listed individually rather than reported
 informationally.
 
+## Style-lens gold cases (synthetic)
+
+The `slop-*` cases (10, authored 2026-08-19) measure `/reviso:style`'s
+expanded lenses: five true-positive / expected-clean pairs, one per lens —
+over-engineering, dead weight, comments, test slop, AI tells. Findings are
+category `slop` (in-lane, so misses count against
+`gold_recall_correctness`); each clean look-alike guards the matching
+lens's precision (a mocked *dependency* vs a mocked subject, a genuinely
+nullable value vs a dead defense, and so on).
+
+**Style-tier gold runs are meaningful only against style-labeled or
+expected-clean cases.** Running `REVISO_TIER=style` over a bug-labeled
+case scores zero recall by design — the style lane hunts no bugs — and
+says nothing about either product. The inverse holds too: review/audit
+tiers are not measured against the `slop-*` cases.
+
 ## Imported gold cases (CRB)
 
 50 entries came from `withmartian/code-review-benchmark` via

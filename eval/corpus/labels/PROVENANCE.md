@@ -24,3 +24,10 @@ the `origin` field distinguishes them.
   the duplication, so no upstream code is copied or redistributed — the same
   pointer-only posture the imported cases use. It is the corpus's only
   `duplication`-category label.
+- `slop-*.json` (10 files) — authored 2026-08-19 in this repo for the
+  slop-detection expansion, alongside their fixtures under `synthetic/`.
+  All content (code, labels, PR framing) is original to this repo —
+  nothing imported, nothing vendored. Five true-positive / expected-clean
+  pairs, one per new style lens (over-engineering, dead weight, comments,
+  test slop, AI tells); all findings carry category `slop`. Style-tier
+  gold cases: run them with `REVISO_TIER=style`.

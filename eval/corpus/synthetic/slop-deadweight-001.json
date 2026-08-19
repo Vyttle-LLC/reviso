@@ -1,0 +1,22 @@
+{
+  "id": "slop-deadweight-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add monthly summary report",
+    "description": "Builds the monthly summary from report rows."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/report.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,21 @@\n+export interface Row {\n+  label: string;\n+  amount: number;\n+}\n+\n+export interface Report {\n+  lines: string[];\n+  total: number;\n+}\n+\n+export function buildReport(rows: Row[], includeTotals: boolean): Report {\n+  const lines = rows.map((row) => `${row.label}: ${row.amount.toFixed(2)}`);\n+  const total = rows.reduce((sum, row) => sum + row.amount, 0);\n+  return { lines, total };\n+}\n+\n+export function exportReportCsv(report: Report): string {\n+  const header = \"line,total\";\n+  const body = report.lines.map((line) => `\"${line}\",${report.total}`);\n+  return [header, ...body].join(\"\\n\");\n+}"
+    },
+    {
+      "filename": "src/summary.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,6 @@\n+import { buildReport, Row } from \"./report\";\n+\n+export function monthlySummary(rows: Row[]): string {\n+  const report = buildReport(rows, true);\n+  return report.lines.join(\"\\n\") + `\\nTotal: ${report.total.toFixed(2)}`;\n+}"
+    }
+  ]
+}

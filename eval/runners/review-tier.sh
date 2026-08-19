@@ -11,16 +11,17 @@
 # while being read as "Reviso's recall". Mirrors baseline.sh's refusal of
 # an unpinned upstream level.
 #
-# Sets REVIEW_TIER (review|audit) and REVIEW_TIER_CMD (its slash command).
+# Sets REVIEW_TIER (review|audit|style) and REVIEW_TIER_CMD (its slash command).
 resolve_review_tier() {
   case "${REVISO_TIER:-}" in
     review) REVIEW_TIER=review; REVIEW_TIER_CMD='/reviso:review' ;;
     audit)  REVIEW_TIER=audit;  REVIEW_TIER_CMD='/reviso:audit' ;;
+    style)  REVIEW_TIER=style;  REVIEW_TIER_CMD='/reviso:style' ;;
     "")
-      echo "${0##*/}: REVISO_TIER is required and has no default — set it to 'review' or 'audit'" >&2
+      echo "${0##*/}: REVISO_TIER is required and has no default — set it to 'review', 'audit', or 'style'" >&2
       exit 1 ;;
     *)
-      echo "${0##*/}: unknown REVISO_TIER '$REVISO_TIER' — accepted values: review, audit" >&2
+      echo "${0##*/}: unknown REVISO_TIER '$REVISO_TIER' — accepted values: review, audit, style" >&2
       exit 1 ;;
   esac
 }

@@ -9,7 +9,7 @@
 #   candidate + judge pipeline. Synthetic cases are REFUSED, not skipped
 #   quietly — they are gold-mode-only by spec.
 #
-# Env: REVISO_TIER (required: review|audit — which product this sweep
+# Env: REVISO_TIER (required: review|audit|style — which product this sweep
 # measures), REVISO_SWEEP_SUBSET (optional name for a deliberate partial
 # sweep, e.g. "audit-smoke"; recorded in summary.json), CORPUS_FILE
 # (default eval/corpus/public.jsonl) plus everything the per-case runners

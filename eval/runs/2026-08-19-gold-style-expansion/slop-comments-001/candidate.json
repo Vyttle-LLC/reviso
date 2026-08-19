@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/cart.ts",
+    "line": 6,
+    "title": "Doc comment restates the signature and narrates the loop",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Doc comment restates what the function signature already declares and narrates loop steps that will silently go stale when code changes. Delete the block; name, parameter types, and return type carry the essential facts."
+  },
+  {
+    "file": "src/cart.ts",
+    "line": 16,
+    "title": "Four inline comments each restate the line beneath them",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Four inline comments (lines 16, 18, 20, 23) restate their statements verbatim. Reader parses each twice and learns nothing from the repetition. Delete all four; loop body is self-describing."
+  }
+]

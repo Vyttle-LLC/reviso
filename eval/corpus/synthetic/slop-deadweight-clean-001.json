@@ -1,0 +1,17 @@
+{
+  "id": "slop-deadweight-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add user lifecycle event dispatch",
+    "description": "Routes user lifecycle events to their handlers via the event registry."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/events.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,18 @@\n+type Handler = (payload: unknown) => void;\n+\n+function handleUserCreated(payload: unknown): void {\n+  console.log(\"provisioning workspace for\", payload);\n+}\n+\n+function handleUserDeleted(payload: unknown): void {\n+  console.log(\"scheduling data purge for\", payload);\n+}\n+\n+const handlers: Record<string, Handler> = {\n+  \"user.created\": handleUserCreated,\n+  \"user.deleted\": handleUserDeleted,\n+};\n+\n+export function dispatch(event: string, payload: unknown): void {\n+  handlers[event]?.(payload);\n+}"
+    }
+  ]
+}

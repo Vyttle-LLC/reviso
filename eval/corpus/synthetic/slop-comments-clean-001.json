@@ -1,0 +1,17 @@
+{
+  "id": "slop-comments-clean-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add retry delay and SKU normalization helpers",
+    "description": "Backoff with jitter for the sync client; SKU normalization for the warehouse API."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/retry.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,11 @@\n+export function retryDelayMs(attempt: number): number {\n+  // Full jitter (not equal jitter): spreads synchronized client retries,\n+  // which equal jitter only halves.\n+  const cap = Math.min(30_000, 1_000 * 2 ** attempt);\n+  return Math.random() * cap;\n+}\n+\n+export function normalizeSku(raw: string): string {\n+  // Legacy SKUs mix en-dash and hyphen; the warehouse API accepts only hyphen.\n+  return raw.trim().replace(/\u2013/g, \"-\").toUpperCase();\n+}"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "case": "slop-deadweight-001",
+  "origin": "synthetic",
+  "imported": "2026-08-19",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/report.ts",
+      "line": 17,
+      "title": "Exported helper exportReportCsv has no caller anywhere in the repo",
+      "severity": "medium",
+      "category": "slop",
+      "description": "exportReportCsv is added and exported but nothing imports or calls it; the only consumer of this module (summary.ts) uses buildReport alone. Dead weight the typechecker will not flag (unused exports are not errors)."
+    },
+    {
+      "file": "src/report.ts",
+      "line": 11,
+      "title": "Parameter includeTotals is accepted (and passed by the caller) but never read",
+      "severity": "medium",
+      "category": "slop",
+      "description": "buildReport(rows, includeTotals) never reads includeTotals \u2014 the body always computes the total. The caller passes true and gets no behavior for it."
+    }
+  ]
+}

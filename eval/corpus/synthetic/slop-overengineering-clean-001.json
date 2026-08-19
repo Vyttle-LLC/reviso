@@ -1,0 +1,17 @@
+{
+  "id": "slop-overengineering-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add user reminder notifications",
+    "description": "Sends report-ready reminders by the user's preferred channel (email or SMS)."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/notify.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,34 @@\n+export interface Notifier {\n+  send(userId: string, message: string): Promise<void>;\n+}\n+\n+export class EmailNotifier implements Notifier {\n+  async send(userId: string, message: string): Promise<void> {\n+    await postJson(\"/internal/email\", { userId, message });\n+  }\n+}\n+\n+export class SmsNotifier implements Notifier {\n+  async send(userId: string, message: string): Promise<void> {\n+    await postJson(\"/internal/sms\", { userId, message });\n+  }\n+}\n+\n+export function notifierFor(pref: \"email\" | \"sms\"): Notifier {\n+  return pref === \"email\" ? new EmailNotifier() : new SmsNotifier();\n+}\n+\n+export async function remindUser(\n+  userId: string,\n+  pref: \"email\" | \"sms\",\n+  phone: string | null,\n+): Promise<void> {\n+  if (pref === \"sms\" && phone === null) {\n+    throw new Error(`user ${userId} has no phone number on file`);\n+  }\n+  await notifierFor(pref).send(userId, \"Your report is ready.\");\n+}\n+\n+async function postJson(path: string, body: unknown): Promise<void> {\n+  await fetch(path, { method: \"POST\", body: JSON.stringify(body) });\n+}"
+    }
+  ]
+}

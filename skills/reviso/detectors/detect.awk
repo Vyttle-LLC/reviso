@@ -12,6 +12,7 @@ after_minus && /^\+\+\+ / {
   sub(/^b\//, "", file)
   is_md   = (file ~ /\.(md|markdown|mdx)$/)
   is_test = (file ~ /(^|\/)(__tests__|tests?|spec)\// || file ~ /\.(test|spec)\.[A-Za-z]+$/)
+  is_example = (file ~ /(^|\/)(examples?|demos?|samples?|fixtures?)(\/|$)/)
   cs = 0
   next
 }
@@ -33,6 +34,18 @@ after_minus && /^\+\+\+ / {
     if      (c ~ /^<<<<<<< /)            { cs = 1; csline = line }
     else if (cs == 1 && c ~ /^=======\r?$/) { cs = 2 }
     else if (cs == 2 && c ~ /^>>>>>>> /) { printf "%s\t%d\tconflict\n", file, csline; cs = 0 }
+  }
+
+  # placeholder: language presenting unimplemented code as implemented.
+  # Suppressed in markdown and example/demo/sample/fixture paths, where
+  # narrating a stand-in is legitimate.
+  if (!is_md && !is_example) {
+    lc = tolower(c)
+    if (lc ~ /in a real (implementation|app|application|system|project)/ ||
+        lc ~ /in production,? you would/ ||
+        lc ~ /a real implementation would/) {
+      printf "%s\t%d\tplaceholder\n", file, line
+    }
   }
 
   # testfocus: focus modifiers in test files.

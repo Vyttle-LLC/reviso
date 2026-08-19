@@ -1,5 +1,5 @@
 ---
-description: Single-pass style-only review of base..HEAD + uncommitted changes — slop, drift, length, duplication; report-only
+description: Single-pass style-only review of base..HEAD + uncommitted changes — slop, drift, duplication, comments, dead weight, over-engineering, test slop, AI tells; report-only
 argument-hint: "[--base <ref>] [--out <path>] [--explain]"
 model: opus
 allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(rg:*)
@@ -8,7 +8,8 @@ allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(git 
 Review the current branch's changes for style only, in a single pass — you
 do the entire review yourself, no subagents. This is the dedicated style
 lane: AI slop, drift from this repo's own norms, bloated comments,
-oversized methods, duplication. It hunts no bugs — that is what
+oversized methods, duplication, over-engineering, dead weight, test slop,
+and AI tells. It hunts no bugs — that is what
 `/reviso:review` (inner loop) and `/reviso:audit` (pre-PR deep pass) are
 for, and your report says so.
 
@@ -21,7 +22,11 @@ file when the user explicitly passed `--out`.
 The cardinal rule of every lens here: **style is relative to this
 codebase's own norms, never to your taste or to absolute thresholds.** A
 deliberate, established style in this repo is never a finding. When the
-repo itself is verbose, verbose new code matches its norms.
+repo itself is verbose, verbose new code matches its norms. The rule has
+exactly two named exceptions, defined in their lens entries: the comments
+lens's earn-its-place bar (only a written convention overrides it) and
+placeholder text in the AI-tells lens (nothing overrides it). Everything
+else yields to the repo.
 
 Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; default is
 the repository's default branch), `--out <path>` (also write the report
@@ -113,9 +118,18 @@ is the only trace a noticed bug leaves.
   existing utility's `file:line`, or it's not a finding — and before you
   clear an added block as original, grep the repo for that block's most
   distinctive identifiers and string literals, not whole lines, which a
-  rename dodges); comments that restate code or read as AI bloat —
-  include the tightened rewrite in `suggested_fix`, or deletion when the
-  code speaks for itself.
+  rename dodges).
+- **Comments** — every changed comment, against an absolute bar, not
+  this repo's habits: a comment earns its place only when the code
+  cannot be made to say the same thing — through naming, extraction, or
+  types — and even then it is as short as the point allows. Comments
+  that restate the code, narrate control flow, or pad a necessary point
+  with generated filler are findings; `suggested_fix` carries the
+  tightened rewrite, or deletion when the code speaks for itself. The
+  only override is a written convention: a CLAUDE.md / AGENTS.md rule or
+  a lint rule governing the changed paths (e.g. require-jsdoc) that
+  demands the comment shape in question. Demonstrated verbosity in the
+  repo's existing comments clears nothing.
 - **Duplication** — the same logic living in more than one place, in
   either direction: new code copying something the repo already has, or
   the change copying itself. The unit is a rule-encoding expression or
@@ -171,15 +185,53 @@ is the only trace a noticed bug leaves.
   territory and someone else's taste; the only admissible yardstick is
   this repo. `suggested_fix` sketches the split (for a method) or the
   tightened text (for a comment).
+- **Over-engineering** — machinery the change builds that nothing needs:
+  an abstraction with a single consumer (an interface, factory, or
+  config knob serving one caller), defensive handling of states the
+  types or call sites make impossible, a backwards-compatibility shim
+  with no second consumer. `evidence` cites the absence by `file:line` —
+  the only consumer, the type or call sites that make the defended state
+  unreachable, the shim's missing second caller. Convention-relative
+  like drift: two existing files building this kind of code the same
+  defensive way make it the repo's norm, not a finding.
+- **Dead weight** — code the change adds that nothing uses, scoped to
+  what linters cannot see. Read the lint configs governing the changed
+  paths first: anything a configured rule already covers is excluded,
+  and unused imports and unused locals are excluded always — linter
+  territory. In scope: an added helper or export with no caller anywhere
+  in the repo, a parameter accepted but never read, a flag or config key
+  never consumed, a branch the surrounding code makes impossible. The
+  search protocol is mandatory: grep the repo for the symbol's most
+  distinctive identifiers, and check for dynamic access (reflection,
+  string-keyed dispatch, DI registration) near the definition before
+  trusting an empty result. `evidence` states what you searched and that
+  it came back empty — no recorded search, no finding.
+- **Test slop** — tests that cannot fail: tautological assertions,
+  asserting the value a mock was just configured to return, mocking the
+  subject under test; also sleep-based waits where the repo demonstrates
+  a deterministic waiting idiom (cite it). Quote the assertion (or the
+  wait) in `evidence` and state concretely why it cannot fail or what it
+  actually exercises instead of the subject. `suggested_fix` sketches
+  the test as it should be written, or its deletion.
+- **AI tells** — text artifacts of machine generation, quoted verbatim
+  in `evidence`: temporal or comparative naming (`newHelper`,
+  `enhancedFoo`, `utils2`), changelog-style comments ("// Fixed bug
+  where…"), emoji or tonal flourishes foreign to this repo's text.
+  Convention-relative with one absolute item: placeholder text ("in a
+  real implementation…", "in production you would…") is always a finding
+  — no repo's norm is unimplemented code presented as implemented. For
+  everything else, two existing examples of the pattern in the repo make
+  it the repo's own idiom, not a tell.
 
 Record each candidate per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`).
 The schema's `dimension` enum predates this command: record `conventions`
-candidates as `conventions`, and slop, duplication, drift, and length
-candidates all as `slop` — the ledger and the report carry the precise
+candidates as `conventions`, and every other lens's candidates — slop,
+comments, duplication, drift, length, over-engineering, dead weight, test
+slop, AI tells — as `slop`; the ledger and the report carry the precise
 lens name.
 
-Record a ledger row per lens as you finish it — five rows here, plus the
+Record a ledger row per lens as you finish it — ten rows here, plus the
 `deterministic` row from Step 2. Write the row when you finish the lens,
 not at the end from memory: a row reconstructed at report time is a guess
 about what you did, which is exactly what the ledger replaces.
@@ -190,12 +242,21 @@ Read `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md` and
 `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/confidence-rubric.md` once.
 For every candidate from Step 3:
 
-1. Exclusion list first — a match scores 0–25.
+1. Exclusion list first — a match scores 0–25, with one carve-out: the
+   deliberate-style entry ("a codebase's deliberate, established style is
+   never slop") does not apply to comments-lens candidates or to
+   placeholder text. Those two bars are absolute here; for a comments
+   candidate, only the lens's written-convention override clears it — and
+   a candidate whose comment shape a written convention actually demands
+   scores 0.
 2. On lines the change modified? Pre-existing → 0.
-3. Baseline check, this command's own gate: a drift candidate without two
-   cited `file:line` examples of the established pattern, or a length
-   candidate that doesn't name its comparable units, scores 0 — the
-   citation *is* the evidence, and without it the finding is taste.
+3. Baseline check, this command's own gate: a drift or over-engineering
+   candidate without its cited `file:line` evidence (two examples of the
+   established pattern; the absence citation), or a length candidate that
+   doesn't name its comparable units, scores 0 — the citation *is* the
+   evidence, and without it the finding is taste. A dead-weight candidate
+   whose evidence doesn't state the search performed and its empty result
+   also scores 0.
 4. Re-examine the actual code: does the failure scenario hold against the
    real baseline, and is the repo's own style genuinely on your side?
 5. Score 0–100 using the rubric exactly as written — no stricter, no
@@ -206,9 +267,9 @@ For every candidate from Step 3:
 Keep, for every candidate: its lens, its `file:line`, its score, and its
 disposition — reported, or dropped and why. The reason is whichever step
 above gated it: `exclusion-list` (step 1), `pre-existing` (step 2),
-`no-baseline` (step 3), or `rubric-score` (survived all three, still
-under 80). That record is what `--explain` prints; without the flag it
-stays yours.
+`no-baseline` or `no-search` (step 3), or `rubric-score` (survived all
+three, still under 80). That record is what `--explain` prints; without
+the flag it stays yours.
 
 ## Step 5 — Report
 
@@ -218,9 +279,10 @@ Consolidate related minor findings. Order most-severe-first, ties by
 confidence.
 
 Severity, this command's band: style findings are **P2** by default, and
-**P1** only when the finding actively misleads (a wrong comment, a
-shadowed utility with different behavior) or duplicated copies have
-already diverged in behavior. The style lenses never emit P0 — nothing
+**P1** only when the finding actively misleads: a wrong comment, a
+shadowed utility with different behavior, duplicated copies that have
+already diverged in behavior, or a test that appears to cover behavior
+but cannot fail. The style lenses never emit P0 — nothing
 purely stylistic blocks a merge. Deterministic detector findings keep
 their own severities.
 
@@ -251,9 +313,9 @@ Style only — for bugs, run /reviso:review (inner loop) or /reviso:audit (pre-P
 ```
 
 The `Baseline:` line replaces the review command's `Failure:` line for
-drift and length findings; slop, duplication, conventions, and
-deterministic findings keep `Failure:` (the concrete cost to the next
-reader/maintainer). Every finding cites `file:line`.
+drift and length findings; every other lens and deterministic findings
+keep `Failure:` (the concrete cost to the next reader/maintainer). Every
+finding cites `file:line`.
 
 The coverage block is derived from the ledger, every run:
 
@@ -282,7 +344,8 @@ Append one section after the findings, in this shape:
 
 ```text
 --- explain: pipeline diagnostics (not review findings) ---
-Lenses: slop 2, duplication 0, conventions 1, drift 1, length 0,
+Lenses: slop 2, comments 1, duplication 0, conventions 1, drift 1,
+length 0, over-engineering 0, dead-weight 0, test-slop 0, ai-tells 0,
 deterministic 0.
 Candidates before the gate (4):
   [drift]       cli_server.rs:2257  score 88  reported
@@ -321,7 +384,8 @@ When the user names a finding:
    `linter-territory`, `wrong-on-facts`, or `other`.
 2. **Tier 1 (default).** Bucket the confidence (80–89 → `80s`, 90–99 →
    `90s`, 100 → `100`), map the lens to its schema dimension (slop,
-   duplication, drift, length → `slop`; conventions → `conventions`;
+   comments, duplication, drift, length, over-engineering, dead weight,
+   test slop, AI tells → `slop`; conventions → `conventions`;
    deterministic → `deterministic`), and run:
 
    ```sh

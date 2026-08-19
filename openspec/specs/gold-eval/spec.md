@@ -10,10 +10,10 @@ Candidate-only evaluation against gold-labeled corpus cases — absolute recall/
 
 The harness SHALL provide a gold-mode runner that, for a gold-labeled
 corpus case, runs **the Reviso review tier named by the invocation**
-(`/reviso:review` or `/reviso:audit`) against the case's pinned checkout
-(identically to parity mode's candidate leg) and judges the resulting
-findings against the case's labels file — invoking no upstream review at
-any point. The tier SHALL be named explicitly at every invocation and
+(`/reviso:review`, `/reviso:audit`, or `/reviso:style`) against the
+case's pinned checkout (identically to parity mode's candidate leg) and
+judges the resulting findings against the case's labels file — invoking
+no upstream review at any point. The tier SHALL be named explicitly at every invocation and
 SHALL NOT be inferred from a default, so a recorded run always states which
 product it measured. Matching SHALL use the same matcher and the same
 tiering as parity mode, from one shared definition. The runner SHALL fail
@@ -46,6 +46,13 @@ case.
 - **WHEN** a gold run names `/reviso:audit` as the tier under test
 - **THEN** the deep multi-agent pipeline is the candidate leg, judged
   against the same labels by the same matcher as a `/reviso:review` run
+
+#### Scenario: The style tier can be the candidate
+
+- **WHEN** a gold run names `/reviso:style` as the tier under test
+- **THEN** the single-pass style lane is the candidate leg, judged
+  against the same labels by the same matcher as the other tiers, and the
+  run's recorded metadata names `style` as the tier
 
 #### Scenario: An unnamed tier is an error
 
