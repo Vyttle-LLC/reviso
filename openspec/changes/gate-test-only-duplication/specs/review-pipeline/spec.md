@@ -1,0 +1,102 @@
+# review-pipeline (delta)
+
+## MODIFIED Requirements
+
+### Requirement: The duplication lens ships helper extractions above a calibrated bar
+
+The anti-slop dimension SHALL flag duplication in both directions —
+new code reimplementing something the repository already has, and code
+duplicated within the change itself — only when the diff reaches the bar.
+The unit is a rule-encoding expression or predicate, a declaration or
+definition, or a verbatim or near-verbatim block, and new occurrences
+SHALL be counted together with any pre-existing copies. Four or more
+occurrences SHALL ship. Exactly three occurrences SHALL ship only when
+the duplicated unit encodes a rule that can change — a predicate, a
+policy constant, a shared type or contract — and SHALL stay silent when
+the similarity is incidental, such as setup or assertion scaffolding. Two
+or fewer occurrences SHALL NOT ship regardless of how long the copied
+block is. Every shipped duplication finding SHALL cite each occurrence by
+`file:line`, state the drift-risk failure scenario concretely, and give a
+`suggested_fix` naming the helper (name, signature, proposed location
+consistent with the repository's layout) plus the rewrite of one call
+site. Below-bar duplication SHALL NOT be reported at all. Before clearing
+any added block as non-duplicative, the finder SHALL search the
+repository for that block's distinctive identifiers.
+
+A duplication finding whose occurrences are **all in test code** (as the
+repository's own layout and naming identify test code) SHALL NOT ship
+unless a written repository convention — CLAUDE.md, AGENTS.md, a lint
+configuration, or a skill/contributor doc governing the changed paths —
+demands shared test helpers or deduplicated test logic, in which case the
+ordinary bar applies. A helper idiom merely demonstrated in the code,
+with no written rule, SHALL NOT open the gate. If any occurrence is
+production code, the ordinary bar applies unchanged. The gate is applied
+where judgment lives — the self-verify step of the single-pass commands
+and the audit orchestrator, via the shared false-positive exclusion
+list — and finders still report test-only candidates.
+
+#### Scenario: Rule expression repeated across call sites
+
+- **WHEN** the diff adds the same collision predicate at five call sites
+  plus a closure
+- **THEN** one duplication finding ships, citing every occurrence, with a
+  named shared helper and the drift-risk scenario
+
+#### Scenario: Third verbatim copy of an existing utility
+
+- **WHEN** the diff adds a verbatim copy of a shared type declaration
+  already present in two other files
+- **THEN** a duplication finding ships naming the existing copies and the
+  shared home the three should adopt
+
+#### Scenario: Three incidental look-alikes stay below the bar
+
+- **WHEN** three added lines coincide only as setup or assertion
+  scaffolding, encoding no rule that a future edit would have to change in
+  every copy
+- **THEN** no duplication finding ships — at exactly three occurrences the
+  duplicated unit must encode a changeable rule
+
+#### Scenario: Two-instance duplication stays below the bar
+
+- **WHEN** the diff contains a helper duplicated exactly twice with no
+  prior copies
+- **THEN** no duplication finding ships and the report says nothing about
+  it
+
+#### Scenario: A long block duplicated only once stays below the bar
+
+- **WHEN** the diff contains a line-for-line copy of a sixteen-line
+  function or view skeleton, giving two occurrences in total
+- **THEN** no duplication finding ships — block length is not a route
+  past the occurrence bar
+
+#### Scenario: Test-only duplication with no written convention stays silent
+
+- **WHEN** the diff repeats a mock-configuration lambda at seven sites,
+  all within test files, and no written convention of the repository
+  demands shared test helpers
+- **THEN** no duplication finding ships, however many occurrences there
+  are
+
+#### Scenario: Test-only duplication ships where the repo wrote the rule
+
+- **WHEN** the diff adds five near-verbatim copies of a store-lookup
+  block across test specs, and a skill doc governing those paths says to
+  use the shared helpers module
+- **THEN** one duplication finding ships under the ordinary bar, citing
+  every occurrence and the written convention
+
+#### Scenario: A demonstrated idiom is not a written rule
+
+- **WHEN** test-only duplication sits in a file that already contains a
+  shared helper idiom, but no written convention demands helpers
+- **THEN** no duplication finding ships — the gate opens on written rules
+  only
+
+#### Scenario: Severity cap
+
+- **WHEN** a duplication finding ships and the copies have not yet
+  diverged in behavior
+- **THEN** its severity is P2 (P1 is reserved for copies that have
+  already drifted)

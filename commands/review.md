@@ -143,7 +143,13 @@ to each hunk as you go:
     disagree"). `suggested_fix` names the helper — name, signature, and
     the home it belongs in following this repo's existing layout — plus
     the rewrite of one call site; no named helper, no finding. P2, or P1
-    only when the copies have already diverged. Test code counts.
+    only when the copies have already diverged. Test code counts only
+    when the repo wrote the rule: a duplication whose occurrences are
+    all in test code ships only if a written convention (CLAUDE.md /
+    AGENTS.md / lint config / skill doc governing the changed paths)
+    demands shared test helpers — a demonstrated-but-unwritten helper
+    idiom doesn't open the gate. Any production occurrence and the
+    ordinary bar applies.
 
 Record each candidate per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`).

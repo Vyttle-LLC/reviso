@@ -23,6 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   policy as `/reviso:review`.
 - The false-positive feedback builder accepts `--command style`.
 
+### Changed
+
+- **Test-only duplication is convention-gated.** Duplication whose
+  occurrences are all in test code no longer ships unless a written repo
+  convention (CLAUDE.md / AGENTS.md / lint config / skill doc governing
+  the changed paths) demands shared test helpers — repetition in tests is
+  a legitimate, often deliberate style (DAMP), and only a written rule
+  makes it drift. Encoded once in the shared false-positive exclusion
+  list, so review, style, and the audit orchestrator gate identically;
+  finders still return the candidates. Driven by the style verb's first
+  field false positive.
+
 ## [0.5.0] — 2026-08-17
 
 ### Changed

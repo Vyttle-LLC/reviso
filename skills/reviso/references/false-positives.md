@@ -21,8 +21,15 @@ reading for any subagent; the orchestrator scores a match 0–25 at the gate.
   to the broader change — read the commit messages; stated intent counts.
 - Real issues on lines the change did not modify.
 
-Reviso addition (the anti-slop lens has its own trap):
+Reviso additions (the anti-slop lens has its own traps):
 
 - A codebase's deliberate, established style is never slop. Slop findings
   must be relative to the repo's own norms — flag drift from the codebase,
   not from the reviewer's taste.
+- Duplication whose occurrences are all in test code, unless a written
+  repo convention (CLAUDE.md, AGENTS.md, a lint config, or a skill or
+  contributor doc governing the changed paths) demands shared test helpers
+  or deduplicated test logic. Repetition in tests is a legitimate,
+  often deliberate style (DAMP); only a written rule makes it drift. A
+  helper idiom merely demonstrated in the code does not count as written.
+  If any occurrence is production code, the ordinary bar applies.
