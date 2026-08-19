@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src/format.ts",
+    "line": 19,
+    "title": "Placeholder text committed (unimplemented code presented as implemented)",
+    "severity": "P1",
+    "category": "deterministic",
+    "description": "Comment admits code is a stand-in for locale settings. Readers will believe locale handling is an unimplemented gap in this function when nothing routes to it."
+  },
+  {
+    "file": "src/format.ts",
+    "line": 14,
+    "title": "formatBytesEnhanced is a comparative-named parallel variant with silently different behavior",
+    "severity": "P1",
+    "category": "over-engineering",
+    "description": "Two exported byte formatters differ only by Enhanced suffix; they disagree on negatives (formatBytes(-2048)→−2048.0 B vs formatBytesEnhanced(-2048)→−2.0 KB). formatBytesEnhanced has one consumer and delegates entirely to formatBytes; formatBytes has no external callers."
+  },
+  {
+    "file": "src/format.ts",
+    "line": 13,
+    "title": "Comments on formatBytesEnhanced restate code or narrate history",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Two comments (lines 13, 15) either restate what the signature shows or recite changelog text. Both will go stale on any change to the function."
+  }
+]

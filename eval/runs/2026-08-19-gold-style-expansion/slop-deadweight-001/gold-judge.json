@@ -1,0 +1,56 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/report.ts",
+        "line": 17,
+        "title": "Exported helper exportReportCsv has no caller anywhere in the repo",
+        "severity": "medium",
+        "category": "slop",
+        "description": "exportReportCsv is added and exported but nothing imports or calls it; the only consumer of this module (summary.ts) uses buildReport alone. Dead weight the typechecker will not flag (unused exports are not errors).",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/report.ts",
+        "line": 17,
+        "title": "exportReportCsv has no caller anywhere in the repo",
+        "severity": "P2",
+        "category": "dead weight",
+        "description": "Dead export ships as maintained surface area. No package.json or entry point establishes it as public API."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/report.ts",
+        "line": 11,
+        "title": "Parameter includeTotals is accepted (and passed by the caller) but never read",
+        "severity": "medium",
+        "category": "slop",
+        "description": "buildReport(rows, includeTotals) never reads includeTotals — the body always computes the total. The caller passes true and gets no behavior for it.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/report.ts",
+        "line": 11,
+        "title": "includeTotals parameter is accepted but never read",
+        "severity": "P1",
+        "category": "dead weight",
+        "description": "Parameter advertised in signature but ignored in implementation. Callers passing different values get same result, creating confusion about actual behavior."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

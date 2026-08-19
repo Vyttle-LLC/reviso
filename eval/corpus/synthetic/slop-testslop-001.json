@@ -1,0 +1,22 @@
+{
+  "id": "slop-testslop-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add tax-inclusive price calculation with tests",
+    "description": "Adds finalPrice and its unit tests."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/pricing.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,3 @@\n+export function finalPrice(base: number, taxRate: number): number {\n+  return Math.round(base * (1 + taxRate) * 100) / 100;\n+}"
+    },
+    {
+      "filename": "tests/pricing.test.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,14 @@\n+import { finalPrice } from \"../src/pricing\";\n+\n+describe(\"finalPrice\", () => {\n+  it(\"returns the final price with tax applied\", () => {\n+    const mockFinalPrice = jest.fn().mockReturnValue(110);\n+    const result = mockFinalPrice(100, 0.1);\n+    expect(result).toBe(110);\n+    expect(mockFinalPrice).toHaveBeenCalledWith(100, 0.1);\n+  });\n+\n+  it(\"is defined\", () => {\n+    expect(finalPrice).toBeDefined();\n+  });\n+});"
+    }
+  ]
+}

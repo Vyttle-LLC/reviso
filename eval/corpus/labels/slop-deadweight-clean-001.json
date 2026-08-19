@@ -1,0 +1,7 @@
+{
+  "case": "slop-deadweight-clean-001",
+  "origin": "synthetic",
+  "imported": "2026-08-19",
+  "expected_clean": true,
+  "findings": []
+}

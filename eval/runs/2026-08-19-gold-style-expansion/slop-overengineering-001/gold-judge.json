@@ -1,0 +1,56 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/discount.ts",
+        "line": 1,
+        "title": "Strategy interface + factory + options type for a single implementation with one caller — a plain function does the job",
+        "severity": "medium",
+        "category": "slop",
+        "description": "The change builds a DiscountStrategy interface, a BulkDiscountStrategy class, a DiscountStrategyFactory, and a factory-options type, all to apply one discount rule from one call site (applyBulkDiscount, consumed only by checkoutTotal). A single plain function holds the whole rule; the abstraction has no second implementation and no second consumer.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/discount.ts",
+        "line": 1,
+        "title": "Strategy interface + factory built for a single caller",
+        "severity": "P2",
+        "category": "over-engineering",
+        "description": "DiscountStrategy has one implementer (BulkDiscountStrategy). Factory.create has one caller passing no arguments. DiscountStrategyFactoryOptions never supplied. Four indirections encode one rule. Collapse to a parameterized function; reintroduce interface when second strategy exists."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/discount.ts",
+        "line": 36,
+        "title": "Defensive null/undefined check on a number-typed parameter the type system makes impossible",
+        "severity": "medium",
+        "category": "slop",
+        "description": "applyBulkDiscount(total: number) guards total === null || total === undefined, states its own signature already rules out. Dead defense: the branch cannot execute from any typed caller.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/discount.ts",
+        "line": 36,
+        "title": "Null/undefined guard on a parameter the types make impossible",
+        "severity": "P2",
+        "category": "over-engineering",
+        "description": "total declared number; sole caller passes number from reduce. Null/undefined branch at lines 36-38 is unreachable. Delete dead code."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 2,
+    "candidate_count": 2,
+    "matched_count": 2,
+    "matched_correctness_count": 2,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

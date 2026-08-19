@@ -1,0 +1,22 @@
+{
+  "id": "slop-testslop-clean-001",
+  "language": "typescript",
+  "difficulty": "easy",
+  "pr": {
+    "title": "Add overdue invoice reminders with tests",
+    "description": "Sends escalating overdue reminders; tests cover the 30-day escalation boundary."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/reminder.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,15 @@\n+export interface Mailer {\n+  send(to: string, subject: string, body: string): Promise<void>;\n+}\n+\n+export async function sendOverdueReminder(\n+  mailer: Mailer,\n+  email: string,\n+  daysOverdue: number,\n+): Promise<void> {\n+  const subject =\n+    daysOverdue >= 30\n+      ? \"Final notice: invoice overdue\"\n+      : `Reminder: invoice ${daysOverdue} days overdue`;\n+  await mailer.send(email, subject, \"Please settle the outstanding balance.\");\n+}"
+    },
+    {
+      "filename": "tests/reminder.test.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,23 @@\n+import { sendOverdueReminder, Mailer } from \"../src/reminder\";\n+\n+describe(\"sendOverdueReminder\", () => {\n+  const mailer: Mailer = { send: jest.fn().mockResolvedValue(undefined) };\n+\n+  it(\"escalates to a final notice at 30 days\", async () => {\n+    await sendOverdueReminder(mailer, \"a@example.com\", 30);\n+    expect(mailer.send).toHaveBeenCalledWith(\n+      \"a@example.com\",\n+      \"Final notice: invoice overdue\",\n+      expect.any(String),\n+    );\n+  });\n+\n+  it(\"states the days overdue before 30 days\", async () => {\n+    await sendOverdueReminder(mailer, \"b@example.com\", 12);\n+    expect(mailer.send).toHaveBeenCalledWith(\n+      \"b@example.com\",\n+      \"Reminder: invoice 12 days overdue\",\n+      expect.any(String),\n+    );\n+  });\n+});"
+    }
+  ]
+}

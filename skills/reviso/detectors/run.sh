@@ -32,6 +32,10 @@ MB=$(git merge-base "$BASE" HEAD)
     title["testfocus"] = "Focused test committed (.only / fit / fdescribe)"
     fail["testfocus"]  = "The runner executes only the focused spec; the rest of the suite is silently skipped in CI"
     fix["testfocus"]   = "Remove the focus modifier so the full suite runs"
+    sev["placeholder"]   = "P1"
+    title["placeholder"] = "Placeholder text committed (unimplemented code presented as implemented)"
+    fail["placeholder"]  = "The code admits it is a stand-in; whatever a real implementation would do does not happen"
+    fix["placeholder"]   = "Implement the real behavior, or remove the code and track the gap explicitly"
     printf "["
   }
   {

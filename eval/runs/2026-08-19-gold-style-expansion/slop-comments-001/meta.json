@@ -1,0 +1,10 @@
+{
+  "cli_version": "2.1.235",
+  "tier": "style",
+  "command": "/reviso:style --base 1e5ecdb68e88e2d32a1cdc0e5f37e111fbf137ec",
+  "base_sha": "1e5ecdb68e88e2d32a1cdc0e5f37e111fbf137ec",
+  "head_sha": "1e5ecdb68e88e2d32a1cdc0e5f37e111fbf137ec",
+  "models": [
+    "claude-opus-5"
+  ]
+}

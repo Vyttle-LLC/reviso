@@ -1,0 +1,32 @@
+{
+  "case": "slop-aitells-001",
+  "origin": "synthetic",
+  "imported": "2026-08-19",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/format.ts",
+      "line": 14,
+      "title": "Temporal/comparative naming: formatBytesEnhanced names the edit, not the behavior",
+      "severity": "medium",
+      "category": "slop",
+      "description": "\"Enhanced\" relative to what? The name records that this function came after formatBytes, not what it does. Fold the negative-value handling into formatBytes or name the function for its behavior."
+    },
+    {
+      "file": "src/format.ts",
+      "line": 15,
+      "title": "Changelog-style comment records edit history in code",
+      "severity": "medium",
+      "category": "slop",
+      "description": "\"// Fixed bug where negative values were not handled\" is commit-message content; in the file it goes stale the moment the code changes again. Git history already records it."
+    },
+    {
+      "file": "src/format.ts",
+      "line": 19,
+      "title": "Placeholder text: unimplemented behavior presented as implemented",
+      "severity": "high",
+      "category": "slop",
+      "description": "\"In a real implementation, this would use the user's locale settings\" \u2014 the code admits it is a stand-in; locale handling does not happen."
+    }
+  ]
+}

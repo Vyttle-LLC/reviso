@@ -10,7 +10,7 @@
 # files are full-content "added" patches) as uncommitted changes on an
 # empty base commit, then review that.
 #
-# Env: REVISO_TIER (required: review|audit — which product is under test),
+# Env: REVISO_TIER (required: review|audit|style — which product is under test),
 # CORPUS_FILE (default eval/corpus/public.jsonl; set it to
 # "$REVISO_EVAL_PRIVATE_CORPUS" to run a private-tier case — send those runs
 # to eval/runs/private/, which is gitignored), plus everything

@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] — 2026-08-19
+
+### Added
+
+- **The expanded slop set.** `/reviso:style` grows from five lenses to
+  ten: **over-engineering** (abstractions with one consumer, defenses
+  against states the types make impossible — absence cited by
+  `file:line`), **dead weight** (added code nothing uses, scoped beyond
+  linter coverage, with a mandatory recorded search), **test slop**
+  (tests that cannot fail, mocked subjects, sleep waits), **AI tells**
+  (temporal naming, changelog comments, placeholder text, quoted
+  verbatim), and **comments**, promoted out of the slop lens. The
+  ledger, `--explain` diagnostics, and feedback mapping carry all ten.
+- **The comments lens holds an absolute bar.** A changed comment earns
+  its place only when the code cannot say it, and then as short as the
+  point allows. Only a *written* convention (a CLAUDE.md rule, a lint
+  rule like require-jsdoc) overrides; the repo's own demonstrated
+  verbosity does not. This and placeholder text are the cardinal rule's
+  only two exceptions — everything else still yields to the repo's norms.
+  Style-command-local: the shared exclusion list and the other verbs are
+  unchanged.
+- **`placeholder` detector.** The deterministic suite flags committed
+  placeholder language ("in a real implementation…", "in production you
+  would…") at P1, suppressed in markdown and example/demo/sample/fixture
+  paths. Discovery re-run per D5: 0 false positives across ~2,700 commits
+  in 10 repos; changelog comments, temporal naming, and emoji evaluated
+  and rejected to the AI-tells lens (DISCOVERY.md has the tables).
+- **The style tier is measurable.** `REVISO_TIER=style` runs
+  `/reviso:style` through the gold harness like the sibling tiers, and
+  ten synthetic corpus cases land with it — a true-positive and an
+  expected-clean look-alike per new lens, findings labeled `slop`
+  (in-lane for recall). Style-tier gold runs are meaningful only against
+  style-labeled or expected-clean cases.
+
 ## [0.6.0] — 2026-08-18
 
 ### Added

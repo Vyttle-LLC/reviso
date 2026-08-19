@@ -1,0 +1,22 @@
+{
+  "id": "slop-overengineering-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add bulk discount to checkout",
+    "description": "Applies a 10% discount to carts of $100 or more at checkout."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/checkout.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,6 @@\n+import { applyBulkDiscount } from \"./discount\";\n+\n+export function checkoutTotal(items: { price: number }[]): number {\n+  const total = items.reduce((sum, item) => sum + item.price, 0);\n+  return applyBulkDiscount(total);\n+}"
+    },
+    {
+      "filename": "src/discount.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,44 @@\n+export interface DiscountStrategy {\n+  applies(total: number): boolean;\n+  apply(total: number): number;\n+}\n+\n+export interface DiscountStrategyFactoryOptions {\n+  threshold?: number;\n+  rate?: number;\n+}\n+\n+export class BulkDiscountStrategy implements DiscountStrategy {\n+  constructor(\n+    private threshold: number,\n+    private rate: number,\n+  ) {}\n+\n+  applies(total: number): boolean {\n+    return total >= this.threshold;\n+  }\n+\n+  apply(total: number): number {\n+    return total - total * this.rate;\n+  }\n+}\n+\n+export class DiscountStrategyFactory {\n+  static create(options?: DiscountStrategyFactoryOptions): DiscountStrategy {\n+    return new BulkDiscountStrategy(\n+      options?.threshold ?? 100,\n+      options?.rate ?? 0.1,\n+    );\n+  }\n+}\n+\n+export function applyBulkDiscount(total: number): number {\n+  if (total === null || total === undefined) {\n+    return 0;\n+  }\n+  const strategy = DiscountStrategyFactory.create();\n+  if (strategy.applies(total)) {\n+    return strategy.apply(total);\n+  }\n+  return total;\n+}"
+    }
+  ]
+}

@@ -54,10 +54,27 @@ Two metric families, deliberately not comparable to each other:
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-08-07 | `review` | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
 | 2026-08-08 | `review` | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
+| 2026-08-19 | `style` | `slop-*` only (10 cases: 5 TP + 5 expected-clean, one pair per new lens) | **100%** (9/9) | 90% (9/10) | **5/5 silent** | [runs/2026-08-19-gold-style-expansion](../eval/runs/2026-08-19-gold-style-expansion/) |
 
-Both rows measure `/reviso:review`. The tier column is attributed
-retroactively: neither run recorded a tier, because the runner had only
-one to record.
+The first two rows measure `/reviso:review`; their tier column is
+attributed retroactively — neither run recorded a tier, because the runner
+had only one to record.
+
+The 2026-08-19 row is the style expansion's acceptance run (0.7.0):
+`/reviso:style`'s five new lenses (over-engineering, dead weight,
+comments, test slop, AI tells) against their authored synthetic pairs —
+all five true-positive cases matched every gold finding, all five
+expected-clean look-alikes stayed silent. The 90% precision proxy is one
+granularity artifact, not an FP: on `slop-comments-001` the candidate
+split one root cause (comments restating code) into two findings, both
+correct; the extra stands as a promotion candidate. One label was
+recalibrated after the run: `slop-testslop-001` originally demanded two
+findings, but the command's reporting policy *requires* consolidating the
+two can't-fail tests into one — the label now encodes the consolidated
+shape, and the case was **re-matched fresh** (not verdict-reuse) against
+the corrected label. Per-case cost ~$0.45, `claude-opus-5`. Style-tier
+gold runs are meaningful only against style-labeled or expected-clean
+cases (see `eval/corpus/README.md`).
 
 The 2026-08-08 row is a single-case acceptance run for the duplication
 lens (0.3.0), not a sweep — do not compare its numbers to the row above.

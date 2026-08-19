@@ -38,9 +38,12 @@ Reviso is the missing review. Three commands, all local, all report-only:
   and heavier, for when the branch is about to become a PR. (Full
   adversarial multi-skeptic depth lands in P1.)
 - **`/reviso:style`** — the style lane: slop, drift from your repo's own
-  conventions, comment and method length, duplication — and nothing else.
-  Every finding is measured against how *your* codebase writes, with the
-  baseline cited; no bug hunting, no absolute thresholds.
+  conventions, comment and method length, duplication, over-engineering,
+  dead weight, test slop, AI tells — and nothing else. Every finding is
+  measured against how *your* codebase writes, with the baseline cited —
+  no bug hunting, no absolute thresholds, with two deliberate exceptions:
+  a comment must earn its place (only a written convention overrides),
+  and placeholder text is always a finding.
 
 The intended rhythm: code → `review` → fix → a few more commits →
 `audit` → open the PR. Reach for `style` when the question is "is this
@@ -126,8 +129,10 @@ lane, calibrated to your repo's own norms), the parity eval harness in
 [eval/](eval/), and the assisted false-positive feedback flow under the
 [docs/feedback.md](docs/feedback.md) privacy contract.
 Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),
-comment humanization (P1), and `.reviso/` team memory — rules and dismissal
-learnings (P2). Report-only is permanent; those aren't.
+comment humanization (P1), `.reviso/` team memory — rules and dismissal
+learnings (P2) — and a lane restructure under consideration (`review` at
+`/code-review` parity, `audit` as review + style + architecture).
+Report-only is permanent; those aren't.
 
 ## Contributing
 

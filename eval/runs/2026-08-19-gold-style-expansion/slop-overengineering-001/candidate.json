@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/discount.ts",
+    "line": 1,
+    "title": "Strategy interface + factory built for a single caller",
+    "severity": "P2",
+    "category": "over-engineering",
+    "description": "DiscountStrategy has one implementer (BulkDiscountStrategy). Factory.create has one caller passing no arguments. DiscountStrategyFactoryOptions never supplied. Four indirections encode one rule. Collapse to a parameterized function; reintroduce interface when second strategy exists."
+  },
+  {
+    "file": "src/discount.ts",
+    "line": 36,
+    "title": "Null/undefined guard on a parameter the types make impossible",
+    "severity": "P2",
+    "category": "over-engineering",
+    "description": "total declared number; sole caller passes number from reduce. Null/undefined branch at lines 36-38 is unreachable. Delete dead code."
+  }
+]

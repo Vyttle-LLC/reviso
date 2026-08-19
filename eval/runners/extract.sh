@@ -62,7 +62,7 @@ fi
 
 # Loud-failure cross-check: review claims issues but extraction is empty.
 if printf '%s\n' "$CLEAN" | jq -e 'length == 0' >/dev/null 2>&1 \
-   && grep -qiE 'found [1-9][0-9]* issue' "$F"; then
+   && grep -qiE 'found [1-9][0-9]* (style )?issue' "$F"; then
   echo "extract.sh: review text claims issues but extraction is empty for $F" >&2
   exit 1
 fi

@@ -1,0 +1,75 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/format.ts",
+        "line": 14,
+        "title": "Temporal/comparative naming: formatBytesEnhanced names the edit, not the behavior",
+        "severity": "medium",
+        "category": "slop",
+        "description": "\"Enhanced\" relative to what? The name records that this function came after formatBytes, not what it does. Fold the negative-value handling into formatBytes or name the function for its behavior.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/format.ts",
+        "line": 14,
+        "title": "formatBytesEnhanced is a comparative-named parallel variant with silently different behavior",
+        "severity": "P1",
+        "category": "over-engineering",
+        "description": "Two exported byte formatters differ only by Enhanced suffix; they disagree on negatives (formatBytes(-2048)→−2048.0 B vs formatBytesEnhanced(-2048)→−2.0 KB). formatBytesEnhanced has one consumer and delegates entirely to formatBytes; formatBytes has no external callers."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/format.ts",
+        "line": 15,
+        "title": "Changelog-style comment records edit history in code",
+        "severity": "medium",
+        "category": "slop",
+        "description": "\"// Fixed bug where negative values were not handled\" is commit-message content; in the file it goes stale the moment the code changes again. Git history already records it.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/format.ts",
+        "line": 13,
+        "title": "Comments on formatBytesEnhanced restate code or narrate history",
+        "severity": "P2",
+        "category": "comments",
+        "description": "Two comments (lines 13, 15) either restate what the signature shows or recite changelog text. Both will go stale on any change to the function."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/format.ts",
+        "line": 19,
+        "title": "Placeholder text: unimplemented behavior presented as implemented",
+        "severity": "high",
+        "category": "slop",
+        "description": "\"In a real implementation, this would use the user's locale settings\" — the code admits it is a stand-in; locale handling does not happen.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/format.ts",
+        "line": 19,
+        "title": "Placeholder text committed (unimplemented code presented as implemented)",
+        "severity": "P1",
+        "category": "deterministic",
+        "description": "Comment admits code is a stand-in for locale settings. Readers will believe locale handling is an unimplemented gap in this function when nothing routes to it."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 3,
+    "gold_correctness_count": 3,
+    "candidate_count": 3,
+    "matched_count": 3,
+    "matched_correctness_count": 3,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}
