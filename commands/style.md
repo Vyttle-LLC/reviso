@@ -137,8 +137,14 @@ is the only trace a noticed bug leaves.
   disagree"). `suggested_fix` names the helper — name, signature, and
   the home it belongs in following this repo's existing layout — plus
   the rewrite of one call site; no named helper, no finding. Test code
-  counts. The bar itself — 4-or-more / exactly-3 / 2-or-fewer, the
-  helper-naming requirement, the search protocol — is shared with
+  counts only when the repo wrote the rule: a duplication whose
+  occurrences are all in test code ships only if a written convention
+  (CLAUDE.md / AGENTS.md / lint config / skill doc governing the changed
+  paths) demands shared test helpers — a demonstrated-but-unwritten
+  helper idiom doesn't open the gate. Any production occurrence and the
+  ordinary bar applies. The bar itself — 4-or-more / exactly-3 /
+  2-or-fewer, the helper-naming requirement, the search protocol — is
+  shared with
   `/reviso:review` and the audit's anti-slop finder and must not drift;
   severity and gating are each surface's own (the audit's finder reports
   below-bar candidates for its orchestrator to judge — do not copy that

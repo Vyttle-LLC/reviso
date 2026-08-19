@@ -92,6 +92,18 @@ site. Below-bar duplication SHALL NOT be reported at all. Before clearing
 any added block as non-duplicative, the finder SHALL search the
 repository for that block's distinctive identifiers.
 
+A duplication finding whose occurrences are **all in test code** (as the
+repository's own layout and naming identify test code) SHALL NOT ship
+unless a written repository convention — CLAUDE.md, AGENTS.md, a lint
+configuration, or a skill/contributor doc governing the changed paths —
+demands shared test helpers or deduplicated test logic, in which case the
+ordinary bar applies. A helper idiom merely demonstrated in the code,
+with no written rule, SHALL NOT open the gate. If any occurrence is
+production code, the ordinary bar applies unchanged. The gate is applied
+where judgment lives — the self-verify step of the single-pass commands
+and the audit orchestrator, via the shared false-positive exclusion
+list — and finders still report test-only candidates.
+
 #### Scenario: Rule expression repeated across call sites
 
 - **WHEN** the diff adds the same collision predicate at five call sites
@@ -127,6 +139,29 @@ repository for that block's distinctive identifiers.
   function or view skeleton, giving two occurrences in total
 - **THEN** no duplication finding ships — block length is not a route
   past the occurrence bar
+
+#### Scenario: Test-only duplication with no written convention stays silent
+
+- **WHEN** the diff repeats a mock-configuration lambda at seven sites,
+  all within test files, and no written convention of the repository
+  demands shared test helpers
+- **THEN** no duplication finding ships, however many occurrences there
+  are
+
+#### Scenario: Test-only duplication ships where the repo wrote the rule
+
+- **WHEN** the diff adds five near-verbatim copies of a store-lookup
+  block across test specs, and a skill doc governing those paths says to
+  use the shared helpers module
+- **THEN** one duplication finding ships under the ordinary bar, citing
+  every occurrence and the written convention
+
+#### Scenario: A demonstrated idiom is not a written rule
+
+- **WHEN** test-only duplication sits in a file that already contains a
+  shared helper idiom, but no written convention demands helpers
+- **THEN** no duplication finding ships — the gate opens on written rules
+  only
 
 #### Scenario: Severity cap
 

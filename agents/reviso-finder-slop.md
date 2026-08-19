@@ -56,8 +56,11 @@ You flag exactly this P0 slop set, nothing broader:
    five silently disagree". Your `suggested_fix` names the helper — its
    name, its signature, and the home it belongs in following this repo's
    existing layout — plus the rewrite of one call site. No named helper,
-   no finding. Test code counts: duplicated test logic drifts the same way
-   production code does.
+   no finding. Test code counts as a candidate: duplicated test logic
+   drifts the same way production code does. Whether a test-only
+   duplication ships is the orchestrator's call — it gates on a written
+   repo convention — so return it either way, noting in `evidence` when
+   every occurrence is test code.
 
 Items 3 and 5 overlap by design and are one finding, not two: item 3 is
 the semantic case (you wrote your own version of a utility that exists),
