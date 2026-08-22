@@ -3,7 +3,9 @@
 ## Purpose
 
 The `/reviso:style` verb: a single-pass, style-only review — AI slop, drift from the repo's own norms, comment and method length, duplication, over-engineering, dead weight, test slop, AI tells, derived state, naming, error-handling shape — calibrated against the codebase itself, never against absolute thresholds, with exactly two named exceptions (the comments lens's earn-its-place bar and placeholder text).
+
 ## Requirements
+
 ### Requirement: `/reviso:style` is a single-pass, style-only review
 
 The plugin SHALL provide `/reviso:style`, a review performed entirely by
@@ -336,4 +338,3 @@ should be written, or its deletion.
   the subject itself
 - **THEN** a test-slop finding ships, quoting the assertion and naming
   what the test actually exercises
-
