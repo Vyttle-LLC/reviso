@@ -1,0 +1,66 @@
+[
+  {
+    "file": "src/services/summary-manager.test.ts",
+    "line": 9,
+    "title": "Test assertion is tautological and cannot fail",
+    "severity": "P1",
+    "category": "test slop",
+    "description": "`expect(total).toBe(total)` compares the value to itself, providing no actual coverage of `total()` implementation"
+  },
+  {
+    "file": "src/format/period.ts",
+    "line": 8,
+    "title": "Placeholder text committed — unimplemented code presented as implemented",
+    "severity": "P1",
+    "category": "deterministic",
+    "description": "Comment admits code is a stand-in; locale handling described never happens, gap not explicitly tracked"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 31,
+    "title": "`persist` swallows and logs where this repo wraps and rethrows",
+    "severity": "P1",
+    "category": "error handling",
+    "description": "Catch does `console.warn` instead of throwing `StorageError` like other storage writers in this repo; inconsistent error pattern"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 6,
+    "title": "`count` is a stored projection of `invoices.length`",
+    "severity": "P2",
+    "category": "derived state",
+    "description": "Field is lockstep with source and never varies; maintenance burden without added meaning"
+  },
+  {
+    "file": "src/format/period.ts",
+    "line": 5,
+    "title": "Comparative name and changelog comment in `period.ts`",
+    "severity": "P2",
+    "category": "AI tells",
+    "description": "`formatPeriodEnhanced` doesn't describe its behavior; changelog comment documents commit history, not code intent"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 18,
+    "title": "Comments in `total()` restate the code",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Comments narrate what the code already says; no insight, will not track changes"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 37,
+    "title": "`toCsvRow` and `replace` are added with no caller",
+    "severity": "P2",
+    "category": "dead weight",
+    "description": "Both methods unreachable via grep, reflection, or dynamic access; exported surface with zero callers"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 4,
+    "title": "`Manager` suffix diverges from this repo's `Service` naming",
+    "severity": "P2",
+    "category": "naming",
+    "description": "Class should be `SummaryService` to match repo convention (`InvoiceService`, `ExportService`)"
+  }
+]

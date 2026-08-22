@@ -52,7 +52,11 @@ $WHOLE"
 
 # Pinned to haiku: extraction is mechanical parsing; cheap and reproducible.
 RES=$(claude -p "$PROMPT" --model "${EXTRACT_MODEL:-haiku}" --output-format json --setting-sources project,local ${EXTRACT_CLAUDE_FLAGS:-} | jq -r '.result')
-CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
+# The model may wrap the array in a fence and surround it with prose
+# (observed on a clean style report whose --explain section mentioned
+# dropped candidates): take the fenced block when there is one.
+CLEAN=$(printf '%s\n' "$RES" | awk '/^```json[[:space:]]*$/{inb=1; next} /^```[[:space:]]*$/{if(inb) exit} inb')
+[ -n "$CLEAN" ] || CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
 
 if ! printf '%s\n' "$CLEAN" | jq -e 'type == "array"' >/dev/null 2>&1; then
   echo "extract.sh: model output is not a JSON array for $F" >&2

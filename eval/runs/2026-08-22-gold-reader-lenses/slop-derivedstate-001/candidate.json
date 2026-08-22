@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/session.ts",
+    "line": 5,
+    "title": "`Session.messages` is a stored projection of `manifest.platform.messages`",
+    "severity": "P2",
+    "category": "derived state",
+    "description": "Stored copy of `manifest.platform.messages` requires synchronous updates at multiple write sites (8-9, 13-14). Single read site at src/banner.ts:4. Fix: inline projection at read site, drop the field and assignments."
+  }
+]

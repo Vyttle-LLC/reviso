@@ -80,6 +80,18 @@ most-severe-first ordering under real load. One fixture with ≥10
 plantable findings across ≥4 lenses, labeled with the expected
 consolidated set, fills that gap.
 
+### D7 — Synthetic fixtures gain `context` files
+
+The naming and error-handling pairs need an existing same-language
+baseline: the TP has to diverge from *something*, and the clean case has
+to match it. The harness materialized every fixture file as an
+uncommitted addition on an empty base, so no baseline existed. Fixture
+files now carry `status: "context"` (committed into the base first) or
+`status: "added"` (the change under review); `gold.sh` branches on it.
+The gold-eval spec already reads "base content committed, diff applied",
+so this is the harness catching up to its spec, not a spec change.
+Existing fixtures are all-`added` and unaffected.
+
 ## Risks / Trade-offs
 
 - [Naming is the most taste-prone lens in the set] → two same-language

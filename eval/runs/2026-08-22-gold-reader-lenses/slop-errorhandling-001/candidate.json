@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/storage/upload-blob.ts",
+    "line": 5,
+    "title": "`uploadBlob` swallows the error and logs where the repo wraps and throws",
+    "severity": "P1",
+    "category": "error handling",
+    "description": "Function logs error and returns null instead of matching sibling pattern (readBlob, deleteBlob) which wrap caught errors in StorageError with key-bearing message and forward cause. Missing error shape consistency and cause propagation."
+  }
+]

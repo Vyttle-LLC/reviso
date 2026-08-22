@@ -39,7 +39,8 @@ Reviso is the missing review. Three commands, all local, all report-only:
   adversarial multi-skeptic depth lands in P1.)
 - **`/reviso:style`** — the style lane: slop, drift from your repo's own
   conventions, comment and method length, duplication, over-engineering,
-  dead weight, test slop, AI tells — and nothing else. Every finding is
+  dead weight, test slop, AI tells, derived state, naming, error-handling
+  shape — and nothing else. Every finding is
   measured against how *your* codebase writes, with the baseline cited —
   no bug hunting, no absolute thresholds, with two deliberate exceptions:
   a comment must earn its place (only a written convention overrides),

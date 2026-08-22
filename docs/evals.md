@@ -55,10 +55,36 @@ Two metric families, deliberately not comparable to each other:
 | 2026-08-07 | `review` | full public (63 cases: 50 CRB + 13 synthetic) | **48%** (68/139) | 37% (71/189) | 4/5 silent | [runs/2026-08-07-gold-sweep-v0](../eval/runs/2026-08-07-gold-sweep-v0/) |
 | 2026-08-08 | `review` | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
 | 2026-08-19 | `style` | `slop-*` only (10 cases: 5 TP + 5 expected-clean, one pair per new lens) | **100%** (9/9) | 90% (9/10) | **5/5 silent** | [runs/2026-08-19-gold-style-expansion](../eval/runs/2026-08-19-gold-style-expansion/) |
+| 2026-08-22 | `style` | reader lenses only (7 cases: 3 TP + 3 expected-clean + 1 multi-lens) | **100%** (12/12) | 100% (12/12) | **3/3 silent** | [runs/2026-08-22-gold-reader-lenses](../eval/runs/2026-08-22-gold-reader-lenses/) |
 
 The first two rows measure `/reviso:review`; their tier column is
 attributed retroactively — neither run recorded a tier, because the runner
 had only one to record.
+
+The 2026-08-22 row is the reader lenses' acceptance run (0.8.0):
+`/reviso:style`'s three new lenses (derived state, naming, error
+handling) against their synthetic pairs, plus `slop-multilens-001` —
+ten findings planted across seven lenses, eight expected after
+consolidation. All three true-positive cases matched every gold finding,
+all three clean look-alikes stayed silent, and the multi-lens case
+shipped exactly eight findings, the three P1s first (placeholder
+detector, can't-fail test, swallowed error the repo surfaces). The
+naming and error-handling pairs are the first fixtures to carry
+`context` files — base content committed before the change lands, so
+the lens has an existing same-language baseline to cite. Two fixtures
+were corrected after a first pass and re-run fresh: the naming TP had
+copied `InvoiceService`'s method bodies verbatim (the command correctly
+reported the reuse — a real finding the label never intended), and the
+multi-lens repo had no entry points at all, so "uncalled" could not
+distinguish the planted dead weight from the existing public surface
+(the command said exactly that in `--explain` and dropped it —
+correctly). Per-case cost ~$0.50, multi-lens $0.66; `claude-opus-5`.
+Field smoke on a real pica-api branch (6 commits, 22 files), 0.8.0
+against 0.7.0 on the same range: 6 findings vs 3 (the extra three are a
+can't-fail test and two comment findings — none from the three new
+lenses, which returned clean), all fourteen ledger rows returned,
+6m25s / $2.14 vs 5m04s / $1.97. A ~27% longer pass for three more
+lenses; the lens-family grouping deferred in the design stays deferred.
 
 The 2026-08-19 row is the style expansion's acceptance run (0.7.0):
 `/reviso:style`'s five new lenses (over-engineering, dead weight,

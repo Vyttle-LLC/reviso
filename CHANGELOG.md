@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] — 2026-08-22
+
+### Added
+
+- **The reader lenses.** `/reviso:style` grows from ten lenses to
+  thirteen: **derived state** (a stored value kept in lockstep with
+  another at every write site — every write and read cited, the
+  projection inlined or made a getter in the repo's idiom), **naming**
+  (names that hedge, lie, or diverge from how the repo names the same
+  kind of thing), and **error handling** (swallow-and-log where the repo
+  surfaces, context-free rethrows where it wraps, try/catch around code
+  that cannot throw — shape only; a swallow that hides a real failure is
+  `/reviso:review`'s). Naming and error handling hold drift's bar: two
+  existing same-language examples by `file:line`, or no finding. Drift
+  no longer names naming or error shape as its own. Ledger, `--explain`,
+  and feedback mapping carry all thirteen. Closes #9 (pattern 2; pattern
+  1 shipped in 0.3.0).
+- **Same-language baselines.** A convention-relative finding's cited
+  examples must be in the language of the changed code — a Swift idiom
+  sets no norm for a TypeScript file in the same repo. Cross-language
+  citations no longer count toward the two.
+- **Synthetic fixtures can carry base content.** A fixture file with
+  `status: "context"` is committed into the throwaway repo before the
+  `added` files land as the change, so convention-relative lenses have
+  an existing baseline to cite. Seven corpus cases land on it: a
+  true-positive / expected-clean pair per new lens, and
+  `slop-multilens-001`, the first case to exercise dedupe, the
+  8-finding cap, and most-severe-first ordering under load (ten planted
+  findings, eight expected). Acceptance run
+  (`eval/runs/2026-08-22-gold-reader-lenses/`): recall **100% (12/12)**,
+  clean cases **3/3 silent**, precision proxy 100%, multi-lens case at
+  exactly eight findings, P1s first.
+
 ## [0.7.0] — 2026-08-19
 
 ### Added

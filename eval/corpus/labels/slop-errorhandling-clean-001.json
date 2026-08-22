@@ -1,0 +1,7 @@
+{
+  "case": "slop-errorhandling-clean-001",
+  "origin": "synthetic",
+  "imported": "2026-08-22",
+  "expected_clean": true,
+  "findings": []
+}
