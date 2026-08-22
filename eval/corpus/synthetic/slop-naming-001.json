@@ -1,0 +1,32 @@
+{
+  "id": "slop-naming-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add the monthly report service",
+    "description": "Builds the monthly invoice report from an account's invoices."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/services/invoice-service.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,14 @@\n+import { Invoice } from \"../types\";\n+\n+export class InvoiceService {\n+  constructor(private readonly baseUrl: string) {}\n+\n+  async fetchInvoices(accountId: string): Promise<Invoice[]> {\n+    const res = await fetch(`${this.baseUrl}/accounts/${accountId}/invoices`);\n+    return (await res.json()) as Invoice[];\n+  }\n+\n+  isOverdue(invoice: Invoice, now: Date): boolean {\n+    return invoice.dueAt.getTime() < now.getTime() && !invoice.paid;\n+  }\n+}"
+    },
+    {
+      "filename": "src/services/export-service.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,17 @@\n+import { Invoice } from \"../types\";\n+\n+export class ExportService {\n+  constructor(private readonly baseUrl: string) {}\n+\n+  async exportCsv(invoices: Invoice[]): Promise<string> {\n+    const res = await fetch(`${this.baseUrl}/exports`, {\n+      method: \"POST\",\n+      body: JSON.stringify(invoices),\n+    });\n+    return res.text();\n+  }\n+\n+  hasRows(invoices: Invoice[]): boolean {\n+    return invoices.length > 0;\n+  }\n+}"
+    },
+    {
+      "filename": "src/types.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,11 @@\n+export interface Invoice {\n+  id: string;\n+  dueAt: Date;\n+  paid: boolean;\n+  total: number;\n+}\n+\n+export interface Report {\n+  title: string;\n+  invoices: Invoice[];\n+}"
+    },
+    {
+      "filename": "src/services/report-manager.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,18 @@\n+import { Report } from \"../types\";\n+\n+export class ReportManager {\n+  constructor(private readonly baseUrl: string) {}\n+\n+  async data(accountId: string, month: string): Promise<Report> {\n+    const res = await fetch(`${this.baseUrl}/accounts/${accountId}/reports/${month}`);\n+    return (await res.json()) as Report;\n+  }\n+\n+  empty(report: Report): boolean {\n+    return report.invoices.length === 0;\n+  }\n+\n+  validateReport(report: Report): string {\n+    return report.title;\n+  }\n+}"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 ---
-description: Single-pass style-only review of base..HEAD + uncommitted changes — slop, drift, duplication, comments, dead weight, over-engineering, test slop, AI tells; report-only
+description: Single-pass style-only review of base..HEAD + uncommitted changes — slop, drift, duplication, comments, dead weight, over-engineering, test slop, AI tells, derived state, naming, error handling; report-only
 argument-hint: "[--base <ref>] [--out <path>] [--explain]"
 model: opus
 allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(rg:*)
@@ -9,7 +9,8 @@ Review the current branch's changes for style only, in a single pass — you
 do the entire review yourself, no subagents. This is the dedicated style
 lane: AI slop, drift from this repo's own norms, bloated comments,
 oversized methods, duplication, over-engineering, dead weight, test slop,
-and AI tells. It hunts no bugs — that is what
+AI tells, derived state, naming, and error-handling shape. It hunts no
+bugs — that is what
 `/reviso:review` (inner loop) and `/reviso:audit` (pre-PR deep pass) are
 for, and your report says so.
 
@@ -168,14 +169,19 @@ is the only trace a noticed bug leaves.
   instructions about process, tone, branch shape, or workflow — those are
   `/reviso:review`'s territory.
 - **Drift** — the change writes this kind of code differently from how
-  the repo demonstrably writes it: naming, error-handling shape, module
-  layout, test structure. This is the *demonstrated*-conventions
-  counterpart to the written ones above. Before flagging, locate how the
-  repo already does it and cite **at least two existing examples** by
-  `file:line` in `evidence` — no cited baseline, no finding. One
-  divergent precedent elsewhere in the repo is not a norm; two files
-  doing it the established way is the minimum bar for calling it
-  established.
+  the repo demonstrably writes it: module layout, test structure,
+  control-flow shape. (Naming and error-handling shape have their own
+  lenses below and are not drift's.) This is the
+  *demonstrated*-conventions counterpart to the written ones above.
+  Before flagging, locate how the repo already does it and cite **at
+  least two existing examples** by `file:line` in `evidence` — no cited
+  baseline, no finding. One divergent precedent elsewhere in the repo is
+  not a norm; two files doing it the established way is the minimum bar
+  for calling it established. **The examples must be in the same
+  language as the changed code** — this holds for every
+  convention-relative lens, not just drift. In a polyglot repo, a norm
+  demonstrated in Swift says nothing about how the repo writes
+  TypeScript; a cross-language baseline is no baseline.
 - **Length** — a changed method/function or comment far outside the size
   of comparable units in this repo. "Comparable" means same kind of thing:
   handlers against handlers, tests against tests, doc comments against
@@ -222,16 +228,54 @@ is the only trace a noticed bug leaves.
   — no repo's norm is unimplemented code presented as implemented. For
   everything else, two existing examples of the pattern in the repo make
   it the repo's own idiom, not a tell.
+- **Derived state** — a stored value the change adds or writes that is
+  always a projection of another stored value: every site that writes
+  the copy writes it from the source in the same place (`self.messages =
+  manifest.platform?.messages` beside `self.activePolicy =
+  manifest.platform`), so the copy can never say anything the source
+  doesn't. Also a cached or memoized value with a single reader. The
+  evidence protocol is textual: `evidence` cites **every write site** of
+  the copy, quoting the lockstep assignment at each, and **every read
+  site**. A copy with even one write that doesn't come from the source
+  is independently written and not derived — no finding. Copies that
+  have *already* diverged are a bug, not style; leave them to
+  `/reviso:review`. `suggested_fix`: with one reader, inline the
+  projection at the read site; with several, a computed property or
+  getter in the repo's idiom (cite an existing one if there is one).
+- **Naming** — a name the change introduces that hedges, lies, or
+  diverges from how this repo names the same kind of thing: generic
+  nouns (`data`, `result`, `info`, `item`), verb-less handlers,
+  suffixes the repo doesn't use (`Manager`, `Helper`, `Util`), booleans
+  not phrased as predicates, and names asserting behavior the code does
+  not have (`validateUser` that only reads the user). Convention-relative
+  with drift's bar: `evidence` cites **at least two existing
+  same-language examples** by `file:line` of how the repo names this
+  kind of thing — no cited baseline, no finding. There is no absolute
+  generic-name list: a repo full of `FooManager` keeps naming them that
+  way. Temporal and comparative names (`newHelper`, `enhancedFoo`) stay
+  with AI tells, not here. `suggested_fix` gives the name, following the
+  cited examples.
+- **Error handling** — the change handles errors in a shape the repo
+  doesn't: swallow-and-log where the repo surfaces, an empty catch, a
+  rethrow that adds no context where the repo wraps, a generic message
+  where the repo's are specific, or a try/catch around code that cannot
+  throw (cite what makes it non-throwing). Same bar as naming:
+  `evidence` cites **at least two existing same-language examples** by
+  `file:line` of how the repo handles the same kind of error — no cited
+  baseline, no finding; a repo whose idiom is log-and-continue keeps it.
+  **Shape only.** Whether a swallowed error actually hides a failure
+  from the caller is a bug question and belongs to `/reviso:review` —
+  report the divergence from the repo's idiom, never the masked failure.
 
 Record each candidate per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`).
 The schema's `dimension` enum predates this command: record `conventions`
 candidates as `conventions`, and every other lens's candidates — slop,
 comments, duplication, drift, length, over-engineering, dead weight, test
-slop, AI tells — as `slop`; the ledger and the report carry the precise
-lens name.
+slop, AI tells, derived state, naming, error handling — as `slop`; the
+ledger and the report carry the precise lens name.
 
-Record a ledger row per lens as you finish it — ten rows here, plus the
+Record a ledger row per lens as you finish it — thirteen rows here, plus the
 `deterministic` row from Step 2. Write the row when you finish the lens,
 not at the end from memory: a row reconstructed at report time is a guess
 about what you did, which is exactly what the ledger replaces.
@@ -250,13 +294,17 @@ For every candidate from Step 3:
    a candidate whose comment shape a written convention actually demands
    scores 0.
 2. On lines the change modified? Pre-existing → 0.
-3. Baseline check, this command's own gate: a drift or over-engineering
-   candidate without its cited `file:line` evidence (two examples of the
-   established pattern; the absence citation), or a length candidate that
-   doesn't name its comparable units, scores 0 — the citation *is* the
-   evidence, and without it the finding is taste. A dead-weight candidate
-   whose evidence doesn't state the search performed and its empty result
-   also scores 0.
+3. Baseline check, this command's own gate: a drift, naming,
+   error-handling, or over-engineering candidate without its cited
+   `file:line` evidence (two examples of the established pattern; the
+   absence citation), or a length candidate that doesn't name its
+   comparable units, scores 0 — the citation *is* the evidence, and
+   without it the finding is taste. Cited examples in a different
+   language from the changed code do not count toward the two. A
+   derived-state candidate whose evidence doesn't quote the lockstep
+   assignment at every write site scores 0 the same way. A dead-weight
+   candidate whose evidence doesn't state the search performed and its
+   empty result also scores 0.
 4. Re-examine the actual code: does the failure scenario hold against the
    real baseline, and is the repo's own style genuinely on your side?
 5. Score 0–100 using the rubric exactly as written — no stricter, no
@@ -281,8 +329,11 @@ confidence.
 Severity, this command's band: style findings are **P2** by default, and
 **P1** only when the finding actively misleads: a wrong comment, a
 shadowed utility with different behavior, duplicated copies that have
-already diverged in behavior, or a test that appears to cover behavior
-but cannot fail. The style lenses never emit P0 — nothing
+already diverged in behavior, a test that appears to cover behavior but
+cannot fail, a name that asserts behavior the code does not have, or a
+catch that silently swallows an error the repo elsewhere surfaces. (A
+derived copy that has already diverged is a bug and ships nowhere here.)
+The style lenses never emit P0 — nothing
 purely stylistic blocks a merge. Deterministic detector findings keep
 their own severities.
 
@@ -313,7 +364,9 @@ Style only — for bugs, run /reviso:review (inner loop) or /reviso:audit (pre-P
 ```
 
 The `Baseline:` line replaces the review command's `Failure:` line for
-drift and length findings; every other lens and deterministic findings
+drift, naming, error-handling, and length findings; every other lens
+(derived state included — its cost is the lockstep to maintain) and
+deterministic findings
 keep `Failure:` (the concrete cost to the next reader/maintainer). Every
 finding cites `file:line`.
 
@@ -346,11 +399,12 @@ Append one section after the findings, in this shape:
 --- explain: pipeline diagnostics (not review findings) ---
 Lenses: slop 2, comments 1, duplication 0, conventions 1, drift 1,
 length 0, over-engineering 0, dead-weight 0, test-slop 0, ai-tells 0,
-deterministic 0.
+derived-state 0, naming 1, error-handling 0, deterministic 0.
 Candidates before the gate (4):
   [drift]       cli_server.rs:2257  score 88  reported
   [length]      shell_env.rs:453    score  0  dropped: no-baseline
   [slop]        shell_env.rs:50     score 72  dropped: rubric-score
+  [naming]      shell_env.rs:118    score  0  dropped: no-baseline
 ```
 
 The ledger with counts, then every candidate you kept a record of in Step
@@ -385,7 +439,8 @@ When the user names a finding:
 2. **Tier 1 (default).** Bucket the confidence (80–89 → `80s`, 90–99 →
    `90s`, 100 → `100`), map the lens to its schema dimension (slop,
    comments, duplication, drift, length, over-engineering, dead weight,
-   test slop, AI tells → `slop`; conventions → `conventions`;
+   test slop, AI tells, derived state, naming, error handling → `slop`;
+   conventions → `conventions`;
    deterministic → `deterministic`), and run:
 
    ```sh

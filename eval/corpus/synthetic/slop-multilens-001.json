@@ -1,0 +1,67 @@
+{
+  "id": "slop-multilens-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add the invoice summary report",
+    "description": "Builds a per-account invoice summary with CSV export and a formatted period label."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/services/invoice-service.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,14 @@\n+import { Invoice } from \"../types\";\n+\n+export class InvoiceService {\n+  constructor(private readonly baseUrl: string) {}\n+\n+  async fetchInvoices(accountId: string): Promise<Invoice[]> {\n+    const res = await fetch(`${this.baseUrl}/accounts/${accountId}/invoices`);\n+    return (await res.json()) as Invoice[];\n+  }\n+\n+  isOverdue(invoice: Invoice, now: Date): boolean {\n+    return invoice.dueAt.getTime() < now.getTime() && !invoice.paid;\n+  }\n+}"
+    },
+    {
+      "filename": "src/services/export-service.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,17 @@\n+import { Invoice } from \"../types\";\n+\n+export class ExportService {\n+  constructor(private readonly baseUrl: string) {}\n+\n+  async exportCsv(invoices: Invoice[]): Promise<string> {\n+    const res = await fetch(`${this.baseUrl}/exports`, {\n+      method: \"POST\",\n+      body: JSON.stringify(invoices),\n+    });\n+    return res.text();\n+  }\n+\n+  hasRows(invoices: Invoice[]): boolean {\n+    return invoices.length > 0;\n+  }\n+}"
+    },
+    {
+      "filename": "src/types.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,11 @@\n+export interface Invoice {\n+  id: string;\n+  dueAt: Date;\n+  paid: boolean;\n+  total: number;\n+}\n+\n+export interface Report {\n+  title: string;\n+  invoices: Invoice[];\n+}"
+    },
+    {
+      "filename": "src/storage/read-blob.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,10 @@\n+import { StorageError } from \"./errors\";\n+\n+export async function readBlob(key: string): Promise<Uint8Array> {\n+  try {\n+    const res = await fetch(`/blobs/${key}`);\n+    return new Uint8Array(await res.arrayBuffer());\n+  } catch (cause) {\n+    throw new StorageError(`failed to read blob ${key}`, { cause });\n+  }\n+}"
+    },
+    {
+      "filename": "src/storage/delete-blob.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,9 @@\n+import { StorageError } from \"./errors\";\n+\n+export async function deleteBlob(key: string): Promise<void> {\n+  try {\n+    await fetch(`/blobs/${key}`, { method: \"DELETE\" });\n+  } catch (cause) {\n+    throw new StorageError(`failed to delete blob ${key}`, { cause });\n+  }\n+}"
+    },
+    {
+      "filename": "src/storage/errors.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,6 @@\n+export class StorageError extends Error {\n+  constructor(message: string, options?: { cause?: unknown }) {\n+    super(message, options);\n+    this.name = \"StorageError\";\n+  }\n+}"
+    },
+    {
+      "filename": "src/services/summary-manager.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,43 @@\n+import { Invoice } from \"../types\";\n+import { StorageError } from \"../storage/errors\";\n+\n+export class SummaryManager {\n+  invoices: Invoice[];\n+  count: number;\n+\n+  constructor(invoices: Invoice[]) {\n+    this.invoices = invoices;\n+    this.count = invoices.length;\n+  }\n+\n+  replace(invoices: Invoice[]): void {\n+    this.invoices = invoices;\n+    this.count = invoices.length;\n+  }\n+\n+  // Sum the totals of all invoices\n+  total(): number {\n+    // Loop over each invoice and add its total to the sum\n+    let sum = 0;\n+    for (const invoice of this.invoices) {\n+      sum += invoice.total;\n+    }\n+    return sum;\n+  }\n+\n+  async persist(key: string): Promise<void> {\n+    try {\n+      await fetch(`/blobs/${key}`, { method: \"PUT\", body: JSON.stringify(this.invoices) });\n+    } catch (err) {\n+      console.warn(\"persist failed\");\n+    }\n+  }\n+}\n+\n+export function toCsvRow(invoice: Invoice): string {\n+  return [invoice.id, invoice.total, invoice.paid ? \"paid\" : \"open\"].join(\",\");\n+}\n+\n+export function summaryLine(manager: SummaryManager): string {\n+  return `${manager.count} invoices, ${manager.total()} total`;\n+}"
+    },
+    {
+      "filename": "src/format/period.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,10 @@\n+export function formatPeriod(start: Date, end: Date): string {\n+  return `${start.toISOString().slice(0, 10)} \u2013 ${end.toISOString().slice(0, 10)}`;\n+}\n+\n+// Fixed bug where the end date was off by one day\n+export function formatPeriodEnhanced(start: Date, end: Date): string {\n+  const inclusiveEnd = new Date(end.getTime() + 86_400_000);\n+  // In a real implementation, this would use the account's locale\n+  return formatPeriod(start, inclusiveEnd);\n+}"
+    },
+    {
+      "filename": "src/services/summary-manager.test.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,10 @@\n+import { SummaryManager } from \"./summary-manager\";\n+\n+test(\"total sums invoice totals\", () => {\n+  const manager = new SummaryManager([\n+    { id: \"a\", dueAt: new Date(), paid: true, total: 10 },\n+    { id: \"b\", dueAt: new Date(), paid: false, total: 5 },\n+  ]);\n+  const total = manager.total();\n+  expect(total).toBe(total);\n+});"
+    },
+    {
+      "filename": "src/app.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,9 @@\n+import { InvoiceService } from \"./services/invoice-service\";\n+import { ExportService } from \"./services/export-service\";\n+\n+const BASE_URL = process.env.BILLING_URL ?? \"http://localhost:4000\";\n+\n+export async function exportAccount(accountId: string): Promise<string> {\n+  const invoices = await new InvoiceService(BASE_URL).fetchInvoices(accountId);\n+  return new ExportService(BASE_URL).exportCsv(invoices);\n+}"
+    },
+    {
+      "filename": "src/cli/summary.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,12 @@\n+import { InvoiceService } from \"../services/invoice-service\";\n+import { SummaryManager, summaryLine } from \"../services/summary-manager\";\n+import { formatPeriodEnhanced } from \"../format/period\";\n+\n+const BASE_URL = process.env.BILLING_URL ?? \"http://localhost:4000\";\n+\n+export async function printSummary(accountId: string, start: Date, end: Date): Promise<void> {\n+  const invoices = await new InvoiceService(BASE_URL).fetchInvoices(accountId);\n+  const manager = new SummaryManager(invoices);\n+  await manager.persist(`summaries/${accountId}`);\n+  console.log(`${formatPeriodEnhanced(start, end)}: ${summaryLine(manager)}`);\n+}"
+    }
+  ]
+}

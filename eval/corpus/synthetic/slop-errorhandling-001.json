@@ -1,0 +1,32 @@
+{
+  "id": "slop-errorhandling-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add blob upload",
+    "description": "Uploads a blob by key and returns its etag."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/storage/read-blob.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,10 @@\n+import { StorageError } from \"./errors\";\n+\n+export async function readBlob(key: string): Promise<Uint8Array> {\n+  try {\n+    const res = await fetch(`/blobs/${key}`);\n+    return new Uint8Array(await res.arrayBuffer());\n+  } catch (cause) {\n+    throw new StorageError(`failed to read blob ${key}`, { cause });\n+  }\n+}"
+    },
+    {
+      "filename": "src/storage/delete-blob.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,9 @@\n+import { StorageError } from \"./errors\";\n+\n+export async function deleteBlob(key: string): Promise<void> {\n+  try {\n+    await fetch(`/blobs/${key}`, { method: \"DELETE\" });\n+  } catch (cause) {\n+    throw new StorageError(`failed to delete blob ${key}`, { cause });\n+  }\n+}"
+    },
+    {
+      "filename": "src/storage/errors.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,6 @@\n+export class StorageError extends Error {\n+  constructor(message: string, options?: { cause?: unknown }) {\n+    super(message, options);\n+    this.name = \"StorageError\";\n+  }\n+}"
+    },
+    {
+      "filename": "src/storage/upload-blob.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,9 @@\n+export async function uploadBlob(key: string, body: Uint8Array): Promise<string | null> {\n+  try {\n+    const res = await fetch(`/blobs/${key}`, { method: \"PUT\", body });\n+    return res.headers.get(\"etag\");\n+  } catch (err) {\n+    console.warn(\"upload failed\");\n+    return null;\n+  }\n+}"
+    }
+  ]
+}

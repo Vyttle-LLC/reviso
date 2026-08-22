@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/services/report-manager.ts",
+    "line": 15,
+    "title": "validateReport asserts validation but only returns a field",
+    "severity": "P1",
+    "category": "naming",
+    "description": "Method name claims to validate but only returns report.title. If it's an accessor, rename to reportTitle; if validation is intended, delay naming until the validation code exists."
+  },
+  {
+    "file": "src/services/report-manager.ts",
+    "line": 3,
+    "title": "New service's class, file, and method names diverge from sibling services",
+    "severity": "P2",
+    "category": "naming",
+    "description": "Uses Manager suffix instead of Service; method names inconsistent (data vs fetchReport, empty vs isEmpty). Should be ReportService in report-service.ts with method names matching ExportService and InvoiceService conventions."
+  }
+]

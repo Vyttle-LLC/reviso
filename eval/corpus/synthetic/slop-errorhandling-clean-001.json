@@ -1,0 +1,32 @@
+{
+  "id": "slop-errorhandling-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Record scroll-depth metric",
+    "description": "Fire-and-forget scroll-depth metric, same best-effort shape as the other metrics calls."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/metrics/record-view.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,9 @@\n+import { log } from \"../log\";\n+\n+export async function recordView(pageId: string): Promise<void> {\n+  try {\n+    await fetch(`/metrics/views/${pageId}`, { method: \"POST\" });\n+  } catch (err) {\n+    log.warn(\"metrics: view not recorded\", { pageId, err });\n+  }\n+}"
+    },
+    {
+      "filename": "src/metrics/record-click.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,9 @@\n+import { log } from \"../log\";\n+\n+export async function recordClick(elementId: string): Promise<void> {\n+  try {\n+    await fetch(`/metrics/clicks/${elementId}`, { method: \"POST\" });\n+  } catch (err) {\n+    log.warn(\"metrics: click not recorded\", { elementId, err });\n+  }\n+}"
+    },
+    {
+      "filename": "src/log.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,5 @@\n+export const log = {\n+  warn(message: string, fields: Record<string, unknown>): void {\n+    console.warn(message, fields);\n+  },\n+};"
+    },
+    {
+      "filename": "src/metrics/record-scroll.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,12 @@\n+import { log } from \"../log\";\n+\n+export async function recordScroll(pageId: string, depth: number): Promise<void> {\n+  try {\n+    await fetch(`/metrics/scroll/${pageId}`, {\n+      method: \"POST\",\n+      body: JSON.stringify({ depth }),\n+    });\n+  } catch (err) {\n+    log.warn(\"metrics: scroll not recorded\", { pageId, depth, err });\n+  }\n+}"
+    }
+  ]
+}

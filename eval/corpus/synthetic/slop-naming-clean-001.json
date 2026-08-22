@@ -1,0 +1,27 @@
+{
+  "id": "slop-naming-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add the session manager",
+    "description": "Holds the active session id alongside the other per-process managers."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/services/cache-manager.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,11 @@\n+export class CacheManager {\n+  private readonly entries = new Map<string, string>();\n+\n+  get(key: string): string | undefined {\n+    return this.entries.get(key);\n+  }\n+\n+  set(key: string, value: string): void {\n+    this.entries.set(key, value);\n+  }\n+}"
+    },
+    {
+      "filename": "src/services/token-manager.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,11 @@\n+export class TokenManager {\n+  private token: string | null = null;\n+\n+  current(): string | null {\n+    return this.token;\n+  }\n+\n+  refresh(token: string): void {\n+    this.token = token;\n+  }\n+}"
+    },
+    {
+      "filename": "src/services/session-manager.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,15 @@\n+export class SessionManager {\n+  private sessionId: string | null = null;\n+\n+  current(): string | null {\n+    return this.sessionId;\n+  }\n+\n+  start(sessionId: string): void {\n+    this.sessionId = sessionId;\n+  }\n+\n+  end(): void {\n+    this.sessionId = null;\n+  }\n+}"
+    }
+  ]
+}

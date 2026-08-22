@@ -1,0 +1,27 @@
+{
+  "id": "slop-derivedstate-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Track the active platform on the session",
+    "description": "Stores the manifest's platform on the session so the banner can read its messages."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/session.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,16 @@\n+import { Manifest, Platform } from \"./manifest\";\n+\n+export class Session {\n+  platform: Platform | null;\n+  messages: string[];\n+\n+  constructor(manifest: Manifest) {\n+    this.platform = manifest.platform;\n+    this.messages = manifest.platform?.messages ?? [];\n+  }\n+\n+  apply(manifest: Manifest): void {\n+    this.platform = manifest.platform;\n+    this.messages = manifest.platform?.messages ?? [];\n+  }\n+}"
+    },
+    {
+      "filename": "src/manifest.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,9 @@\n+export interface Platform {\n+  name: string;\n+  messages: string[];\n+}\n+\n+export interface Manifest {\n+  version: number;\n+  platform: Platform | null;\n+}"
+    },
+    {
+      "filename": "src/banner.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,5 @@\n+import { Session } from \"./session\";\n+\n+export function bannerText(session: Session): string {\n+  return session.messages.join(\" \u00b7 \");\n+}"
+    }
+  ]
+}

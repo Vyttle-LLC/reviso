@@ -37,13 +37,26 @@ informationally.
 
 ## Style-lens gold cases (synthetic)
 
-The `slop-*` cases (10, authored 2026-08-19) measure `/reviso:style`'s
-expanded lenses: five true-positive / expected-clean pairs, one per lens —
-over-engineering, dead weight, comments, test slop, AI tells. Findings are
-category `slop` (in-lane, so misses count against
-`gold_recall_correctness`); each clean look-alike guards the matching
-lens's precision (a mocked *dependency* vs a mocked subject, a genuinely
-nullable value vs a dead defense, and so on).
+The `slop-*` cases (17) measure `/reviso:style`'s thirteen lenses: eight
+true-positive / expected-clean pairs, one per lens added since 0.6.0 —
+over-engineering, dead weight, comments, test slop, AI tells (authored
+2026-08-19), derived state, naming, error handling (authored 2026-08-22)
+— plus `slop-multilens-001`, one fixture planting ten findings across
+seven lenses that must consolidate to the eight its label lists, most
+severe first: the only case that exercises dedupe, the 8-finding cap,
+and ordering under load. Findings are category `slop` (in-lane, so
+misses count against `gold_recall_correctness`); each clean look-alike
+guards the matching lens's precision (a mocked *dependency* vs a mocked
+subject, a genuinely nullable value vs a dead defense, a repo that
+really does name its services `*Manager`, and so on).
+
+Fixture files carry a `status`: `added` files are the change under
+review; `context` files are committed into the throwaway repo's base
+first, so a convention-relative lens has an existing same-language
+baseline to cite (the naming and error-handling pairs need one — without
+it the TP has no norm to diverge from and the clean case nothing to
+match). A fixture with no `context` files reviews against an empty base,
+as before.
 
 **Style-tier gold runs are meaningful only against style-labeled or
 expected-clean cases.** Running `REVISO_TIER=style` over a bug-labeled

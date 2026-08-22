@@ -31,3 +31,11 @@ the `origin` field distinguishes them.
   pairs, one per new style lens (over-engineering, dead weight, comments,
   test slop, AI tells); all findings carry category `slop`. Style-tier
   gold cases: run them with `REVISO_TIER=style`.
+- `slop-derivedstate-*.json`, `slop-naming-*.json`,
+  `slop-errorhandling-*.json`, `slop-multilens-001.json` (7 files) —
+  authored 2026-08-22 in this repo for the reader lenses, same posture:
+  all content original, nothing imported. Three true-positive /
+  expected-clean pairs (derived state, naming, error handling) and one
+  multi-lens case whose label is the expected *consolidated* set — eight
+  findings from ten planted, ordered most-severe-first. Category `slop`;
+  `REVISO_TIER=style`.

@@ -54,22 +54,31 @@ cleanup() {
 trap cleanup EXIT
 
 if [ "$(printf '%s' "$ENTRY" | jq -r '.synthetic // false')" = "true" ]; then
-  # Materialize (design D6): empty base commit, fixture files as
-  # uncommitted additions — the working diff equals the fixture's diff.
+  # Materialize (design D6): fixture files with status "context" form
+  # the base commit — the pre-existing repo a convention-relative lens
+  # cites as its baseline — and "added" files land as uncommitted
+  # additions, so the working diff equals the fixture's diff.
   FIXTURE="$CORPUS_BASE/$(printf '%s' "$ENTRY" | jq -r '.fixture')"
   git -C "$WD" init -q
+  materialize() {  # materialize <status> — write every fixture file of that status
+    n=$(jq '.files | length' "$FIXTURE")
+    i=0
+    while [ "$i" -lt "$n" ]; do
+      if [ "$(jq -r ".files[$i].status" "$FIXTURE")" = "$1" ]; then
+        fn=$(jq -r ".files[$i].filename" "$FIXTURE")
+        mkdir -p "$WD/$(dirname "$fn")"
+        # Full-content patch: body = every +line minus the prefix.
+        jq -r ".files[$i].patch" "$FIXTURE" \
+          | sed -n 's/^+//p' > "$WD/$fn"
+      fi
+      i=$((i + 1))
+    done
+  }
+  materialize context
+  git -C "$WD" add -A
   git -C "$WD" -c user.email=eval@reviso -c user.name=reviso-eval \
     commit -q --allow-empty -m "base"
-  n=$(jq '.files | length' "$FIXTURE")
-  i=0
-  while [ "$i" -lt "$n" ]; do
-    fn=$(jq -r ".files[$i].filename" "$FIXTURE")
-    mkdir -p "$WD/$(dirname "$fn")"
-    # Full-content "added" patch: body = every +line minus the prefix.
-    jq -r ".files[$i].patch" "$FIXTURE" \
-      | sed -n 's/^+//p' > "$WD/$fn"
-    i=$((i + 1))
-  done
+  materialize added
   BASE=$(git -C "$WD" rev-parse HEAD)
   HEAD_SHA=$BASE   # review scope = uncommitted changes on the base
 else
