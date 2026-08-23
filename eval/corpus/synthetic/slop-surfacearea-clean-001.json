@@ -1,0 +1,42 @@
+{
+  "id": "slop-surfacearea-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Extract total computation and share rounding with reports",
+    "description": "Moves the checkout total math into totals.ts; the report summary reuses its rounding."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/types.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,5 @@\n+export interface LineItem {\n+  sku: string;\n+  cents: number;\n+  quantity: number;\n+}"
+    },
+    {
+      "filename": "src/billing/tax.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,10 @@\n+import { LineItem } from \"../types\";\n+\n+function clampRate(rate: number): number {\n+  return Math.min(Math.max(rate, 0), 1);\n+}\n+\n+export function computeTax(items: LineItem[], rate: number): number {\n+  const subtotal = items.reduce((sum, item) => sum + item.cents, 0);\n+  return Math.round(subtotal * clampRate(rate));\n+}"
+    },
+    {
+      "filename": "src/billing/checkout.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,7 @@\n+import { LineItem } from \"../types\";\n+import { computeTax } from \"./tax\";\n+\n+export function checkoutTotal(items: LineItem[], taxRate: number): number {\n+  const subtotal = items.reduce((sum, item) => sum + item.cents * item.quantity, 0);\n+  return subtotal + computeTax(items, taxRate);\n+}"
+    },
+    {
+      "filename": "src/billing/totals.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,11 @@\n+import { LineItem } from \"../types\";\n+import { computeTax } from \"./tax\";\n+\n+export function roundCents(value: number): number {\n+  return Math.round(value);\n+}\n+\n+export function computeTotal(items: LineItem[], taxRate: number): number {\n+  const subtotal = items.reduce((sum, item) => sum + item.cents * item.quantity, 0);\n+  return roundCents(subtotal + computeTax(items, taxRate));\n+}"
+    },
+    {
+      "filename": "src/billing/checkout.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,6 @@\n+import { LineItem } from \"../types\";\n+import { computeTotal } from \"./totals\";\n+\n+export function checkoutTotal(items: LineItem[], taxRate: number): number {\n+  return computeTotal(items, taxRate);\n+}"
+    },
+    {
+      "filename": "src/reports/summary.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,6 @@\n+import { roundCents } from \"../billing/totals\";\n+\n+export function averageCents(values: number[]): number {\n+  if (values.length === 0) return 0;\n+  return roundCents(values.reduce((a, b) => a + b, 0) / values.length);\n+}"
+    }
+  ]
+}

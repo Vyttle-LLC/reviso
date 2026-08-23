@@ -1,0 +1,10 @@
+[
+  {
+    "file": "README.md",
+    "line": 7,
+    "title": "README documents the removed `--output` flag",
+    "severity": "P1",
+    "category": "stale docs",
+    "description": "README line 7 still documents the `--output` flag which was renamed to `--out` in src/cli.ts. Readers following the documentation will pass a flag that parseArgs no longer defines. Update to: `Run reviso-sync --out <path>`"
+  }
+]

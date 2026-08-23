@@ -1,0 +1,32 @@
+{
+  "id": "slop-staledocs-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Rename --output to --out",
+    "description": "Shortens the manifest output flag to match the sibling CLIs."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "README.md",
+      "status": "context",
+      "patch": "@@ -0,0 +1,8 @@\n+# reviso-sync\n+\n+Syncs the local manifest with the server.\n+\n+## Usage\n+\n+Run `reviso-sync --output <path>` to write the merged manifest to a file\n+instead of stdout. Pass `--dry-run` to print the plan without writing."
+    },
+    {
+      "filename": "src/manifest.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,14 @@\n+export interface Manifest {\n+  plan: string;\n+  write(path: string | undefined): Promise<void>;\n+}\n+\n+export async function mergeManifest(): Promise<Manifest> {\n+  return {\n+    plan: \"no-op\",\n+    async write(path) {\n+      if (path) await Bun.write(path, \"{}\");\n+      else console.log(\"{}\");\n+    },\n+  };\n+}"
+    },
+    {
+      "filename": "src/cli.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,18 @@\n+import { parseArgs } from \"node:util\";\n+import { mergeManifest } from \"./manifest\";\n+\n+export async function main(argv: string[]): Promise<void> {\n+  const { values } = parseArgs({\n+    args: argv,\n+    options: {\n+      output: { type: \"string\" },\n+      \"dry-run\": { type: \"boolean\", default: false },\n+    },\n+  });\n+  const manifest = await mergeManifest();\n+  if (values[\"dry-run\"]) {\n+    console.log(manifest.plan);\n+    return;\n+  }\n+  await manifest.write(values.output);\n+}"
+    },
+    {
+      "filename": "src/cli.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,18 @@\n+import { parseArgs } from \"node:util\";\n+import { mergeManifest } from \"./manifest\";\n+\n+export async function main(argv: string[]): Promise<void> {\n+  const { values } = parseArgs({\n+    args: argv,\n+    options: {\n+      out: { type: \"string\" },\n+      \"dry-run\": { type: \"boolean\", default: false },\n+    },\n+  });\n+  const manifest = await mergeManifest();\n+  if (values[\"dry-run\"]) {\n+    console.log(manifest.plan);\n+    return;\n+  }\n+  await manifest.write(values.out);\n+}"
+    }
+  ]
+}

@@ -40,7 +40,8 @@ Reviso is the missing review. Three commands, all local, all report-only:
 - **`/reviso:style`** — the style lane: slop, drift from your repo's own
   conventions, comment and method length, duplication, over-engineering,
   dead weight, test slop, AI tells, derived state, naming, error-handling
-  shape — and nothing else. Every finding is
+  shape, stale docs, surface area, type slop — and nothing else. Every
+  finding is
   measured against how *your* codebase writes, with the baseline cited —
   no bug hunting, no absolute thresholds, with two deliberate exceptions:
   a comment must earn its place (only a written convention overrides),

@@ -56,12 +56,43 @@ Two metric families, deliberately not comparable to each other:
 | 2026-08-08 | `review` | `termic-162` only (1 case, duplication lens) | **100%** (1/1) | 33% (1/3) | n/a | [runs/2026-08-08-gold-termic-162](../eval/runs/2026-08-08-gold-termic-162/) |
 | 2026-08-19 | `style` | `slop-*` only (10 cases: 5 TP + 5 expected-clean, one pair per new lens) | **100%** (9/9) | 90% (9/10) | **5/5 silent** | [runs/2026-08-19-gold-style-expansion](../eval/runs/2026-08-19-gold-style-expansion/) |
 | 2026-08-22 | `style` | reader lenses only (7 cases: 3 TP + 3 expected-clean + 1 multi-lens) | **100%** (12/12) | 100% (12/12) | **3/3 silent** | [runs/2026-08-22-gold-reader-lenses](../eval/runs/2026-08-22-gold-reader-lenses/) |
+| 2026-08-22 | `style` | surface lenses only (7 cases: 3 TP + 3 expected-clean + the 0.8.0 multi-lens case) | **100%** (11/11) | 100% (11/11) | **3/3 silent** | [runs/2026-08-22-gold-surface-lenses](../eval/runs/2026-08-22-gold-surface-lenses/) |
 
 The first two rows measure `/reviso:review`; their tier column is
 attributed retroactively — neither run recorded a tier, because the runner
 had only one to record.
 
-The 2026-08-22 row is the reader lenses' acceptance run (0.8.0):
+The second 2026-08-22 row is the surface lenses' acceptance run
+(0.9.0): `/reviso:style`'s three new lenses (stale docs, surface area,
+type slop) against their synthetic pairs, plus `slop-multilens-001`
+re-run to confirm consolidation and ordering hold at sixteen lenses —
+it shipped exactly eight again, the same three P1s first. All three
+true-positive cases matched their gold finding: the stale-docs finding
+anchored on the renaming line in `cli.ts` and quoted the README
+sentence verbatim at P1; the surface-area finding named the recorded
+search (two hits, both in `totals.ts`) and the repo's unexported
+precedent; the type-slop finding cited both sibling handlers' payload
+interfaces. All three clean look-alikes stayed silent — the missing
+CHANGELOG entry, the export consumed by a sibling package, and the
+`any`-heavy repo each drew nothing. One fixture was corrected after a
+first pass and re-run fresh: the surface-area pair's `totals.ts` had
+inlined the tax rule `tax.ts` already owned and named a hundredths
+rounder `roundCents` — the command reported both (a reuse and a naming
+finding, both correct), and the fixture now calls `computeTax` and
+rounds to whole cents. Per-case cost $0.43–$0.66, multi-lens $0.71;
+`claude-opus-5`. Field smoke on a real pica-api branch (8 commits, 18
+files — a different branch from the 0.8.0 smoke, so the numbers are not
+a before/after): 4 findings, one of them a stale-docs P1 against a
+`CLAUDE.md` sentence three clauses of which a migration had falsified,
+all seventeen ledger rows returned, coverage block `Checked: shape,
+text, reuse, tests, deterministic.`; 5m29s / $1.81. A second run of the
+same range against a scratch copy of the command with stale docs forced
+to `no result` rendered `Checked: shape, reuse, tests, comments, AI
+tells, naming, deterministic.` / `Not checked: stale docs (no result:
+forced for smoke test).` — the family grouping deferred since 0.8.0
+lands with the differing-lens rule verified.
+
+The first 2026-08-22 row is the reader lenses' acceptance run (0.8.0):
 `/reviso:style`'s three new lenses (derived state, naming, error
 handling) against their synthetic pairs, plus `slop-multilens-001` —
 ten findings planted across seven lenses, eight expected after

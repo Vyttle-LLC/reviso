@@ -22,9 +22,9 @@ bind this verb identically.
 - **THEN** no subagent is launched; the session performs assembly,
   detection, review, self-verification, and reporting itself
 
-### Requirement: Thirteen style lenses, and no bug hunting
+### Requirement: Sixteen style lenses, and no bug hunting
 
-`/reviso:style` SHALL apply exactly thirteen lenses:
+`/reviso:style` SHALL apply exactly sixteen lenses:
 
 1. **Anti-slop** — drift from codebase patterns, ~3× verbosity, and
    reimplementing an existing utility (cited, or it is not a finding),
@@ -79,12 +79,36 @@ bind this verb identically.
     message where the repo's are specific, or a try/catch around code
     that cannot throw. Shape only — an error that a swallow actually
     hides is a bug and belongs to `/reviso:review`.
+14. **Stale docs** — existing prose the change made false: README,
+    CLAUDE.md / AGENTS.md, CHANGELOG entries, ADRs, and doc comments on
+    a signature the change altered. The finding anchors on the changed
+    line that falsified the prose and quotes the contradicted sentence
+    verbatim in `evidence`. A missing doc update is never a finding;
+    only a contradiction is. Changed comments stay with the comments
+    lens.
+15. **Surface area** — exposure without a consumer: a new `export` /
+    `public` member with callers only inside its own module, a widened
+    signature (added parameter, new optional) nothing passes, a return
+    type broadened beyond what any caller reads. The dead-weight
+    recorded-search protocol applies, searching for external consumers.
+16. **Type slop** — a loosened type where the repo types the same kind
+    of value precisely: `any` / `Any` / `interface{}`, a force-unwrap
+    or cast the surrounding code makes unnecessary, a stringly-typed
+    enum, an optional that is never absent. Convention-relative; a
+    configured lint rule already covering the case, or an inline
+    suppression, clears it.
 
 The command SHALL NOT report bugs, and SHALL NOT apply the bugs, history,
 or code-comment-compliance lenses. Its report SHALL point users to
 `/reviso:review` and `/reviso:audit` for bug-finding coverage. Each lens
 SHALL get a coverage-ledger row recorded as it resolves, exactly as the
-sibling verbs keep theirs.
+sibling verbs keep theirs. The default report's coverage block SHALL
+render lenses by family — shape (drift, length, over-engineering,
+conventions, error handling, surface area), text (comments, AI tells,
+naming, stale docs), reuse (anti-slop, duplication, dead weight, derived
+state), tests (test slop) — plus the deterministic row, naming an
+individual lens only when its outcome differs from its family's;
+`--explain` SHALL keep per-lens counts.
 
 #### Scenario: A bug is noticed mid-review
 
@@ -102,9 +126,9 @@ sibling verbs keep theirs.
 #### Scenario: Every lens has a ledger row
 
 - **WHEN** a style review completes
-- **THEN** the ledger holds one row per lens — thirteen lens rows plus
+- **THEN** the ledger holds one row per lens — sixteen lens rows plus
   the deterministic row — and the report's coverage block is derived
-  from them
+  from them, rendered by family
 
 #### Scenario: Swallowed error that masks a failure
 
@@ -112,6 +136,45 @@ sibling verbs keep theirs.
   swallowed error would leave the caller with a wrong result
 - **THEN** the error-handling lens reports only the shape divergence
   (with the repo's surfacing idiom cited), never the masked failure
+
+#### Scenario: One lens in a family did not resolve
+
+- **WHEN** every text-family lens returned except stale docs, which has
+  a `no result` row
+- **THEN** `Checked:` names the text family's other lenses individually
+  and `Not checked:` names "stale docs (no result)"
+
+#### Scenario: Contradicted README sentence
+
+- **WHEN** the change renames a CLI flag and the README still documents
+  the old name
+- **THEN** a stale-docs finding ships anchored on the renaming line,
+  quoting the README sentence, at P1
+
+#### Scenario: Missing changelog entry is not a finding
+
+- **WHEN** the change adds a feature and CHANGELOG.md has no entry for it
+- **THEN** no stale-docs finding ships
+
+#### Scenario: Export with only an internal caller
+
+- **WHEN** the change exports a function whose only callers, by recorded
+  search, are in the same module
+- **THEN** a surface-area finding ships with the search stated in
+  evidence and the narrowed visibility in `suggested_fix`
+
+#### Scenario: any in a typed repo
+
+- **WHEN** the change types a payload `any`, two same-language files
+  type the same payload with a named interface, and no lint rule covers
+  `any`
+- **THEN** a type-slop finding ships citing both
+
+#### Scenario: Suppressed any is silenced
+
+- **WHEN** the change types a value `any` under an inline lint disable
+- **THEN** no type-slop finding ships; the exclusion list's explicitly-
+  silenced rule holds
 
 ### Requirement: Every style finding cites the repo baseline it was measured against
 

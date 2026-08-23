@@ -1,0 +1,27 @@
+{
+  "id": "slop-typeslop-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add the refund endpoint",
+    "description": "Creates a refund against an order."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/api/users.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,10 @@\n+import { Request, Response } from \"express\";\n+\n+export function handleCreateUser(req: Request, res: Response): void {\n+  const payload: any = req.body;\n+  if (!payload.email.includes(\"@\")) {\n+    res.status(400).json({ error: \"invalid email\" });\n+    return;\n+  }\n+  res.status(201).json({ email: payload.email, displayName: payload.displayName });\n+}"
+    },
+    {
+      "filename": "src/api/orders.ts",
+      "status": "context",
+      "patch": "@@ -0,0 +1,10 @@\n+import { Request, Response } from \"express\";\n+\n+export function handleCreateOrder(req: Request, res: Response): void {\n+  const payload: any = req.body;\n+  if (payload.quantity <= 0) {\n+    res.status(400).json({ error: \"quantity must be positive\" });\n+    return;\n+  }\n+  res.status(201).json({ sku: payload.sku, quantity: payload.quantity });\n+}"
+    },
+    {
+      "filename": "src/api/refunds.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,10 @@\n+import { Request, Response } from \"express\";\n+\n+export function handleCreateRefund(req: Request, res: Response): void {\n+  const payload: any = req.body;\n+  if (payload.amountCents <= 0) {\n+    res.status(400).json({ error: \"amount must be positive\" });\n+    return;\n+  }\n+  res.status(201).json({ orderId: payload.orderId, amountCents: payload.amountCents });\n+}"
+    }
+  ]
+}

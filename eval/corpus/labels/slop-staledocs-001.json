@@ -1,0 +1,16 @@
+{
+  "case": "slop-staledocs-001",
+  "origin": "synthetic",
+  "imported": "2026-08-22",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/cli.ts",
+      "line": 8,
+      "title": "README still documents `--output`, which this change renames to `--out`",
+      "severity": "high",
+      "category": "slop",
+      "description": "README.md line 7 says \"Run `reviso-sync --output <path>` to write the merged manifest to a file\". The change renames the option to `out` and reads `values.out`; `--output` is now an unknown flag. The README sentence is false as of this change. Update it to `--out <path>`."
+    }
+  ]
+}

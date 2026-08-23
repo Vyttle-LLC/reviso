@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/api/refunds.ts",
+    "line": 4,
+    "title": "`payload` typed `any` where sibling handlers declare a payload interface",
+    "severity": "P2",
+    "category": "type slop",
+    "description": "Sibling handlers in `orders.ts` and `users.ts` declare proper payload interfaces and narrow with `as` casts. `refunds.ts` uses untyped `any`. Fix: declare `interface RefundPayload { orderId: string; amountCents: number }` and narrow with `req.body as RefundPayload`."
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "case": "slop-typeslop-001",
+  "origin": "synthetic",
+  "imported": "2026-08-22",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "src/api/refunds.ts",
+      "line": 4,
+      "title": "Request payload typed `any` where the sibling handlers type theirs with a named interface",
+      "severity": "medium",
+      "category": "slop",
+      "description": "users.ts and orders.ts each declare a payload interface (UserPayload, OrderPayload) and read req.body through it. refunds.ts types the same kind of value `any`, so orderId and amountCents are unchecked. Declare RefundPayload { orderId: string; amountCents: number } and use it."
+    }
+  ]
+}

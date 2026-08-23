@@ -37,10 +37,11 @@ informationally.
 
 ## Style-lens gold cases (synthetic)
 
-The `slop-*` cases (17) measure `/reviso:style`'s thirteen lenses: eight
+The `slop-*` cases (23) measure `/reviso:style`'s sixteen lenses: eleven
 true-positive / expected-clean pairs, one per lens added since 0.6.0 —
 over-engineering, dead weight, comments, test slop, AI tells (authored
-2026-08-19), derived state, naming, error handling (authored 2026-08-22)
+2026-08-19), derived state, naming, error handling, stale docs, surface
+area, type slop (authored 2026-08-22)
 — plus `slop-multilens-001`, one fixture planting ten findings across
 seven lenses that must consolidate to the eight its label lists, most
 severe first: the only case that exercises dedupe, the 8-finding cap,
@@ -56,7 +57,15 @@ first, so a convention-relative lens has an existing same-language
 baseline to cite (the naming and error-handling pairs need one — without
 it the TP has no norm to diverge from and the clean case nothing to
 match). A fixture with no `context` files reviews against an empty base,
-as before.
+as before. A filename listed as both `context` and `added` is a
+*modified* file: the `added` entry's full content overwrites the base
+copy, so the working diff is the edit (the stale-docs pair renames a
+flag this way while its README stays unchanged).
+
+The command's report renders its sixteen ledger rows by lens family
+(shape, text, reuse, tests, plus deterministic); the gold judge reads
+findings, not the coverage block, so the family rendering is checked in
+the field smoke, not here.
 
 **Style-tier gold runs are meaningful only against style-labeled or
 expected-clean cases.** Running `REVISO_TIER=style` over a bug-labeled
