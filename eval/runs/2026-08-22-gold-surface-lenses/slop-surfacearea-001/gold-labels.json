@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/billing/totals.ts",
+    "line": 4,
+    "title": "roundCents is exported but its only caller is computeTotal in the same file",
+    "severity": "medium",
+    "category": "slop",
+    "description": "roundCents is exported from totals.ts; the only reference in the repo is computeTotal a few lines below. The repo keeps single-file helpers unexported (tax.ts: clampRate). Drop the export."
+  }
+]

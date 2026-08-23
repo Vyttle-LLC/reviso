@@ -1,5 +1,5 @@
 ---
-description: Single-pass style-only review of base..HEAD + uncommitted changes — slop, drift, duplication, comments, dead weight, over-engineering, test slop, AI tells, derived state, naming, error handling; report-only
+description: Single-pass style-only review of base..HEAD + uncommitted changes — slop, drift, duplication, comments, dead weight, over-engineering, test slop, AI tells, derived state, naming, error handling, stale docs, surface area, type slop; report-only
 argument-hint: "[--base <ref>] [--out <path>] [--explain]"
 model: opus
 allowed-tools: Read, Grep, Glob, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(rg:*)
@@ -9,8 +9,8 @@ Review the current branch's changes for style only, in a single pass — you
 do the entire review yourself, no subagents. This is the dedicated style
 lane: AI slop, drift from this repo's own norms, bloated comments,
 oversized methods, duplication, over-engineering, dead weight, test slop,
-AI tells, derived state, naming, and error-handling shape. It hunts no
-bugs — that is what
+AI tells, derived state, naming, error-handling shape, stale docs,
+surface area, and type slop. It hunts no bugs — that is what
 `/reviso:review` (inner loop) and `/reviso:audit` (pre-PR deep pass) are
 for, and your report says so.
 
@@ -266,16 +266,53 @@ is the only trace a noticed bug leaves.
   **Shape only.** Whether a swallowed error actually hides a failure
   from the caller is a bug question and belongs to `/reviso:review` —
   report the divergence from the repo's idiom, never the masked failure.
+- **Stale docs** — existing prose the change made false: README,
+  CLAUDE.md / AGENTS.md, CHANGELOG entries, ADRs, and doc comments on a
+  signature the change altered. This is the one lens that reads lines
+  the change did not touch, and only to find the sentence the change
+  contradicts: grep the changed identifiers and behaviors across the
+  repo's doc paths rather than reading docs whole. The finding anchors
+  on the **changed line that falsified the prose**; `evidence` quotes
+  the contradicted sentence verbatim with its `file:line`. Only a
+  contradiction is a finding — a missing doc update, a missing changelog
+  entry, is process, not style, and never ships here. Changed comments
+  stay with the comments lens; an *unchanged* comment the change
+  falsified is stale docs'.
+- **Surface area** — exposure without a consumer: a new `export` /
+  `public` / `pub` member whose callers, by recorded search, all live
+  inside its own module; a widened signature (an added parameter, a new
+  optional) nothing passes; a return type broadened beyond what any
+  caller reads. Dead weight's search protocol applies unchanged — grep
+  the distinctive identifiers, check for dynamic access — but the
+  question is *external* consumers, not any consumer: dead weight asks
+  "does anyone use this?", surface area asks "does anyone outside this
+  module?". A symbol with no caller at all is dead weight's finding,
+  never softened into this one. `evidence` states the search and what
+  it found; `suggested_fix` gives the narrowed visibility or signature.
+- **Type slop** — a loosened type where the repo types the same kind of
+  value precisely: `any` / `Any` / `interface{}` / `Object`, a
+  force-unwrap or cast (`as`, `!`, `as!`) the surrounding code makes
+  unnecessary, a stringly-typed enum, an optional that is never absent.
+  Convention-relative with drift's bar: `evidence` cites **at least two
+  existing same-language examples** by `file:line` of the precise form
+  the repo uses for this kind of value — no cited baseline, no finding;
+  an `any`-heavy repo keeps its `any`. Read the lint configs first, as
+  dead weight does: a configured rule that already covers the case
+  (`no-explicit-any`, `no-non-null-assertion`) is linter territory, and
+  an inline suppression on the line is the exclusion list's explicitly-
+  silenced case — both clear it. `suggested_fix` gives the precise type,
+  following the cited examples.
 
 Record each candidate per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`).
 The schema's `dimension` enum predates this command: record `conventions`
 candidates as `conventions`, and every other lens's candidates — slop,
 comments, duplication, drift, length, over-engineering, dead weight, test
-slop, AI tells, derived state, naming, error handling — as `slop`; the
-ledger and the report carry the precise lens name.
+slop, AI tells, derived state, naming, error handling, stale docs,
+surface area, type slop — as `slop`; the ledger and the report carry the
+precise lens name.
 
-Record a ledger row per lens as you finish it — thirteen rows here, plus the
+Record a ledger row per lens as you finish it — sixteen rows here, plus the
 `deterministic` row from Step 2. Write the row when you finish the lens,
 not at the end from memory: a row reconstructed at report time is a guess
 about what you did, which is exactly what the ledger replaces.
@@ -292,10 +329,15 @@ For every candidate from Step 3:
    placeholder text. Those two bars are absolute here; for a comments
    candidate, only the lens's written-convention override clears it — and
    a candidate whose comment shape a written convention actually demands
-   scores 0.
-2. On lines the change modified? Pre-existing → 0.
+   scores 0. A type-slop candidate on a line with an inline lint
+   suppression is the explicitly-silenced entry and scores 0.
+2. On lines the change modified? Pre-existing → 0. A stale-docs
+   candidate is anchored on the changed line that falsified the prose,
+   so it passes this step on that anchor; the unchanged sentence it
+   quotes is evidence, not the finding's line. A stale-docs candidate
+   anchored on the doc line instead is pre-existing and scores 0.
 3. Baseline check, this command's own gate: a drift, naming,
-   error-handling, or over-engineering candidate without its cited
+   error-handling, type-slop, or over-engineering candidate without its cited
    `file:line` evidence (two examples of the established pattern; the
    absence citation), or a length candidate that doesn't name its
    comparable units, scores 0 — the citation *is* the evidence, and
@@ -303,8 +345,9 @@ For every candidate from Step 3:
    language from the changed code do not count toward the two. A
    derived-state candidate whose evidence doesn't quote the lockstep
    assignment at every write site scores 0 the same way. A dead-weight
-   candidate whose evidence doesn't state the search performed and its
-   empty result also scores 0.
+   or surface-area candidate whose evidence doesn't state the search
+   performed and its result also scores 0. A stale-docs candidate whose
+   evidence doesn't quote the contradicted sentence scores 0.
 4. Re-examine the actual code: does the failure scenario hold against the
    real baseline, and is the repo's own style genuinely on your side?
 5. Score 0–100 using the rubric exactly as written — no stricter, no
@@ -315,7 +358,7 @@ For every candidate from Step 3:
 Keep, for every candidate: its lens, its `file:line`, its score, and its
 disposition — reported, or dropped and why. The reason is whichever step
 above gated it: `exclusion-list` (step 1), `pre-existing` (step 2),
-`no-baseline` or `no-search` (step 3), or `rubric-score` (survived all
+`no-baseline`, `no-search`, or `no-quote` (step 3), or `rubric-score` (survived all
 three, still under 80). That record is what `--explain` prints; without
 the flag it stays yours.
 
@@ -330,8 +373,10 @@ Severity, this command's band: style findings are **P2** by default, and
 **P1** only when the finding actively misleads: a wrong comment, a
 shadowed utility with different behavior, duplicated copies that have
 already diverged in behavior, a test that appears to cover behavior but
-cannot fail, a name that asserts behavior the code does not have, or a
-catch that silently swallows an error the repo elsewhere surfaces. (A
+cannot fail, a name that asserts behavior the code does not have, a
+catch that silently swallows an error the repo elsewhere surfaces, a
+doc sentence the change contradicted, or a loosened type where the
+repo's precise one would have caught a misuse. (A
 derived copy that has already diverged is a bug and ships nowhere here.)
 The style lenses never emit P0 — nothing
 purely stylistic blocks a merge. Deterministic detector findings keep
@@ -357,28 +402,45 @@ Found <k> style issues:
 
 ...
 
-Checked: <lenses whose ledger row says returned>.
+Checked: <families whose every lens returned; lenses named individually>.
 Not checked: <each no-result or skipped lens, with its reason>.
 Skipped: <skipped files, or "nothing">.
 Style only — for bugs, run /reviso:review (inner loop) or /reviso:audit (pre-PR).
 ```
 
 The `Baseline:` line replaces the review command's `Failure:` line for
-drift, naming, error-handling, and length findings; every other lens
-(derived state included — its cost is the lockstep to maintain) and
+drift, naming, error-handling, type-slop, and length findings; every
+other lens (derived state included — its cost is the lockstep to
+maintain; stale docs — its cost is the reader the prose misleads) and
 deterministic findings
 keep `Failure:` (the concrete cost to the next reader/maintainer). Every
 finding cites `file:line`.
 
-The coverage block is derived from the ledger, every run:
+The coverage block is derived from the ledger, every run, and renders
+the sixteen lenses by family so it stays readable:
 
-- `Checked:` names the lenses with a `returned` row and only those. There
-  is no fixed list to fall back on — if you have no row for a lens, you
-  may not name it as checked.
-- `Not checked:` names each `no result` or `skipped` lens with its reason
-  — "drift (no result)", "length (no result)". **Emit the line only
-  when there is at least one such lens.** A run where every lens returned
-  prints no `Not checked:` line at all.
+- **shape** — drift, length, over-engineering, conventions, error
+  handling, surface area
+- **text** — comments, AI tells, naming, stale docs
+- **reuse** — slop, duplication, dead weight, derived state
+- **tests** — test slop
+- **deterministic** — its own row, always named as itself
+
+The ledger is unchanged — one row per lens; only the rendering groups.
+
+- `Checked:` names each family whose every lens has a `returned` row,
+  and names individually any returned lens whose family it could not
+  name whole — "shape, reuse, tests, comments, AI tells, naming,
+  deterministic" when stale docs alone did not return. There is no
+  fixed list to fall back on — if you have no row for a lens, you may
+  not name it, or its family, as checked.
+- `Not checked:` names each `no result` or `skipped` lens individually
+  with its reason — "stale docs (no result)", "test slop (skipped: no
+  test files changed)". A family is never named here; a lens whose
+  outcome differs from its family's is always named on its own, so a
+  single unresolved lens cannot hide behind its family. **Emit the line
+  only when there is at least one such lens.** A run where every lens
+  returned prints no `Not checked:` line at all.
 - No per-lens candidate counts here. Counts are `--explain`'s job; a count
   in the default report tells the user findings were withheld.
 - `Skipped:` is unchanged and unrelated: it lists the *files* content
@@ -399,16 +461,18 @@ Append one section after the findings, in this shape:
 --- explain: pipeline diagnostics (not review findings) ---
 Lenses: slop 2, comments 1, duplication 0, conventions 1, drift 1,
 length 0, over-engineering 0, dead-weight 0, test-slop 0, ai-tells 0,
-derived-state 0, naming 1, error-handling 0, deterministic 0.
-Candidates before the gate (4):
+derived-state 0, naming 1, error-handling 0, stale-docs 1,
+surface-area 0, type-slop 0, deterministic 0.
+Candidates before the gate (5):
   [drift]       cli_server.rs:2257  score 88  reported
   [length]      shell_env.rs:453    score  0  dropped: no-baseline
   [slop]        shell_env.rs:50     score 72  dropped: rubric-score
   [naming]      shell_env.rs:118    score  0  dropped: no-baseline
+  [stale-docs]  cli_server.rs:2260  score 85  reported
 ```
 
-The ledger with counts, then every candidate you kept a record of in Step
-4 — one line each, with its score and disposition. Rules: it goes after
+The ledger with per-lens counts (never by family), then every candidate
+you kept a record of in Step 4 — one line each, with its score and disposition. Rules: it goes after
 the findings, never among them; every line in it is a diagnostic, never a
 finding; and the findings section above it is identical whether or not the
 flag was passed. Without `--explain`, none of this appears — no dropped
@@ -439,7 +503,8 @@ When the user names a finding:
 2. **Tier 1 (default).** Bucket the confidence (80–89 → `80s`, 90–99 →
    `90s`, 100 → `100`), map the lens to its schema dimension (slop,
    comments, duplication, drift, length, over-engineering, dead weight,
-   test slop, AI tells, derived state, naming, error handling → `slop`;
+   test slop, AI tells, derived state, naming, error handling, stale
+   docs, surface area, type slop → `slop`;
    conventions → `conventions`;
    deterministic → `deterministic`), and run:
 

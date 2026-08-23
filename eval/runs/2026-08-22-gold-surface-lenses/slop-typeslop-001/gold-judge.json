@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/api/refunds.ts",
+        "line": 4,
+        "title": "Request payload typed `any` where the sibling handlers type theirs with a named interface",
+        "severity": "medium",
+        "category": "slop",
+        "description": "users.ts and orders.ts each declare a payload interface (UserPayload, OrderPayload) and read req.body through it. refunds.ts types the same kind of value `any`, so orderId and amountCents are unchecked. Declare RefundPayload { orderId: string; amountCents: number } and use it.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/api/refunds.ts",
+        "line": 4,
+        "title": "`payload` typed `any` where sibling handlers declare a payload interface",
+        "severity": "P2",
+        "category": "type slop",
+        "description": "Sibling handlers in `orders.ts` and `users.ts` declare proper payload interfaces and narrow with `as` casts. `refunds.ts` uses untyped `any`. Fix: declare `interface RefundPayload { orderId: string; amountCents: number }` and narrow with `req.body as RefundPayload`."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

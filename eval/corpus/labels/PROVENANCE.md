@@ -39,3 +39,11 @@ the `origin` field distinguishes them.
   multi-lens case whose label is the expected *consolidated* set — eight
   findings from ten planted, ordered most-severe-first. Category `slop`;
   `REVISO_TIER=style`.
+- `slop-staledocs-*.json`, `slop-surfacearea-*.json`,
+  `slop-typeslop-*.json` (6 files) — authored 2026-08-22 in this repo
+  for the surface lenses, same posture: all content original, nothing
+  imported. Three true-positive / expected-clean pairs (stale docs,
+  surface area, type slop). The stale-docs pair is the first to carry a
+  `context` file re-listed as `added` — the change modifies an existing
+  file, and the README it contradicts stays untouched. Category `slop`;
+  `REVISO_TIER=style`.

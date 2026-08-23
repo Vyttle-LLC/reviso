@@ -50,9 +50,14 @@ out, by the dead-weight precedent of reading lint configs first.
 
 ### D4 — Four lens families in the coverage block
 
-shape (drift, length, over-engineering, surface area), text (comments,
-AI tells, naming, stale docs), reuse (slop, duplication, dead weight,
-derived state), tests (test slop), plus deterministic. The ledger is
+shape (drift, length, over-engineering, conventions, error handling,
+surface area), text (comments, AI tells, naming, stale docs), reuse
+(slop, duplication, dead weight, derived state), tests (test slop), plus
+deterministic. Conventions and error handling sit in shape — both judge
+the form the code takes against a repo rule (written or demonstrated),
+and error handling was drift's own until 0.8.0 split it out; the first
+draft of this family list omitted them, leaving two of sixteen lenses
+unrenderable. The ledger is
 unchanged — one row per lens — only the default report's `Checked:` /
 `Not checked:` lines render by family, naming an individual lens only
 when its outcome differs from its family's. `--explain` stays per-lens.

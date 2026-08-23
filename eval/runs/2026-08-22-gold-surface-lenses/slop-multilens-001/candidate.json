@@ -1,0 +1,66 @@
+[
+  {
+    "file": "src/format/period.ts",
+    "line": 8,
+    "title": "Placeholder text committed — unimplemented code presented as implemented",
+    "severity": "P1",
+    "category": null,
+    "description": "Comment indicates locale handling exists but doesn't; gap is untracked"
+  },
+  {
+    "file": "src/services/summary-manager.test.ts",
+    "line": 9,
+    "title": "Tautological assertion — the test cannot fail",
+    "severity": "P1",
+    "category": "test slop",
+    "description": "Test compares value to itself; should be expect(total).toBe(15) to verify fixture totals"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 31,
+    "title": "persist swallows and logs where repo wraps and rethrows",
+    "severity": "P1",
+    "category": "error handling",
+    "description": "Logs and swallows exception; should follow StorageError pattern used in read-blob and delete-blob"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 18,
+    "title": "Comments restate the code they sit above",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Comments narrate code behavior; no repo convention requires them and they don't survive renames"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 6,
+    "title": "count is a stored projection of invoices.length",
+    "severity": "P2",
+    "category": "derived state",
+    "description": "Field duplicates invoices.length; every write must maintain lockstep"
+  },
+  {
+    "file": "src/format/period.ts",
+    "line": 6,
+    "title": "Comparative name and changelog comment",
+    "severity": "P2",
+    "category": "AI tells",
+    "description": "formatPeriodEnhanced names relative to another function; changelog comment belongs in commit message"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 37,
+    "title": "Two added exports with no caller",
+    "severity": "P2",
+    "category": "dead weight",
+    "description": "toCsvRow and replace are never used; can be deleted"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 4,
+    "title": "Manager suffix diverges from this repo's service naming",
+    "severity": "P2",
+    "category": "naming",
+    "description": "Should be SummaryService in summary-service.ts to match InvoiceService and ExportService"
+  }
+]

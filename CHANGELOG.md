@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] — 2026-08-22
+
+### Added
+
+- **The surface lenses.** `/reviso:style` grows from thirteen lenses to
+  sixteen: **stale docs** (existing prose the change made false — README,
+  CLAUDE.md / AGENTS.md, ADRs, doc comments on an altered signature, and
+  a CHANGELOG entry the change *contradicts*; a missing entry is process,
+  not style, and never ships), **surface area** (a new export or
+  `public` member whose only callers, by recorded search, live in its
+  own module; a widened signature nothing passes; a broadened return
+  type nothing reads), and **type slop** (`any` / `Any` / `interface{}`,
+  an unnecessary cast or force-unwrap, a stringly-typed enum, an
+  optional never absent — where two same-language files type the same
+  kind of value precisely; a configured lint rule or an inline
+  suppression clears it). Stale docs is the one lens that reads lines
+  the change did not touch, and only to quote the sentence the change
+  contradicted; the finding anchors on the changed line that falsified
+  it, at P1. Ledger, `--explain`, and feedback mapping carry all
+  sixteen.
+- **Lens families in the coverage block.** The default report's
+  `Checked:` / `Not checked:` lines render the sixteen lenses by family
+  — shape, text, reuse, tests, plus deterministic — naming a lens on its
+  own only when its outcome differs from its family's, so a single
+  unresolved lens is always visible. The ledger is still one row per
+  lens and `--explain` still counts per lens.
+- **Six synthetic corpus cases.** A true-positive / expected-clean pair
+  per new lens. The stale-docs pair is the first fixture to modify an
+  existing file (a `context` filename re-listed as `added`), so the
+  contradicted README stays untouched while the flag it documents is
+  renamed. Acceptance run: see `docs/evals.md`.
+
 ## [0.8.0] — 2026-08-22
 
 ### Added
