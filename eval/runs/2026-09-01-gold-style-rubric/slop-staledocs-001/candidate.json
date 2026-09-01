@@ -1,0 +1,10 @@
+[
+  {
+    "file": "README.md",
+    "line": 7,
+    "title": "README usage line still documents the removed --output flag",
+    "severity": "P1",
+    "category": "stale docs",
+    "description": "The --output flag was renamed to --out, but README.md:7 still documents the old flag name. Users following the README will get a parseArgs error when trying to use the documented command."
+  }
+]

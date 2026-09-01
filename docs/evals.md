@@ -29,6 +29,15 @@
 > the judge refuses comparisons that cross tiers. **Runs recorded before
 > that carry no tier field and are therefore non-comparable under the new
 > rule** — see `eval/README.md`.
+>
+> **Style rubric (2026-09-01).** From 0.10.0 `/reviso:style` scores its
+> candidates on its own rubric (`style-confidence-rubric.md`, revision
+> `style-1`), which measures evidence quality and takes no importance
+> input; before it, the style gate scored on the shared impact-band
+> rubric. **Style-tier candidate scores recorded before 0.10.0 are not
+> comparable with scores recorded after it** — same treatment as a model
+> or CLI roll. Reported/silent outcomes on the gold cases remain
+> comparable, since seeded style cases clear either rubric.
 
 ## Metrics glossary
 
@@ -57,10 +66,32 @@ Two metric families, deliberately not comparable to each other:
 | 2026-08-19 | `style` | `slop-*` only (10 cases: 5 TP + 5 expected-clean, one pair per new lens) | **100%** (9/9) | 90% (9/10) | **5/5 silent** | [runs/2026-08-19-gold-style-expansion](../eval/runs/2026-08-19-gold-style-expansion/) |
 | 2026-08-22 | `style` | reader lenses only (7 cases: 3 TP + 3 expected-clean + 1 multi-lens) | **100%** (12/12) | 100% (12/12) | **3/3 silent** | [runs/2026-08-22-gold-reader-lenses](../eval/runs/2026-08-22-gold-reader-lenses/) |
 | 2026-08-22 | `style` | surface lenses only (7 cases: 3 TP + 3 expected-clean + the 0.8.0 multi-lens case) | **100%** (11/11) | 100% (11/11) | **3/3 silent** | [runs/2026-08-22-gold-surface-lenses](../eval/runs/2026-08-22-gold-surface-lenses/) |
+| 2026-09-01 | `style` | every style case (23: 12 TP + 11 expected-clean) | **88%** (21/24; 92% with the multi-lens re-run — every label is in a report, see below) | 91% (21/23; no false positive) | **11/11 silent** | [runs/2026-09-01-gold-style-rubric](../eval/runs/2026-09-01-gold-style-rubric/) |
 
 The first two rows measure `/reviso:review`; their tier column is
 attributed retroactively — neither run recorded a tier, because the runner
 had only one to record.
+
+The 2026-09-01 row is the style rubric's acceptance run (0.10.0): the
+whole style corpus under the evidence-only gate, the first sweep to run
+all 23 style cases together. What it was for: the precision tripwire.
+Admitting an importance-free gate risks admitting nits, and the eleven
+expected-clean look-alikes are the instrument — **all eleven stayed
+silent**, and none of the 23 candidate findings on true-positive cases
+is a false positive. The recall figure reads below the previous rows
+for two reasons the run README walks through: on `slop-aitells-001` the
+command folded the comparative name and the changelog comment into one
+finding (both labels, one anchor) and split the redundant-wrapper half
+into its own — the matcher pairs once, so 1/3 by count and 3/3 by
+content; and on `slop-multilens-001` the first pass cleared the planted
+dead weight as the fixture repo's own norm (four pre-existing uncalled
+exports), which a fresh run then reported at 88 for 8/8 — lens-level
+variance on a candidate that never reached the gate, the same thing the
+0.8.0 first pass hit. What the sweep cannot show is the field yield
+moving: seeded cases clear either rubric, so that measurement is the
+`--explain` funnel on real branches, recorded below when it lands.
+Per-case cost $0.41–$0.85, $13.35 for the sweep plus the re-run;
+`claude-opus-5`, CLI 2.1.252.
 
 The second 2026-08-22 row is the surface lenses' acceptance run
 (0.9.0): `/reviso:style`'s three new lenses (stale docs, surface area,

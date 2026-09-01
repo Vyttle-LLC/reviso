@@ -1,0 +1,66 @@
+[
+  {
+    "file": "src/format/period.ts",
+    "line": 8,
+    "title": "Placeholder text presents unimplemented locale handling as implemented",
+    "severity": "high",
+    "category": "slop",
+    "description": "\"In a real implementation, this would use the account's locale\" ships as a comment in production code — the placeholder detector's P1 case."
+  },
+  {
+    "file": "src/services/summary-manager.test.ts",
+    "line": 9,
+    "title": "expect(total).toBe(total) cannot fail",
+    "severity": "high",
+    "category": "slop",
+    "description": "The assertion compares the value to itself; the test passes for any implementation of total(), so the coverage it appears to give is not there. Assert against the literal 15."
+  },
+  {
+    "file": "src/format/period.ts",
+    "line": 6,
+    "title": "formatPeriodEnhanced and its changelog-style comment are AI tells",
+    "severity": "medium",
+    "category": "slop",
+    "description": "A comparative name (formatPeriodEnhanced beside formatPeriod) and a \"// Fixed bug where…\" comment are machine-generation artifacts foreign to the repo's text. Fold the inclusive-end fix into formatPeriod and drop the comment."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 18,
+    "title": "Comments on total() restate the code",
+    "severity": "medium",
+    "category": "slop",
+    "description": "\"// Sum the totals of all invoices\" and \"// Loop over each invoice and add its total to the sum\" say what the loop already says; the name total() carries the point. Delete both."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 6,
+    "title": "count is stored in lockstep with invoices and is always invoices.length",
+    "severity": "medium",
+    "category": "slop",
+    "description": "count is written at both sites that write invoices (constructor, replace) as invoices.length, and has one reader (summaryLine). Drop the field and read manager.invoices.length."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 4,
+    "title": "SummaryManager diverges from the repo's *Service naming",
+    "severity": "medium",
+    "category": "slop",
+    "description": "InvoiceService and ExportService establish the Service suffix for this kind of class; the change introduces SummaryManager. Rename to SummaryService."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 31,
+    "title": "persist swallows and logs where the repo's storage calls wrap the failure in a StorageError",
+    "severity": "medium",
+    "category": "slop",
+    "description": "readBlob and deleteBlob both rethrow as new StorageError(`failed to <op> blob ${key}`, { cause }); persist console.warns a generic message and continues. Match the idiom (StorageError is already imported and unused otherwise)."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 37,
+    "title": "toCsvRow is exported and called by nothing",
+    "severity": "medium",
+    "category": "slop",
+    "description": "No caller anywhere in the repo; nothing dispatches to it dynamically. Delete it."
+  }
+]

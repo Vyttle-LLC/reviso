@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/session.ts",
+    "line": 5,
+    "title": "`Session.messages` is a stored projection of `Session.platform`",
+    "severity": "P2",
+    "category": "derived state",
+    "description": "`messages` is written in lockstep with `platform` from the same source at every write site, duplicating data that could be read directly from `platform.messages`. Future write paths risk forgetting to update both. Fix: delete `messages: string[];` (line 5) and both assignments (lines 9, 14); inline the projection at the single read site in `src/banner.ts:4` as `(session.platform?.messages ?? []).join(\" · \")`"
+  }
+]

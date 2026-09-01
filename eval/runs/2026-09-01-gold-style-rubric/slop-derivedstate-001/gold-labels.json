@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/session.ts",
+    "line": 5,
+    "title": "messages is stored in lockstep with platform and is always platform?.messages — inline the projection at its one reader",
+    "severity": "medium",
+    "category": "slop",
+    "description": "Session.messages is written at exactly two sites (the constructor and apply), each immediately after platform is set from the same manifest, as manifest.platform?.messages ?? []. It is a projection of platform with one reader (bannerText). Drop the field and read session.platform?.messages ?? [] at the read site."
+  }
+]

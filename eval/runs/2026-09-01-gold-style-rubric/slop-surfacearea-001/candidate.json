@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/billing/totals.ts",
+    "line": 4,
+    "title": "`roundCents` is exported but has no consumer outside its own module",
+    "severity": "P2",
+    "category": "surface area",
+    "description": "Module's public API advertises a rounding primitive with no cross-module callers. Search confirms only one in-module use at totals.ts:10 and the definition. No dynamic-access paths found. Fix: drop the `export` keyword."
+  }
+]

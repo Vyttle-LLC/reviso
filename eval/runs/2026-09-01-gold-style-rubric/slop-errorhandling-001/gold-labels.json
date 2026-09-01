@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/storage/upload-blob.ts",
+    "line": 5,
+    "title": "uploadBlob swallows and logs where the repo's storage functions wrap the failure in a StorageError naming the key",
+    "severity": "medium",
+    "category": "slop",
+    "description": "readBlob and deleteBlob both catch and rethrow as new StorageError(`failed to <op> blob ${key}`, { cause }). uploadBlob instead console.warns a generic message and returns null. Match the idiom: throw new StorageError(`failed to upload blob ${key}`, { cause })."
+  }
+]

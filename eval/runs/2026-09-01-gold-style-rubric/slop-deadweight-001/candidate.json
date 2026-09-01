@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/report.ts",
+    "line": 11,
+    "title": "includeTotals parameter is never read",
+    "severity": "P1",
+    "category": "dead weight",
+    "description": "Parameter in signature but never used in function body. Caller passes `true` thinking it controls behavior, but it has no effect. Fix: drop parameter and update call site."
+  },
+  {
+    "file": "src/report.ts",
+    "line": 17,
+    "title": "exportReportCsv exported but unused",
+    "severity": "P2",
+    "category": "dead weight",
+    "description": "Unused export maintained and type-checked without any consumer in repo. Delete until a consumer exists, or land together with the caller using it."
+  }
+]

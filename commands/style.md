@@ -320,17 +320,25 @@ about what you did, which is exactly what the ledger replaces.
 ## Step 4 — Self-verify (the trust gate)
 
 Read `${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/false-positives.md` and
-`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/confidence-rubric.md` once.
-For every candidate from Step 3:
+`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/style-confidence-rubric.md`
+once. The style rubric is this command's own — not the shared
+`confidence-rubric.md` the sibling verbs score on, whose bands measure
+impact. Its bands measure how well the evidence supports the finding,
+and nothing else. For every candidate from Step 3:
 
-1. Exclusion list first — a match scores 0–25, with one carve-out: the
+1. Exclusion list first — a match scores 0–25, with two carve-outs. The
    deliberate-style entry ("a codebase's deliberate, established style is
    never slop") does not apply to comments-lens candidates or to
    placeholder text. Those two bars are absolute here; for a comments
    candidate, only the lens's written-convention override clears it — and
    a candidate whose comment shape a written convention actually demands
    scores 0. A type-slop candidate on a line with an inline lint
-   suppression is the explicitly-silenced entry and scores 0.
+   suppression is the explicitly-silenced entry and scores 0. And the
+   two importance-shaped entries — pedantic nitpicks a senior engineer
+   wouldn't call out, general code quality or documentation not required
+   by CLAUDE.md — match only a candidate that fails its lens's evidence
+   protocol; a candidate that satisfies the protocol is not a nitpick by
+   construction and goes on to be scored on its evidence.
 2. On lines the change modified? Pre-existing → 0. A stale-docs
    candidate is anchored on the changed line that falsified the prose,
    so it passes this step on that anchor; the unchanged sentence it
@@ -350,10 +358,16 @@ For every candidate from Step 3:
    evidence doesn't quote the contradicted sentence scores 0.
 4. Re-examine the actual code: does the failure scenario hold against the
    real baseline, and is the repo's own style genuinely on your side?
-5. Score 0–100 using the rubric exactly as written — no stricter, no
-   looser. **Silently drop everything below 80.** Never mention a dropped
-   candidate in the report itself — the one place it may appear is the
-   `--explain` section, and only when the user passed that flag.
+5. Score 0–100 using the style rubric exactly as written — no stricter,
+   no looser. Confidence is evidence quality: protocol satisfied, holds
+   on re-examination, baseline unambiguous, fix concrete. Importance,
+   frequency, impact on functionality, whether a senior engineer would
+   bother, and the candidate's rank against the rest of the change are
+   not inputs — the lens protocol, the severity band, and Step 5's
+   reporting policy own those, and scoring them here is what empties
+   the report. **Silently drop everything below 80.** Never mention a
+   dropped candidate in the report itself — the one place it may appear
+   is the `--explain` section, and only when the user passed that flag.
 
 Keep, for every candidate: its lens, its `file:line`, its score, and its
 disposition — reported, or dropped and why. The reason is whichever step

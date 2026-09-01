@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] — 2026-09-01
+
+### Changed
+
+- **`/reviso:style` scores on its own confidence rubric.** The style
+  gate had been scoring on the shared rubric forked from the reference
+  recipe, whose bands measure impact — "will directly impact the code's
+  functionality" at 75, "might be a nitpick… not very important" at 50.
+  A verified style finding never impacts functionality, so by the
+  rubric's own words it was a 50 against an 80 gate, and a real branch
+  yielded about one finding per run: whichever happened to read as
+  bug-shaped. The new
+  `skills/reviso/references/style-confidence-rubric.md` (revision
+  `style-1`) measures evidence quality alone — the lens's protocol
+  satisfied, holds on re-examination, baseline unambiguous, fix
+  concrete — in ranged bands with the gate on a stated boundary: 80–89
+  is the ordinary verified finding; 90–100 is one a written rule, an
+  existing helper, or a verbatim quote settles. Importance, frequency,
+  impact on functionality, senior-engineer willingness, and rank
+  against the rest of the change are named as inputs it does not take:
+  the lens protocols decide what is callable, the severity band how
+  much it misleads, the reporting policy how many ship. In this lane
+  the exclusion list's two importance-shaped entries (pedantic
+  nitpicks; general quality or documentation) match only a candidate
+  that failed its protocol. Unchanged: the 80 threshold, the silent
+  drop, the P2 floor, the cap of 8, every lens's evidence protocol, the
+  shared rubric (which now says the style lane does not use it), and
+  the review/audit gate. Style candidate scores before and after this
+  release are not comparable; `docs/evals.md` says so.
+
 ## [0.9.0] — 2026-08-22
 
 ### Added

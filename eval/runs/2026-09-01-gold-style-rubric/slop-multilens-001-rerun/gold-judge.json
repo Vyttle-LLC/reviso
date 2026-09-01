@@ -1,0 +1,170 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/format/period.ts",
+        "line": 8,
+        "title": "Placeholder text presents unimplemented locale handling as implemented",
+        "severity": "high",
+        "category": "slop",
+        "description": "\"In a real implementation, this would use the account's locale\" ships as a comment in production code — the placeholder detector's P1 case.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/format/period.ts",
+        "line": 8,
+        "title": "Placeholder text committed — unimplemented code presented as implemented",
+        "severity": "P1",
+        "category": "deterministic",
+        "description": "Comment admits locale handling is a stand-in; the next reader assumes it exists."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/services/summary-manager.test.ts",
+        "line": 9,
+        "title": "expect(total).toBe(total) cannot fail",
+        "severity": "high",
+        "category": "slop",
+        "description": "The assertion compares the value to itself; the test passes for any implementation of total(), so the coverage it appears to give is not there. Assert against the literal 15.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/services/summary-manager.test.ts",
+        "line": 9,
+        "title": "Test assertion cannot fail",
+        "severity": "P1",
+        "category": "test slop",
+        "description": "expect(total).toBe(total) compares the value to itself, passes for any implementation."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/format/period.ts",
+        "line": 6,
+        "title": "formatPeriodEnhanced and its changelog-style comment are AI tells",
+        "severity": "medium",
+        "category": "slop",
+        "description": "A comparative name (formatPeriodEnhanced beside formatPeriod) and a \"// Fixed bug where…\" comment are machine-generation artifacts foreign to the repo's text. Fold the inclusive-end fix into formatPeriod and drop the comment.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/format/period.ts",
+        "line": 6,
+        "title": "Changelog comment and comparative name on formatPeriodEnhanced",
+        "severity": "P2",
+        "category": "AI tells",
+        "description": "Comment narrates past edit; 'Enhanced' dates function against neighbor instead of naming what it does."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/services/summary-manager.ts",
+        "line": 18,
+        "title": "Comments on total() restate the code",
+        "severity": "medium",
+        "category": "slop",
+        "description": "\"// Sum the totals of all invoices\" and \"// Loop over each invoice and add its total to the sum\" say what the loop already says; the name total() carries the point. Delete both.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/services/summary-manager.ts",
+        "line": 18,
+        "title": "Comments restate the code they sit above",
+        "severity": "P2",
+        "category": "comments",
+        "description": "Comments repeat signature and narrate the loop; reader pays for two lines carrying nothing the code doesn't already say."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/services/summary-manager.ts",
+        "line": 6,
+        "title": "count is stored in lockstep with invoices and is always invoices.length",
+        "severity": "medium",
+        "category": "slop",
+        "description": "count is written at both sites that write invoices (constructor, replace) as invoices.length, and has one reader (summaryLine). Drop the field and read manager.invoices.length.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/services/summary-manager.ts",
+        "line": 6,
+        "title": "count is a stored projection of invoices.length",
+        "severity": "P2",
+        "category": "derived state",
+        "description": "Field duplicates invoices.length; every write site sets both, every future mutator must remember the second line."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/services/summary-manager.ts",
+        "line": 4,
+        "title": "SummaryManager diverges from the repo's *Service naming",
+        "severity": "medium",
+        "category": "slop",
+        "description": "InvoiceService and ExportService establish the Service suffix for this kind of class; the change introduces SummaryManager. Rename to SummaryService.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/services/summary-manager.ts",
+        "line": 4,
+        "title": "SummaryManager uses a suffix the repo doesn't",
+        "severity": "P2",
+        "category": "naming",
+        "description": "Repo uses *Service suffix in src/services/*-service.ts pattern; Manager is inconsistent."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/services/summary-manager.ts",
+        "line": 31,
+        "title": "persist swallows and logs where the repo's storage calls wrap the failure in a StorageError",
+        "severity": "medium",
+        "category": "slop",
+        "description": "readBlob and deleteBlob both rethrow as new StorageError(`failed to <op> blob ${key}`, { cause }); persist console.warns a generic message and continues. Match the idiom (StorageError is already imported and unused otherwise).",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/services/summary-manager.ts",
+        "line": 31,
+        "title": "persist swallows errors where the repo wraps and surfaces them",
+        "severity": "P1",
+        "category": "error handling",
+        "description": "Uses console.warn and discards error instead of throwing StorageError like other methods."
+      }
+    },
+    {
+      "gold": {
+        "file": "src/services/summary-manager.ts",
+        "line": 37,
+        "title": "toCsvRow is exported and called by nothing",
+        "severity": "medium",
+        "category": "slop",
+        "description": "No caller anywhere in the repo; nothing dispatches to it dynamically. Delete it.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/services/summary-manager.ts",
+        "line": 37,
+        "title": "Added members with no caller anywhere in the repo",
+        "severity": "P2",
+        "category": "dead weight",
+        "description": "toCsvRow and replace appear only at definitions; no dynamic access; unreachable CSV encoding."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 8,
+    "gold_correctness_count": 8,
+    "candidate_count": 8,
+    "matched_count": 8,
+    "matched_correctness_count": 8,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}
