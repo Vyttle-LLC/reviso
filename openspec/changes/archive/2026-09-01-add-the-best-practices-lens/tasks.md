@@ -83,5 +83,5 @@
       finder` / `recalibrate-the-confidence-rubric` landed first
       (`--onto`, per CLAUDE.md); re-read Stage 3/5 prose after the
       restack.
-- [ ] 5.4 Sync the delta specs and archive this change on the feature
+- [x] 5.4 Sync the delta specs and archive this change on the feature
       PR.
