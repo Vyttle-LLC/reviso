@@ -1,0 +1,10 @@
+[
+  {
+    "file": "auditlog/events.py",
+    "line": 6,
+    "title": "datetime.utcnow() is deprecated on all supported Python versions",
+    "severity": "P2",
+    "category": "best-practices",
+    "description": "datetime.utcnow() is deprecated in Python 3.12+, the project's minimum supported version. It returns naive datetime, causing TypeError when mixed with timezone-aware datetimes in age_seconds(). Fix: use datetime.now(timezone.utc) instead."
+  }
+]

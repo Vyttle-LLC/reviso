@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "auditlog/events.py",
+        "line": 6,
+        "title": "datetime.utcnow() is deprecated on the project's required Python (>=3.12)",
+        "severity": "low",
+        "category": "best-practices",
+        "description": "The official datetime docs mark utcnow() deprecated since 3.12 and recommend datetime.now(timezone.utc); pyproject.toml requires >=3.12, so every supported interpreter warns. The returned value is also naive, so age_seconds() against an aware `now` raises TypeError. Label matches on class, file, and line only — the fetched passage varies with the live page.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "auditlog/events.py",
+        "line": 6,
+        "title": "datetime.utcnow() is deprecated on all supported Python versions",
+        "severity": "P2",
+        "category": "best-practices",
+        "description": "datetime.utcnow() is deprecated in Python 3.12+, the project's minimum supported version. It returns naive datetime, causing TypeError when mixed with timezone-aware datetimes in age_seconds(). Fix: use datetime.now(timezone.utc) instead."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

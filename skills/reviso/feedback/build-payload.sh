@@ -100,7 +100,7 @@ oneof "--command" "$CMD" review audit style
 
 case $MODE in
 meta)
-  oneof "--lens" "$LENS" bugs conventions history prior-reviews comments slop deterministic
+  oneof "--lens" "$LENS" bugs conventions history prior-reviews comments slop best-practices deterministic
   oneof "--severity" "$SEV" P0 P1 P2
   oneof "--confidence" "$CONF" 80s 90s 100
   oneof "--reason" "$REASON" codebase-convention upstream-guarantee \

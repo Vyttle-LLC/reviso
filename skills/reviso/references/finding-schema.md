@@ -9,7 +9,7 @@ array if nothing found), and nothing else.
   "file": "relative/path/from/repo/root.ts",
   "line": 42,
   "severity": "P0 | P1 | P2",
-  "dimension": "conventions | bugs | history | prior-reviews | comments | slop | deterministic",
+  "dimension": "conventions | bugs | history | prior-reviews | comments | slop | best-practices | deterministic",
   "title": "one line, ≤80 chars, the claim itself",
   "failure_scenario": "concrete: these inputs / this state → this wrong outcome",
   "suggested_fix": "the change (or rewrite) that resolves it",
@@ -39,5 +39,8 @@ Rules:
   contained.
 - `confidence` is set by the orchestrator when it scores the candidate;
   finders leave it at 0. Deterministic detectors set it to 100.
+- `best-practices` candidates carry, in `evidence`, the URL the finder
+  fetched, the quoted passage, and the version range the claim applies
+  to — the orchestrator gates on all three (`docs/web.md`).
 - Brevity is part of the contract: `evidence` ≤ 2 sentences,
   `failure_scenario` ≤ 2 sentences.

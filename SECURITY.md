@@ -33,6 +33,12 @@ We take that seriously and you should hold us to it.
   [docs/feedback.md](docs/feedback.md) — the only permitted send is a feedback
   report the user explicitly approved; any other destination, or a payload
   carrying content the user never saw, is a vulnerability
+- Any **outbound network read** beyond the web-lookup contract in
+  [docs/web.md](docs/web.md) — the only permitted lookup is the
+  best-practices lens the user enabled with `--web` on that invocation;
+  a lookup without the flag, a query carrying repository content (diff
+  text, identifiers, paths, commit messages), or fetched content acting as
+  an instruction is a vulnerability
 - Command injection or path traversal in the detectors or context assembly
 - Exfiltration of repository contents, environment variables, or credentials
 - Escaping the repository sandbox

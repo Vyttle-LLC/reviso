@@ -1,6 +1,6 @@
 ---
 description: Deep multi-agent review of base..HEAD + uncommitted changes — the pre-PR gate; report-only
-argument-hint: "[--base <ref>] [--out <path>] [--explain]"
+argument-hint: "[--base <ref>] [--out <path>] [--explain] [--web]"
 model: opus
 allowed-tools: Read, Grep, Glob, Task, Bash(git status:*), Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git merge-base:*), Bash(git rev-parse:*), Bash(git ls-files:*), Bash(git blame:*), Bash(gh pr list:*), Bash(gh pr view:*), Bash(gh search:*), Bash(rg:*)
 ---
@@ -16,13 +16,19 @@ several minutes and meaningfully more usage than `/reviso:review`.
 repository.** Every tool pre-approved above is read-only; anything that
 could write is deliberately not pre-approved, so the user is prompted before
 it runs. The only write this command may ever request is the report file
-when the user explicitly passed `--out`.
+when the user explicitly passed `--out`. The web tools are likewise not
+pre-approved: the only agent that may use them is the best-practices
+finder, launched only under `--web`, and the user's permission prompt on
+its first lookup is the final gate (`${CLAUDE_PLUGIN_ROOT}/docs/web.md`).
 
 Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; default is
 the repository's default branch), `--out <path>` (also write the report
-to that file; terminal-only otherwise), and `--explain` (append the
-pipeline diagnostics described in Stage 6; off by default). Ignore unknown
-flags with a one-line note.
+to that file; terminal-only otherwise), `--explain` (append the
+pipeline diagnostics described in Stage 6; off by default), and `--web`
+(launch the best-practices finder, the one lens that reads the web; off
+by default, and nothing but this flag on this invocation may turn it on —
+not a repo file, not an environment variable). Ignore unknown flags with
+a one-line note.
 
 Follow these steps precisely. Make a todo list first.
 
@@ -109,8 +115,9 @@ Stage 3 and listed in the report's coverage summary.
 
 ## Stage 3 — Finders (parallel, blind)
 
-Launch all six finder agents in parallel — a single message with six Task
-calls — each blind to the others. Give each: the report header facts, the
+Launch all finder agents in parallel — a single message with one Task
+call per finder: six, or seven when the user passed `--web` — each blind
+to the others. Give each: the report header facts, the
 non-skipped diff hunks with their risk tags, the commit messages, the ticket
 (if any), the conventions file paths, and the changed-file list. Do not
 paste file contents or reference-file text into agent prompts — finders
@@ -127,6 +134,18 @@ through your own context is what blows it up. The finders:
 5. `reviso-finder-comments` — compliance with guidance in code comments
 6. `reviso-finder-slop` — the anti-slop lens (P0 slop set,
    convention-relative), including duplication above the calibrated bar
+7. `reviso-finder-best-practices` — **only under `--web`** — what the
+   language, framework, and libraries document about themselves:
+   deprecated or removed APIs on changed lines, documented misuses,
+   advisories against newly pinned versions, superseded idioms with a
+   stated consequence. It queries the web within
+   `${CLAUDE_PLUGIN_ROOT}/docs/web.md` and returns an object —
+   `findings` plus a `web` audit trail of the queries it issued and the
+   URLs it fetched — rather than a bare array. Without `--web`, do not
+   launch it; record its ledger row as `skipped (no --web)`. With
+   `--web` but no web tool available in this environment, do not launch
+   it either; record `skipped (web tools unavailable)`. Neither case is
+   ever `returned` with zero candidates.
 
 Each returns structured candidates per the shared finding schema
 (`${CLAUDE_PLUGIN_ROOT}/skills/reviso/references/finding-schema.md`); every
@@ -138,12 +157,16 @@ commits reachable from the change's head are admissible evidence. Give
 them `MB` and the head SHA so they can check reachability rather than
 guess at it.
 
-As each finder resolves, record its ledger row before you move on — six
-finders, six rows, written here rather than inferred later. A finder that
-returns `[]` is `returned` with a count of zero; a finder whose Task never
-came back, errored, or returned prose instead of a findings array is `no
-result`. If you reach Stage 4 with fewer than six rows, the missing ones
-are `no result`, not silence you may read as clean.
+As each finder resolves, record its ledger row before you move on — one
+row per finder you launched, plus the `best-practices` row you wrote as
+`skipped` if you did not launch it: seven rows either way, written here
+rather than inferred later. A finder that returns `[]` (or, for the
+best-practices finder, an object whose `findings` is `[]`) is `returned`
+with a count of zero; a finder whose Task never came back, errored, or
+returned prose instead of a findings array is `no result`. Keep the
+best-practices finder's `web` trail beside its row — Stage 6 prints it
+under `--explain`. If you reach Stage 4 with fewer than seven rows, the
+missing ones are `no result`, not silence you may read as clean.
 
 ## Stage 4 — Gather evidence (no filtering here)
 
@@ -156,6 +179,12 @@ scenario, whether that scenario reproduces — plus a severity check and a
 one-sentence summary. It returns no score, no drop reason, and no
 verdict, and it filters nothing: every candidate comes back with its
 evidence attached. Judgment happens in Stage 5, and it is yours.
+
+Evidence agents have no web tools, and the web is not consulted again
+after Stage 3. For a best-practices candidate, ask the evidence agent for
+what the code can settle offline: whether the changed line really calls
+the cited symbol, and what version range the manifests pin or allow for
+that library — the version applicability the gate needs.
 
 ## Stage 5 — Judge (the gate, yours alone), then reconcile
 
@@ -186,6 +215,19 @@ Duplication candidates additionally ship only above the calibrated bar,
 judged from the occurrence count the slop finder reported: four or more
 occurrences ship; exactly three only when the duplicated unit encodes a
 rule that can change; two or fewer never ship.
+
+Best-practices candidates are gated on source and version, at step 1 —
+three exclusion-list matches, each scored 0 with reason `exclusion-list`:
+the candidate cites no URL that appears in the finder's `fetched` list,
+or quotes no passage; the claim applies to a version the manifests
+exclude (Stage 4 established the allowed range); or it is a
+superseded-idiom candidate whose source states no consequence of the old
+form. What clears keeps the class's severity band: a removed API P1, a
+deprecated one P2; a documented misuse by its stated consequence; an
+advisory P1, and P0 only when rated critical and the hunk carries the
+external-input tag; a superseded idiom P2, never higher. When the bugs
+finder and this lens flag the same line for the same cause, the reconcile
+step below keeps the source-cited finding.
 
 Keep, for every candidate: its lens, its `file:line`, the score you
 assigned, and its disposition — reported, or dropped with the reason. The
@@ -220,6 +262,7 @@ Found <k> issues:
 1. [P0][conf 95] <one-line title> — path/to/file.ts:42
    Failure: <concrete scenario: inputs/state → wrong outcome>
    Fix: <suggested fix or rewrite>
+   Source: <fetched url — best-practices findings only>
    (<dimension>; deterministic findings say so here)
 
 ...
@@ -235,9 +278,14 @@ The coverage block is derived from the ledger, every run:
   is no fixed list to fall back on — if you have no row for a lens, you
   may not name it as checked.
 - `Not checked:` names each `no result` or `skipped` lens with its reason
-  — "history (no result)", "prior reviews (no GitHub remote)". **Emit the
-  line only when there is at least one such lens.** A run where every lens
-  returned prints no `Not checked:` line at all.
+  — "history (no result)", "prior reviews (no GitHub remote)",
+  "best-practices (no --web)". **Emit the line only when there is at
+  least one such lens.** A run where every lens returned prints no `Not
+  checked:` line at all — which, without `--web`, never happens: the
+  best-practices row is always there, and the user must see why.
+- `Source:` appears only on best-practices findings, and every one of
+  them carries it — the URL is how the user checks the claim without
+  asking for diagnostics.
 - No per-lens candidate counts here. Counts are `--explain`'s job; a count
   in the default report tells the user findings were withheld.
 - `Skipped:` is unchanged and unrelated: it lists skip-tier *files* from
@@ -256,19 +304,27 @@ Append one section after the findings, in this shape:
 ```text
 --- explain: pipeline diagnostics (not review findings) ---
 Finders: conventions 3, bugs 2, history 0, prior-reviews no result,
-comments 0, slop 1.
-Candidates before the gate (6):
-  [slop]        cli_server.rs:2257  score 88  reported
-  [conventions] shell_env.rs:453    score 72  dropped: rubric-score
-  [bugs]        shell_env.rs:50     score  0  dropped: pre-existing
+comments 0, slop 1, best-practices 1.
+Candidates before the gate (7):
+  [slop]           cli_server.rs:2257  score 88  reported
+  [conventions]    shell_env.rs:453    score 72  dropped: rubric-score
+  [bugs]           shell_env.rs:50     score  0  dropped: pre-existing
+  [best-practices] clock.py:14         score 90  reported
+Web (1 search, 1 fetch, bound not hit):
+  python 3.12 datetime.utcnow deprecated
+  https://docs.python.org/3/library/datetime.html
 ```
 
 The ledger with counts, then every candidate you kept a record of in Stage
-5 — one line each, with the score you assigned and its disposition. Rules: it goes after
+5 — one line each, with the score you assigned and its disposition — then,
+when the best-practices finder ran, its `web` trail: every query it
+issued and every URL it fetched, one per line, with whether the search
+bound was hit. That block is the user's record of what left the machine;
+omit it when the finder did not run. Rules: it goes after
 the findings, never among them; every line in it is a diagnostic, never a
 finding; and the findings section above it is identical whether or not the
 flag was passed. Without `--explain`, none of this appears — no dropped
-candidate, no score, no reason.
+candidate, no score, no reason, no query.
 
 Sink: print to the terminal. If `--out <path>` was given, additionally write
 the same report to that path (this triggers a permission prompt — correct
@@ -291,7 +347,9 @@ When the user names a finding:
 
 1. Pick the reason from what they said (ask if unclear):
    `codebase-convention`, `upstream-guarantee`, `deliberate-choice`,
-   `linter-territory`, `wrong-on-facts`, or `other`.
+   `linter-territory`, `wrong-on-facts`, or `other`. A best-practices
+   finding whose source was misread or misquoted is `wrong-on-facts`;
+   its `--lens` value is `best-practices`.
 2. **Tier 1 (default).** Bucket the confidence (80–89 → `80s`, 90–99 →
    `90s`, 100 → `100`) and run:
 
