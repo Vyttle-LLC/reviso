@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/session.ts",
+        "line": 5,
+        "title": "messages is stored in lockstep with platform and is always platform?.messages — inline the projection at its one reader",
+        "severity": "medium",
+        "category": "slop",
+        "description": "Session.messages is written at exactly two sites (the constructor and apply), each immediately after platform is set from the same manifest, as manifest.platform?.messages ?? []. It is a projection of platform with one reader (bannerText). Drop the field and read session.platform?.messages ?? [] at the read site.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/session.ts",
+        "line": 5,
+        "title": "`Session.messages` is a stored projection of `Session.platform`",
+        "severity": "P2",
+        "category": "derived state",
+        "description": "`messages` is written in lockstep with `platform` from the same source at every write site, duplicating data that could be read directly from `platform.messages`. Future write paths risk forgetting to update both. Fix: delete `messages: string[];` (line 5) and both assignments (lines 9, 14); inline the projection at the single read site in `src/banner.ts:4` as `(session.platform?.messages ?? []).join(\" · \")`"
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

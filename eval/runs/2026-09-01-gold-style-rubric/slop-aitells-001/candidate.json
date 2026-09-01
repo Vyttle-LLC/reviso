@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src/format.ts",
+    "line": 19,
+    "title": "Placeholder text committed — unimplemented behavior presented as implemented",
+    "severity": "P1",
+    "category": "comments",
+    "description": "Comment claims locale-aware formatting is deliberate stand-in, but call path never applies locale settings; non-localized string ships as intended."
+  },
+  {
+    "file": "src/format.ts",
+    "line": 14,
+    "title": "Generated-text artifacts in the formatBytesEnhanced block: comparative name, changelog comment, comment asserting behavior the code lacks",
+    "severity": "P1",
+    "category": "AI tells; comments",
+    "description": "Three generated-text tells in eight lines: comparative name, changelog comment, and edge-cases comment. Claims plural edge cases but handles only one (n < 0) and delegates rest to formatBytes."
+  },
+  {
+    "file": "src/format.ts",
+    "line": 14,
+    "title": "Redundant parallel entry point — a wrapper that delegates entirely, for one caller",
+    "severity": "P2",
+    "category": "over-engineering",
+    "description": "formatBytesEnhanced is wrapper export with single consumer (src/usage.ts:4), adding only sign-flip plus delegation to formatBytes. Leaves formatBytes wrong for negatives and creates unnecessary export choice."
+  }
+]

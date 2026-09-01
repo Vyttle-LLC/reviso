@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/discount.ts",
+    "line": 1,
+    "title": "Strategy interface + factory scaffolding, one consumer each",
+    "severity": "P2",
+    "category": "over-engineering",
+    "description": "Four exported types (DiscountStrategy, DiscountStrategyFactory, DiscountStrategyFactoryOptions, BulkDiscountStrategy) encode a plug-in point with no second implementation and no external caller. Collapse to function plus two constants."
+  },
+  {
+    "file": "src/discount.ts",
+    "line": 36,
+    "title": "Null/undefined guard on a parameter typed `number`",
+    "severity": "P2",
+    "category": "over-engineering",
+    "description": "Unreachable guard on parameter typed number; type signature guarantees non-null number. Delete lines 36-38."
+  }
+]

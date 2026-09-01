@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/cart.ts",
+    "line": 7,
+    "title": "Doc block and line comments restate the code — every comment narrates what the line below already says",
+    "severity": "medium",
+    "category": "slop",
+    "description": "The doc block narrates the loop step by step and each line comment repeats its line (\"Initialize the total to zero\" above let total = 0). Nothing states a constraint the code cannot express; the function name and body already read as the comments do. Delete the narration."
+  }
+]

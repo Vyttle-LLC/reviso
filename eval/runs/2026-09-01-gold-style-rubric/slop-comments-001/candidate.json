@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/cart.ts",
+    "line": 6,
+    "title": "Comments restate the code line for line",
+    "severity": "P2",
+    "category": "comments",
+    "description": "15 of 25 lines are comments that restate adjacent code exactly: '// Initialize the total to zero' above 'let total = 0;', '// Loop over each item in the cart' above 'for (const item of items)', etc. JSDoc also narrates the same loop. Readers must read the algorithm three times. Fix: drop inline comments and simplify doc comment to one line: '/** Sum of the prices of items. */'"
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/billing/totals.ts",
+        "line": 4,
+        "title": "roundCents is exported but its only caller is computeTotal in the same file",
+        "severity": "medium",
+        "category": "slop",
+        "description": "roundCents is exported from totals.ts; the only reference in the repo is computeTotal a few lines below. The repo keeps single-file helpers unexported (tax.ts: clampRate). Drop the export.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/billing/totals.ts",
+        "line": 4,
+        "title": "`roundCents` is exported but has no consumer outside its own module",
+        "severity": "P2",
+        "category": "surface area",
+        "description": "Module's public API advertises a rounding primitive with no cross-module callers. Search confirms only one in-module use at totals.ts:10 and the definition. No dynamic-access paths found. Fix: drop the `export` keyword."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

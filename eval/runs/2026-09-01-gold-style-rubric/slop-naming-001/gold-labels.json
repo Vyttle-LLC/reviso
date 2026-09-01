@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/services/report-manager.ts",
+    "line": 3,
+    "title": "ReportManager with data()/empty() diverges from the repo's *Service naming with verb-first methods and predicate booleans",
+    "severity": "medium",
+    "category": "slop",
+    "description": "Both existing services (InvoiceService, ExportService) use the Service suffix, verb-first method names (fetchInvoices, exportCsv) and predicate-shaped booleans (isOverdue, hasRows). The new class is ReportManager with a noun-only data() and a bare empty(). Rename to ReportService, fetchReport, isEmpty."
+  },
+  {
+    "file": "src/services/report-manager.ts",
+    "line": 15,
+    "title": "validateReport asserts validation the code does not perform — it only returns the title",
+    "severity": "high",
+    "category": "slop",
+    "description": "validateReport(report) performs no validation: it returns report.title. A caller reading the name assumes the report was checked. Rename to what it does (reportTitle) or drop it."
+  }
+]

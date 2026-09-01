@@ -1,0 +1,10 @@
+[
+  {
+    "file": "tests/pricing.test.ts",
+    "line": 5,
+    "title": "Test mocks the subject under test and asserts its own stub — cannot fail",
+    "severity": "P1",
+    "category": "slop",
+    "description": "Test creates jest.fn().mockReturnValue(110) and asserts the mock's behavior rather than the real function. Actual rounding logic Math.round(base * (1 + taxRate) * 100) / 100 is never tested. Second test at line 12 asserts only that the import resolved."
+  }
+]

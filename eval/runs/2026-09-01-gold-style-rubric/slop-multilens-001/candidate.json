@@ -1,0 +1,58 @@
+[
+  {
+    "file": "src/format/period.ts",
+    "line": 8,
+    "title": "Placeholder text committed — unimplemented behavior presented as implemented",
+    "severity": "P1",
+    "category": "deterministic",
+    "description": "Code admits it is a stand-in; comment says locale handling never happens"
+  },
+  {
+    "file": "src/services/summary-manager.test.ts",
+    "line": 9,
+    "title": "Test cannot fail — asserts a value against itself",
+    "severity": "P1",
+    "category": "test slop",
+    "description": "Asserts value against itself; always passes including for NaN or 0"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 31,
+    "title": "`persist` swallows and logs where this repo wraps and rethrows",
+    "severity": "P1",
+    "category": "error handling",
+    "description": "Uses console.warn and drops cause instead of throwing StorageError like repo pattern"
+  },
+  {
+    "file": "src/format/period.ts",
+    "line": 5,
+    "title": "Changelog comment and comparative name on a new function",
+    "severity": "P2",
+    "category": "AI tells",
+    "description": "Comment describes history not code; function name only meaningful relative to another function"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 18,
+    "title": "Comments restate the code they sit on",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Comments restate what code already expresses; carry no new information"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 6,
+    "title": "`count` is a stored projection of `invoices.length`",
+    "severity": "P2",
+    "category": "derived state",
+    "description": "Field is lockstep copy of invoices.length; should be derived not stored"
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 4,
+    "title": "`Manager` suffix in a directory that names its classes `Service`",
+    "severity": "P2",
+    "category": "naming",
+    "description": "Class uses Manager suffix inconsistent with Service naming pattern in same directory"
+  }
+]

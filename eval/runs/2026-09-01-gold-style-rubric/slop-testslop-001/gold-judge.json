@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "tests/pricing.test.ts",
+        "line": 5,
+        "title": "Tests cannot fail: the suite mocks the subject under test and asserts tautologies",
+        "severity": "high",
+        "category": "slop",
+        "description": "The first test replaces finalPrice with jest.fn().mockReturnValue(110) and asserts the mock returned 110 — finalPrice itself is never executed. The second test (line 12) asserts only expect(finalPrice).toBeDefined(), which the import already guarantees. Neither test can catch a behavioral regression; one consolidated finding per the style command reporting policy.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "tests/pricing.test.ts",
+        "line": 5,
+        "title": "Test mocks the subject under test and asserts its own stub — cannot fail",
+        "severity": "P1",
+        "category": "slop",
+        "description": "Test creates jest.fn().mockReturnValue(110) and asserts the mock's behavior rather than the real function. Actual rounding logic Math.round(base * (1 + taxRate) * 100) / 100 is never tested. Second test at line 12 asserts only that the import resolved."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

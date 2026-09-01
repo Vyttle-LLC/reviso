@@ -12,8 +12,12 @@ the commands and agents cite one copy instead of drifting apart.
 
 - `references/finding-schema.md` — the one finding format every stage speaks.
 - `references/confidence-rubric.md` — the 0–100 verification rubric
-  (forked from the official code-review plugin, Apache-2.0; see
-  `eval/reference/` for the dated snapshot).
+  `/reviso:review` and `/reviso:audit` score on (forked from the official
+  code-review plugin, Apache-2.0; see `eval/reference/` for the dated
+  snapshot).
+- `references/style-confidence-rubric.md` — `/reviso:style`'s own 0–100
+  rubric: evidence quality only, no importance axis. The shared rubric's
+  bands measure impact, which a style finding never has.
 - `references/false-positives.md` — the exclusion list: what is never a
   finding, no matter how plausible it looks.
 - `references/history-bound.md` — the reachability rule for every lens that

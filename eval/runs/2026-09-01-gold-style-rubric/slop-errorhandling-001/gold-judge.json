@@ -1,0 +1,37 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/storage/upload-blob.ts",
+        "line": 5,
+        "title": "uploadBlob swallows and logs where the repo's storage functions wrap the failure in a StorageError naming the key",
+        "severity": "medium",
+        "category": "slop",
+        "description": "readBlob and deleteBlob both catch and rethrow as new StorageError(`failed to <op> blob ${key}`, { cause }). uploadBlob instead console.warns a generic message and returns null. Match the idiom: throw new StorageError(`failed to upload blob ${key}`, { cause }).",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/storage/upload-blob.ts",
+        "line": 5,
+        "title": "Catch swallows and logs where every sibling wraps in StorageError",
+        "severity": "P1",
+        "category": "error handling",
+        "description": "Catch block should wrap error in StorageError like sibling functions (read-blob.ts:7-8, delete-blob.ts:6-7), but instead swallows and returns null. Uses generic message 'upload failed' instead of specific message interpolating key. Catch parameter named 'err' instead of 'cause'. Return type's '| null' only covers the swallowed failure; once error is thrown instead, null represents genuine absence of etag."
+      }
+    }
+  ],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 1,
+    "candidate_count": 1,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 100,
+    "precision_proxy_pct": 100
+  }
+}

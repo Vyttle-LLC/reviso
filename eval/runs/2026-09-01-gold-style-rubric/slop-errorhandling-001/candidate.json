@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/storage/upload-blob.ts",
+    "line": 5,
+    "title": "Catch swallows and logs where every sibling wraps in StorageError",
+    "severity": "P1",
+    "category": "error handling",
+    "description": "Catch block should wrap error in StorageError like sibling functions (read-blob.ts:7-8, delete-blob.ts:6-7), but instead swallows and returns null. Uses generic message 'upload failed' instead of specific message interpolating key. Catch parameter named 'err' instead of 'cause'. Return type's '| null' only covers the swallowed failure; once error is thrown instead, null represents genuine absence of etag."
+  }
+]

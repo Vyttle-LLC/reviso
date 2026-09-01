@@ -1,0 +1,18 @@
+[
+  {
+    "file": "src/services/report-manager.ts",
+    "line": 15,
+    "title": "validateReport asserts validation it does not perform",
+    "severity": "P1",
+    "category": "naming",
+    "description": "Method named validateReport returns string (report.title) instead of validation result. Repo baseline: methods name exactly what they do (isOverdue, hasRows, exportCsv). Fix: drop method and read report.title at call site, or rename to reportTitle(report: Report): string."
+  },
+  {
+    "file": "src/services/report-manager.ts",
+    "line": 3,
+    "title": "New class and its methods diverge from the repo's naming idiom",
+    "severity": "P2",
+    "category": "naming",
+    "description": "ReportManager doesn't follow <Noun>Service convention (InvoiceService, ExportService). Methods diverge: data(accountId, month) should be fetchReport(); empty(report) should be isEmpty() or hasInvoices(). File should be report-service.ts."
+  }
+]

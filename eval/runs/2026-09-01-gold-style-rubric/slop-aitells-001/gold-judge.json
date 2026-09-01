@@ -1,0 +1,73 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "matched": [
+    {
+      "gold": {
+        "file": "src/format.ts",
+        "line": 19,
+        "title": "Placeholder text: unimplemented behavior presented as implemented",
+        "severity": "high",
+        "category": "slop",
+        "description": "\"In a real implementation, this would use the user's locale settings\" — the code admits it is a stand-in; locale handling does not happen.",
+        "tier": "correctness"
+      },
+      "candidate": {
+        "file": "src/format.ts",
+        "line": 19,
+        "title": "Placeholder text committed — unimplemented behavior presented as implemented",
+        "severity": "P1",
+        "category": "comments",
+        "description": "Comment claims locale-aware formatting is deliberate stand-in, but call path never applies locale settings; non-localized string ships as intended."
+      }
+    }
+  ],
+  "missed_correctness_gold": [
+    {
+      "file": "src/format.ts",
+      "line": 14,
+      "title": "Temporal/comparative naming: formatBytesEnhanced names the edit, not the behavior",
+      "severity": "medium",
+      "category": "slop",
+      "description": "\"Enhanced\" relative to what? The name records that this function came after formatBytes, not what it does. Fold the negative-value handling into formatBytes or name the function for its behavior.",
+      "tier": "correctness"
+    },
+    {
+      "file": "src/format.ts",
+      "line": 15,
+      "title": "Changelog-style comment records edit history in code",
+      "severity": "medium",
+      "category": "slop",
+      "description": "\"// Fixed bug where negative values were not handled\" is commit-message content; in the file it goes stale the moment the code changes again. Git history already records it.",
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "src/format.ts",
+      "line": 14,
+      "title": "Generated-text artifacts in the formatBytesEnhanced block: comparative name, changelog comment, comment asserting behavior the code lacks",
+      "severity": "P1",
+      "category": "AI tells; comments",
+      "description": "Three generated-text tells in eight lines: comparative name, changelog comment, and edge-cases comment. Claims plural edge cases but handles only one (n < 0) and delegates rest to formatBytes."
+    },
+    {
+      "file": "src/format.ts",
+      "line": 14,
+      "title": "Redundant parallel entry point — a wrapper that delegates entirely, for one caller",
+      "severity": "P2",
+      "category": "over-engineering",
+      "description": "formatBytesEnhanced is wrapper export with single consumer (src/usage.ts:4), adding only sign-flip plus delegation to formatBytes. Leaves formatBytes wrong for negatives and creates unnecessary export choice."
+    }
+  ],
+  "metrics": {
+    "gold_count": 3,
+    "gold_correctness_count": 3,
+    "candidate_count": 3,
+    "matched_count": 1,
+    "matched_correctness_count": 1,
+    "gold_recall_correctness": 33,
+    "precision_proxy_pct": 33
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "file": "src/api/refunds.ts",
+    "line": 4,
+    "title": "`any` payload where both sibling handlers declare a typed interface",
+    "severity": "P1",
+    "category": "type slop",
+    "description": "Baseline: `src/api/orders.ts:3-6` declares `interface OrderPayload { sku: string; quantity: number }` and casts at `orders.ts:9`; `src/api/users.ts:3-6` declares `interface UserPayload { email: string; displayName: string }` and casts at `users.ts:9`. `grep -rn \"any\" src` returns exactly one hit — the added line — so the repo has no competing `any` idiom. Fix: mirror the siblings by declaring `interface RefundPayload { orderId: string; amountCents: number; }` and casting `const payload = req.body as RefundPayload;`"
+  }
+]

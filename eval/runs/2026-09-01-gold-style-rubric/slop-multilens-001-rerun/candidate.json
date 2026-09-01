@@ -1,0 +1,66 @@
+[
+  {
+    "file": "src/format/period.ts",
+    "line": 8,
+    "title": "Placeholder text committed — unimplemented code presented as implemented",
+    "severity": "P1",
+    "category": "deterministic",
+    "description": "Comment admits locale handling is a stand-in; the next reader assumes it exists."
+  },
+  {
+    "file": "src/services/summary-manager.test.ts",
+    "line": 9,
+    "title": "Test assertion cannot fail",
+    "severity": "P1",
+    "category": "test slop",
+    "description": "expect(total).toBe(total) compares the value to itself, passes for any implementation."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 31,
+    "title": "persist swallows errors where the repo wraps and surfaces them",
+    "severity": "P1",
+    "category": "error handling",
+    "description": "Uses console.warn and discards error instead of throwing StorageError like other methods."
+  },
+  {
+    "file": "src/format/period.ts",
+    "line": 6,
+    "title": "Changelog comment and comparative name on formatPeriodEnhanced",
+    "severity": "P2",
+    "category": "AI tells",
+    "description": "Comment narrates past edit; 'Enhanced' dates function against neighbor instead of naming what it does."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 6,
+    "title": "count is a stored projection of invoices.length",
+    "severity": "P2",
+    "category": "derived state",
+    "description": "Field duplicates invoices.length; every write site sets both, every future mutator must remember the second line."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 18,
+    "title": "Comments restate the code they sit above",
+    "severity": "P2",
+    "category": "comments",
+    "description": "Comments repeat signature and narrate the loop; reader pays for two lines carrying nothing the code doesn't already say."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 37,
+    "title": "Added members with no caller anywhere in the repo",
+    "severity": "P2",
+    "category": "dead weight",
+    "description": "toCsvRow and replace appear only at definitions; no dynamic access; unreachable CSV encoding."
+  },
+  {
+    "file": "src/services/summary-manager.ts",
+    "line": 4,
+    "title": "SummaryManager uses a suffix the repo doesn't",
+    "severity": "P2",
+    "category": "naming",
+    "description": "Repo uses *Service suffix in src/services/*-service.ts pattern; Manager is inconsistent."
+  }
+]
