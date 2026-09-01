@@ -17,8 +17,8 @@ could write is deliberately not pre-approved, so the user is prompted before
 it runs. The only write this command may ever request is the report file
 when the user explicitly passed `--out`.
 
-Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; default is
-the repository's default branch), `--out <path>` (also write the report
+Arguments: `$ARGUMENTS` may contain `--base <ref>` (diff base; otherwise inferred
+from the PR, the tracking branch, or the default branch — Step 1), `--out <path>` (also write the report
 to that file; terminal-only otherwise), and `--explain` (append the
 pipeline diagnostics described in Step 5; off by default). Ignore unknown
 flags with a one-line note.
@@ -49,10 +49,18 @@ Step 5 reports from these rows and may not name a lens it has no row for.
 Run this exact sequence of read-only git commands. Given identical git state
 and flags it must produce identical context — no judgment calls, no sampling.
 
-1. Resolve the base:
-   - If `--base <ref>` was given, use it.
-   - Else `git rev-parse --abbrev-ref origin/HEAD` → use that branch;
-     if unset, use `main` if it exists (`git rev-parse --verify main`), else `master`.
+1. Resolve the base. The first signal that yields a ref wins; record
+   which one, the report names it:
+   - `flag`: `--base <ref>`, if given.
+   - `pr`: the open PR's target, `gh pr view --json baseRefName -q
+     .baseRefName` → `origin/<that>`. No `gh`, or no PR: move on.
+   - `upstream`: the tracking branch, `git rev-parse --abbrev-ref @{upstream}`,
+     unless it is `<remote>/<current branch>` — a pushed copy of HEAD is
+     not a base. A stacked branch cut with `--track <parent>` lands here.
+   - `default`: `git rev-parse --abbrev-ref origin/HEAD`; if unset,
+     `origin/main` if it exists (`git rev-parse --verify origin/main`),
+     else `origin/master`, else local `main`, else `master`. Prefer the
+     remote ref: a stale local default branch re-reviews landed work.
    - Compute the merge base: `git merge-base <base> HEAD` → `MB`.
 2. Collect the change:
    - Committed: `git diff MB..HEAD`
@@ -61,7 +69,7 @@ and flags it must produce identical context — no judgment calls, no sampling.
    - Changed-file list: union of `git diff --name-status MB..HEAD` and
      `git diff --name-status HEAD` and the untracked list.
    - If the combined change is empty: report "Nothing to review on
-     `<branch>` vs `<base>`" and stop.
+     `<branch>` vs `<base>` (via <signal>)" and stop.
 3. Collect intent: `git log --format='%h %s%n%b' MB..HEAD` (all commit
    messages on the branch — stated intent counts when judging findings).
 4. Collect conventions: root `CLAUDE.md` / `AGENTS.md`, any in directories
@@ -197,6 +205,7 @@ Format:
 
 ```text
 ## Reviso review — <branch> vs <base> (<n> commits, <m> files)
+Base: <base> via <flag|pr|upstream|default> — merge-base <short sha>
 
 Found <k> issues:
 
