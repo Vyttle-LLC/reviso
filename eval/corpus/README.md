@@ -69,14 +69,14 @@ the field smoke, not here.
 
 ## Best-practices gold cases (synthetic)
 
-The `bp-*` pair measures the audit's opt-in best-practices lens
-(`docs/web.md`): `bp-deprecated-api-001` calls `datetime.utcnow()` under a
+The `bp-*` pair measures `/reviso:style`'s opt-in best-practices lens
+(`docs/web.md`, moved from the audit in 0.13.0): `bp-deprecated-api-001` calls `datetime.utcnow()` under a
 `context` `pyproject.toml` requiring Python `>=3.12`, where the official
 docs deprecate it; `bp-deprecated-api-clean-001` is the look-alike on
 `datetime.now(timezone.utc)`. Findings are category `best-practices`,
 which `tiers.sh` treats as in lane **only when `REVISO_CMD_ARGS` contains
-`--web`** — without the flag the lens never launches, the pair is out of
-lane, and every existing audit gold run is unchanged. The label matches
+`--web`** — without the flag the lens never runs, the pair is out of
+lane, and every flag-less gold run is unchanged. The label matches
 on class, file, and line only: the network is live, so the quoted
 passage is not part of the label.
 

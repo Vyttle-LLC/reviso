@@ -1,10 +1,6 @@
-# web-lookup-contract Specification
+# web-lookup-contract (delta)
 
-## Purpose
-
-TBD - created by archiving change add-the-best-practices-lens. Update Purpose after archive.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Network is touched only on explicit per-invocation opt-in
 
@@ -71,6 +67,19 @@ default report. Nothing fetched SHALL be persisted on disk.
 
 - **WHEN** a best-practices finding survives the gate
 - **THEN** its report entry includes the URL of the fetched source
+
+## REMOVED Requirements
+
+### Requirement: Queries are composed only from ecosystem facts
+
+**Reason**: Re-added below with the truncation-order scenario reworded —
+the lens now runs inline in `/reviso:style`, which has no triage risk
+tags to order by; ordering is deterministic (newly pinned versions
+first, then changed-line symbols). Substance otherwise unchanged.
+**Migration**: None — the requirement "Queries carry only ecosystem
+facts, deterministically bounded" (added below) governs.
+
+## ADDED Requirements
 
 ### Requirement: Queries carry only ecosystem facts, deterministically bounded
 

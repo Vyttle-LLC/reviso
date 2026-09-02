@@ -1,0 +1,10 @@
+[
+  {
+    "file": "auditlog/events.py",
+    "line": 6,
+    "title": "`datetime.utcnow()` is deprecated in every Python version this project allows",
+    "severity": "P2",
+    "category": "best practices",
+    "description": "`utcnow()` returns naive datetime (no tzinfo), treated as local time by many methods. Project requires Python >=3.12 where this is deprecated (removed in 3.14). Fix: use `datetime.now(UTC)` instead."
+  }
+]
