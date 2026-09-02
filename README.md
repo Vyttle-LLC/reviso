@@ -36,21 +36,21 @@ Reviso is the missing review. Three commands, all local, all report-only:
   dimension, per-candidate evidence gathering, then a single confidence
   gate applied by the orchestrator with the whole change in view. Slower
   and heavier, for when the branch is about to become a PR. (Full
-  adversarial multi-skeptic depth lands in P1.) Add `--web` and a seventh
-  finder checks changed lines against what your language and libraries
-  document about themselves — deprecated APIs, documented misuses,
-  advisories on newly pinned versions — citing the source. Off by
-  default, and the only thing in Reviso that reads the web; what a query
-  may contain is a written contract, [docs/web.md](docs/web.md).
+  adversarial multi-skeptic depth lands in P1.)
 - **`/reviso:style`** — the style lane: slop, drift from your repo's own
   conventions, comment and method length, duplication, over-engineering,
   dead weight, test slop, AI tells, derived state, naming, error-handling
   shape, stale docs, surface area, type slop — and nothing else. Every
   finding is
   measured against how *your* codebase writes, with the baseline cited —
-  no bug hunting, no absolute thresholds, with two deliberate exceptions:
+  no bug hunting, no absolute thresholds, with three deliberate exceptions:
   a comment must earn its place (only a written convention overrides),
-  and placeholder text is always a finding.
+  placeholder text is always a finding, and `--web` adds the
+  best-practices lens — changed lines checked against what your language
+  and libraries document about themselves (deprecated APIs, documented
+  misuses, advisories on newly pinned versions), citing the source. Off
+  by default, and the only thing in Reviso that reads the web; what a
+  query may contain is a written contract, [docs/web.md](docs/web.md).
 
 The intended rhythm: code → `review` → fix → a few more commits →
 `audit` → open the PR. Reach for `style` when the question is "is this
@@ -137,9 +137,9 @@ including the runs we lose — are published in [docs/evals.md](docs/evals.md).
 
 What's here today: `/reviso:review` (single-pass mock-PR review, anti-slop
 lens, deterministic detectors), `/reviso:audit` (the multi-agent
-finder + verify pipeline, with the opt-in `--web` best-practices lens
-under the [docs/web.md](docs/web.md) contract), `/reviso:style` (the single-pass style-only
-lane, calibrated to your repo's own norms), the parity eval harness in
+finder + verify pipeline), `/reviso:style` (the single-pass style-only
+lane, calibrated to your repo's own norms, with the opt-in `--web`
+best-practices lens under the [docs/web.md](docs/web.md) contract), the parity eval harness in
 [eval/](eval/), and the assisted false-positive feedback flow under the
 [docs/feedback.md](docs/feedback.md) privacy contract.
 Deliberately not yet: audit's full adversarial multi-skeptic depth (P1),

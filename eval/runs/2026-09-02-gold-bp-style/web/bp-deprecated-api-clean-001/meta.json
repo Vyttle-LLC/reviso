@@ -1,0 +1,11 @@
+{
+  "cli_version": "2.1.258",
+  "tier": "style",
+  "command": "/reviso:style --base 32b9133eeb03b690c16503c0f9182d4675f71707 --web",
+  "base_sha": "32b9133eeb03b690c16503c0f9182d4675f71707",
+  "head_sha": "32b9133eeb03b690c16503c0f9182d4675f71707",
+  "models": [
+    "claude-haiku-4-5-20251001",
+    "claude-opus-5"
+  ]
+}

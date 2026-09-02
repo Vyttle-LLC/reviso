@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] — 2026-09-02
+
+### Changed
+
+- **The best-practices lens moved to `/reviso:style --web`.** One
+  release after it shipped in the audit, the ecosystem check lives
+  where it belongs: the style lane — the verb you reach for on a fresh
+  AI-written change, and single-pass, so the lens runs inline with no
+  subagent. Same contract in every respect (`docs/web.md`: opt-in flag
+  only, ecosystem-fact queries, twelve searches / two fetches, fetched
+  primary sources on a `Source:` line, `Web:` audit trail under
+  `--explain`), same four classes, same version-applicability gate —
+  now a `no-source` protocol drop beside the lane's `no-baseline` /
+  `no-search` / `no-quote`. The lens is the cardinal rule's third named
+  exception (ecosystem-relative, not repo-relative) and keeps its own
+  severity band the way deterministic findings do — a critical advisory
+  reachable from external input may ship P0; nothing else in the style
+  lane can. **`/reviso:audit --web` is gone** (the flag now draws the
+  unknown-flag note pointing at style);
+  `agents/reviso-finder-best-practices.md` is deleted and the audit is
+  back to six finders. The `bp-*` gold pair moves to the style tier,
+  in lane only when `REVISO_CMD_ARGS` carries `--web`, as before.
+
 ## [0.12.0] — 2026-09-02
 
 ### Changed

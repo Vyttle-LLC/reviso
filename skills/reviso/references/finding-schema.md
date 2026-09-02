@@ -39,8 +39,8 @@ Rules:
   contained.
 - `confidence` is set by the orchestrator when it scores the candidate;
   finders leave it at 0. Deterministic detectors set it to 100.
-- `best-practices` candidates carry, in `evidence`, the URL the finder
-  fetched, the quoted passage, and the version range the claim applies
-  to — the orchestrator gates on all three (`docs/web.md`).
+- `best-practices` candidates carry, in `evidence`, the fetched URL,
+  the quoted passage, and the version range the claim applies to — the
+  style gate requires all three (`docs/web.md`).
 - Brevity is part of the contract: `evidence` ≤ 2 sentences,
   `failure_scenario` ≤ 2 sentences.

@@ -47,8 +47,8 @@ ALLOWED="Bash(sh $PLUGIN_DIR/skills/reviso/detectors/run.sh:*)"
 if [ "$REVIEW_TIER" = "audit" ]; then
   ALLOWED="Task,Agent,Read,$ALLOWED"
 fi
-# `--web` is the one flag that changes what is measured: it launches the
-# best-practices finder, whose web tools are never pre-approved by the
+# `--web` is the one flag that changes what is measured: it runs the
+# best-practices lens, whose web tools are never pre-approved by the
 # command itself (docs/web.md). Headless, nobody can answer the prompt, so
 # the grant is made here — only when the caller passed the flag, which is
 # the same explicit opt-in the contract requires of a user.
