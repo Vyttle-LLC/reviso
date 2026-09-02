@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] — 2026-09-02
+
+### Changed
+
+- **The diff base is inferred, and the report says how.** Every verb
+  had defaulted to the repository's default branch, so a stacked branch
+  was reviewed against `main` and the report carried the parent's
+  landed work as if it were new. Step 1 now takes the first of four
+  signals: `--base`, the open PR's target (`gh pr view`), the branch's
+  tracking branch (unless it is only the pushed copy of HEAD), then the
+  default branch — and prefers `origin/main` over a local `main` that
+  may be stale. The report header gains a `Base:` line naming the ref,
+  the signal that chose it, and the merge-base, so a wrong base is
+  visible before the findings are read. History-based guessing (the
+  branch with the nearest merge-base) is deliberately not a signal:
+  squash-merged branches left undeleted look like parents.
+  `/reviso:style` gains `gh pr view` in its allowed tools for the PR
+  signal; still read-only.
+
 ## [0.11.0] — 2026-09-01
 
 ### Added
@@ -65,7 +84,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shared rubric (which now says the style lane does not use it), and
   the review/audit gate. Style candidate scores before and after this
   release are not comparable; `docs/evals.md` says so.
-||||||| parent of 8588fdc (Add the best-practices lens behind --web (0.11.0))
 
 ## [0.9.0] — 2026-08-22
 

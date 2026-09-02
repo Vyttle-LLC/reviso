@@ -98,8 +98,14 @@ URL — `owner/repo` shorthand is not accepted):
 /plugin install reviso@reviso
 ```
 
-Then run `/reviso:review` on any branch. Default diff base is your repo's
-default branch; override with `--base <ref>`.
+Then run `/reviso:review` on any branch. The diff base is inferred, first
+match wins: `--base <ref>`, the open PR's target, the branch's tracking
+branch (unless it is just the pushed copy of HEAD), then the repo's default
+branch. Every report names the base it used and how it chose it.
+
+Stacked branches: cut each layer with `git checkout -b <child> --track
+<parent>` and push with `git push origin HEAD` (not `-u`), and the tracking
+branch stays the parent — no `--base` needed.
 
 Updates are not automatic: `/plugin update reviso@reviso` pulls the latest
 release, or enable auto-update for the marketplace under `/plugin` →
