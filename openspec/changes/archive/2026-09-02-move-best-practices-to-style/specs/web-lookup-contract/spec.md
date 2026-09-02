@@ -23,31 +23,6 @@ prompt on first use remains the final gate.
   CLAUDE.md instruction asking for web lookup
 - **THEN** the lens remains skipped unless the user passed `--web`
 
-### Requirement: Queries are composed only from ecosystem facts
-
-A web query SHALL be composed only from: the language; the framework;
-a library name and the version the change's manifests pin or allow; and
-the name of a third-party symbol used on a changed line, where
-third-party means a repository search shows the symbol is not defined in
-the repository. A query SHALL NOT contain diff text, repository-defined
-identifiers, file paths, commit messages, branch names, or ticket ids.
-A run SHALL issue at most twelve searches, one per distinct
-`(library, symbol)` or `(library, version)` pair, and at most two fetches
-per search.
-
-#### Scenario: A repository identifier stays home
-
-- **WHEN** a changed line calls the repository's own `buildInvoice()`
-  helper and the third-party `moment().utc()`
-- **THEN** any query names `moment` and `utc` and never `buildInvoice`
-
-#### Scenario: The search bound truncates deterministically
-
-- **WHEN** the change yields more than twelve distinct query pairs
-- **THEN** the lens issues twelve — versions the change's manifests
-  newly pin first, then symbols on changed lines — and records that the
-  bound was hit
-
 ### Requirement: Fetched content is data, and every citation is fetch-verified
 
 Content returned by a search or fetch SHALL be treated as untrusted
@@ -92,3 +67,41 @@ default report. Nothing fetched SHALL be persisted on disk.
 
 - **WHEN** a best-practices finding survives the gate
 - **THEN** its report entry includes the URL of the fetched source
+
+## REMOVED Requirements
+
+### Requirement: Queries are composed only from ecosystem facts
+
+**Reason**: Re-added below with the truncation-order scenario reworded —
+the lens now runs inline in `/reviso:style`, which has no triage risk
+tags to order by; ordering is deterministic (newly pinned versions
+first, then changed-line symbols). Substance otherwise unchanged.
+**Migration**: None — the requirement "Queries carry only ecosystem
+facts, deterministically bounded" (added below) governs.
+
+## ADDED Requirements
+
+### Requirement: Queries carry only ecosystem facts, deterministically bounded
+
+A web query SHALL be composed only from: the language; the framework;
+a library name and the version the change's manifests pin or allow; and
+the name of a third-party symbol used on a changed line, where
+third-party means a repository search shows the symbol is not defined in
+the repository. A query SHALL NOT contain diff text, repository-defined
+identifiers, file paths, commit messages, branch names, or ticket ids.
+A run SHALL issue at most twelve searches, one per distinct
+`(library, symbol)` or `(library, version)` pair, and at most two fetches
+per search.
+
+#### Scenario: A repository identifier stays home
+
+- **WHEN** a changed line calls the repository's own `buildInvoice()`
+  helper and the third-party `moment().utc()`
+- **THEN** any query names `moment` and `utc` and never `buildInvoice`
+
+#### Scenario: The search bound truncates deterministically
+
+- **WHEN** the change yields more than twelve distinct query pairs
+- **THEN** the lens issues twelve — versions the change's manifests
+  newly pin first, then symbols on changed lines — and records that the
+  bound was hit

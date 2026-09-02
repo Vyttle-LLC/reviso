@@ -46,4 +46,4 @@
 ## 5. Release
 
 - [x] 5.1 CHANGELOG 0.13.0, `plugin.json` 0.13.0.
-- [ ] 5.2 Lint with CI globs; sync + archive on this branch; PR.
+- [x] 5.2 Lint with CI globs; sync + archive on this branch; PR.
