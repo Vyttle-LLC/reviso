@@ -39,8 +39,8 @@ one glance.
 Sent:
 
 - The lens that produced the finding (`bugs`, `conventions`, `history`,
-  `prior-reviews`, `comments`, `slop`, `deterministic`) and, for
-  deterministic findings, the detector id
+  `prior-reviews`, `comments`, `slop`, `best-practices`, `deterministic`)
+  and, for deterministic findings, the detector id
 - Severity and confidence bucket (80s / 90s / 100)
 - Why you judged it wrong, from a fixed list: codebase convention, upstream
   guarantee, deliberate choice, linter territory, wrong on the facts, other

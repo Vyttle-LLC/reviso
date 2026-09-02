@@ -33,3 +33,10 @@ Reviso additions (the anti-slop lens has its own traps):
   often deliberate style (DAMP); only a written rule makes it drift. A
   helper idiom merely demonstrated in the code does not count as written.
   If any occurrence is production code, the ordinary bar applies.
+- An ecosystem claim (deprecated API, documented misuse, advisory,
+  superseded idiom) that rests on no fetched source — no URL the finder
+  fetched this run, or no quoted passage — or that applies to a version
+  the change's manifests exclude, or that recommends a replacement idiom
+  without the source stating a consequence of the old form. The
+  "general code quality" exclusion above is unchanged: a best-practices
+  finding is a documented fact about the ecosystem or it is nothing.

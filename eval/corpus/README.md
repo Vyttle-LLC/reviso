@@ -67,6 +67,19 @@ The command's report renders its sixteen ledger rows by lens family
 findings, not the coverage block, so the family rendering is checked in
 the field smoke, not here.
 
+## Best-practices gold cases (synthetic)
+
+The `bp-*` pair measures the audit's opt-in best-practices lens
+(`docs/web.md`): `bp-deprecated-api-001` calls `datetime.utcnow()` under a
+`context` `pyproject.toml` requiring Python `>=3.12`, where the official
+docs deprecate it; `bp-deprecated-api-clean-001` is the look-alike on
+`datetime.now(timezone.utc)`. Findings are category `best-practices`,
+which `tiers.sh` treats as in lane **only when `REVISO_CMD_ARGS` contains
+`--web`** — without the flag the lens never launches, the pair is out of
+lane, and every existing audit gold run is unchanged. The label matches
+on class, file, and line only: the network is live, so the quoted
+passage is not part of the label.
+
 **Style-tier gold runs are meaningful only against style-labeled or
 expected-clean cases.** Running `REVISO_TIER=style` over a bug-labeled
 case scores zero recall by design — the style lane hunts no bugs — and

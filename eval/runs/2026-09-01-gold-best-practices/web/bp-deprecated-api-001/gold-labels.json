@@ -1,0 +1,10 @@
+[
+  {
+    "file": "auditlog/events.py",
+    "line": 6,
+    "title": "datetime.utcnow() is deprecated on the project's required Python (>=3.12)",
+    "severity": "low",
+    "category": "best-practices",
+    "description": "The official datetime docs mark utcnow() deprecated since 3.12 and recommend datetime.now(timezone.utc); pyproject.toml requires >=3.12, so every supported interpreter warns. The returned value is also naive, so age_seconds() against an aware `now` raises TypeError. Label matches on class, file, and line only — the fetched passage varies with the live page."
+  }
+]

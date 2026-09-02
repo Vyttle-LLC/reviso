@@ -1,0 +1,7 @@
+{
+  "case": "bp-deprecated-api-clean-001",
+  "origin": "synthetic",
+  "imported": "2026-09-01",
+  "expected_clean": true,
+  "findings": []
+}

@@ -47,6 +47,7 @@ body:
         - Prior reviews
         - Code comments
         - Anti-slop
+        - Best practices (--web)
         - Deterministic detector
   - type: input
     id: command

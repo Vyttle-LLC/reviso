@@ -47,11 +47,20 @@ ALLOWED="Bash(sh $PLUGIN_DIR/skills/reviso/detectors/run.sh:*)"
 if [ "$REVIEW_TIER" = "audit" ]; then
   ALLOWED="Task,Agent,Read,$ALLOWED"
 fi
+# `--web` is the one flag that changes what is measured: it launches the
+# best-practices finder, whose web tools are never pre-approved by the
+# command itself (docs/web.md). Headless, nobody can answer the prompt, so
+# the grant is made here — only when the caller passed the flag, which is
+# the same explicit opt-in the contract requires of a user.
+case " ${REVISO_CMD_ARGS:-} " in
+  *" --web "*) ALLOWED="WebSearch,WebFetch,$ALLOWED" ;;
+esac
 
 # The command as executed, recorded in meta.json below: the artifact says
 # what produced it rather than leaving it to be reconstructed. REVISO_CMD_ARGS
 # carries diagnostics flags (--explain), which by spec append a section and
-# leave the findings identical — it is not a way to change what is measured.
+# leave the findings identical, and `--web`, which tiers.sh reads to decide
+# whether best-practices labels are in lane.
 CMD="$REVIEW_TIER_CMD --base $BASE_SHA${REVISO_CMD_ARGS:+ $REVISO_CMD_ARGS}"
 
 # Clean context: project/local settings only — no user-level CLAUDE.md,

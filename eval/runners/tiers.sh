@@ -18,3 +18,13 @@
 # (2026-08-06, all such findings ruled out-of-lane). Removing a category is the
 # same kind of decision and needs the same evidence — a lens that ships it.
 CLEANUP_RE='^(simplification|efficiency|reuse|altitude|conventions|test-coverage|observability|deploy-safety)$'
+
+# `best-practices` is in lane only when the run could reach the web: the
+# lens is opt-in per invocation (docs/web.md), so a run without `--web` in
+# REVISO_CMD_ARGS never launches it and a miss there is the product working
+# as designed. A re-judge of a recorded `--web` run must pass the same
+# REVISO_CMD_ARGS, or its best-practices labels drop out of lane.
+case " ${REVISO_CMD_ARGS:-} " in
+  *" --web "*) ;;
+  *) CLEANUP_RE="${CLEANUP_RE%)\$}|best-practices)\$" ;;
+esac

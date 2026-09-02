@@ -1,0 +1,10 @@
+[
+  {
+    "file": "auditlog/events.py",
+    "line": 6,
+    "title": "Naive UTC timestamp makes `age_seconds` crash on an aware `now`",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "`_stamp()` returns naive `datetime.utcnow()`, but `age_seconds()` can receive aware datetime, causing TypeError on subtraction. Also deprecated in Python 3.12+. Use `datetime.now(timezone.utc)` instead."
+  }
+]

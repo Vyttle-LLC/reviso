@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] — 2026-09-01
+
+### Added
+
+- **The best-practices lens, opt-in.** `/reviso:audit --web` launches a
+  seventh finder that checks changed lines against what the language,
+  framework, and libraries document about themselves: a **deprecated or
+  removed API** in a version the manifests allow, a **documented misuse**
+  the maintainer's docs warn against, a **known advisory** on a version
+  the change pins, and a **superseded idiom** — only where the docs name
+  a replacement *and* a consequence. Every finding cites a fetched
+  primary source on its own `Source:` line; a claim with no fetched
+  source, against a version the manifests exclude, or resting on a
+  recommendation without a consequence, is an exclusion-list drop.
+  Without the flag nothing changes except a `Not checked:
+  best-practices (no --web)` line — the finder is never launched, no
+  prompt appears.
+- **The web-lookup contract.** `docs/web.md`, sibling to the feedback
+  contract: opt-in per invocation only (never a repo file, env var, or
+  setting); queries built from ecosystem facts alone — language,
+  framework, library and version, third-party symbol — never diff text,
+  identifiers, paths, or messages; twelve searches and two fetches per
+  search at most; fetched content is data, never instruction; and
+  `--explain` prints every query and URL. `SECURITY.md` names any
+  outbound read outside it a vulnerability. The `dimension` enum and the
+  tier-1 feedback lens list gain `best-practices`.
+- **One gold pair.** `bp-deprecated-api-001` / `-clean-001` (Python
+  `datetime.utcnow()` under `requires-python >=3.12`), in lane for the
+  audit tier only when `REVISO_CMD_ARGS` carries `--web`, so every
+  existing gold result is untouched.
+
 ## [0.10.0] — 2026-09-01
 
 ### Changed
@@ -34,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shared rubric (which now says the style lane does not use it), and
   the review/audit gate. Style candidate scores before and after this
   release are not comparable; `docs/evals.md` says so.
+||||||| parent of 8588fdc (Add the best-practices lens behind --web (0.11.0))
 
 ## [0.9.0] — 2026-08-22
 

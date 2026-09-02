@@ -1,0 +1,22 @@
+{
+  "id": "bp-deprecated-api-clean-001",
+  "language": "python",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Stamp audit events with a UTC timestamp",
+    "description": "Adds the audit event record and its UTC creation stamp."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "pyproject.toml",
+      "status": "context",
+      "patch": "@@ -0,0 +1,6 @@\n+[project]\n+name = \"auditlog\"\n+version = \"0.1.0\"\n+requires-python = \">=3.12\"\n+dependencies = []\n+"
+    },
+    {
+      "filename": "auditlog/events.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,16 @@\n+from dataclasses import dataclass, field\n+from datetime import datetime, timezone\n+\n+\n+def _stamp() -> datetime:\n+    return datetime.now(timezone.utc)\n+\n+\n+@dataclass(frozen=True)\n+class AuditEvent:\n+    actor: str\n+    action: str\n+    created_at: datetime = field(default_factory=_stamp)\n+\n+    def age_seconds(self, now: datetime) -> float:\n+        return (now - self.created_at).total_seconds()\n"
+    }
+  ]
+}

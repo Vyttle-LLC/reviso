@@ -67,6 +67,7 @@ Two metric families, deliberately not comparable to each other:
 | 2026-08-22 | `style` | reader lenses only (7 cases: 3 TP + 3 expected-clean + 1 multi-lens) | **100%** (12/12) | 100% (12/12) | **3/3 silent** | [runs/2026-08-22-gold-reader-lenses](../eval/runs/2026-08-22-gold-reader-lenses/) |
 | 2026-08-22 | `style` | surface lenses only (7 cases: 3 TP + 3 expected-clean + the 0.8.0 multi-lens case) | **100%** (11/11) | 100% (11/11) | **3/3 silent** | [runs/2026-08-22-gold-surface-lenses](../eval/runs/2026-08-22-gold-surface-lenses/) |
 | 2026-09-01 | `style` | every style case (23: 12 TP + 11 expected-clean) | **88%** (21/24; 92% with the multi-lens re-run — every label is in a report, see below) | 91% (21/23; no false positive) | **11/11 silent** | [runs/2026-09-01-gold-style-rubric](../eval/runs/2026-09-01-gold-style-rubric/) |
+| 2026-09-01 | `audit` | best-practices pair (2: 1 TP + 1 expected-clean), with and without `--web` | **100%** (1/1 with `--web`; out of lane without) | 100% (1/1) | **2/2 silent** | [runs/2026-09-01-gold-best-practices](../eval/runs/2026-09-01-gold-best-practices/) |
 
 The first two rows measure `/reviso:review`; their tier column is
 attributed retroactively — neither run recorded a tier, because the runner
