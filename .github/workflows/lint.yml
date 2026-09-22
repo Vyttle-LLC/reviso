@@ -16,6 +16,10 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
         with:
           globs: '**/*.md'
+      - name: Check skill portability
+        run: |
+          python3 -m pip install jsonschema
+          python3 eval/runners/test_portability.py
       - name: Check internal links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2
         with:

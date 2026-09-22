@@ -68,8 +68,7 @@ scan() { # scan <text> <byte-cap>
 enc() { printf '%s' "$1" | od -An -v -tx1 | awk '{for(i=1;i<=NF;i++) printf "%%%s", $i}'; }
 
 HERE=$(cd "$(dirname "$0")" && pwd)
-VERSION=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' \
-  "$HERE/../../../.claude-plugin/plugin.json" | head -n 1)
+VERSION=$(cat "$HERE/../VERSION")
 patt "plugin version" "$VERSION" '[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.-]+)?'
 
 MODE=${1-}
@@ -105,7 +104,10 @@ meta)
   oneof "--confidence" "$CONF" 80s 90s 100
   oneof "--reason" "$REASON" codebase-convention upstream-guarantee \
     deliberate-choice linter-territory wrong-on-facts other
-  patt "--model" "$MODEL" '[a-z][a-z0-9-]{2,39}'
+  # Reject multiline values before grep's line-oriented pattern match.
+  case $MODEL in *[!a-z0-9.-]*) die "--model contains invalid characters" ;; esac
+  [ "${#MODEL}" -le 40 ] || die "--model is too long"
+  patt "--model" "$MODEL" '([a-z][a-z0-9-]{2,39}|gpt-[0-9]+\.[0-9]+(-[a-z0-9-]+)?)'
   if [ "$LENS" = deterministic ]; then
     [ -n "$DETECTOR" ] || die "lens 'deterministic' requires --detector"
     [ "$CONF" = 100 ] || die "deterministic findings report at confidence 100"
@@ -115,9 +117,9 @@ meta)
     die "--detector only applies to --lens deterministic"
   fi
 
-  # Field patterns forbid '/' and '.', so no payload field can carry a path
-  # into the user's repository tree. Re-checked here anyway.
-  for _v in "$LENS" "$SEV" "$CONF" "$REASON" "$CMD" "$MODEL" "$DETECTOR"; do
+  # Enum fields forbid paths. Model IDs additionally allow a numeric GPT
+  # version (e.g. gpt-5.4), validated above; no slashes or file extensions.
+  for _v in "$LENS" "$SEV" "$CONF" "$REASON" "$CMD" "$DETECTOR"; do
     case $_v in
       */*|*.*) veto "path-shaped field value: $_v" ;;
     esac

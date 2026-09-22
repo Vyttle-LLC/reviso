@@ -1,11 +1,12 @@
 # CLAUDE.md
 
-Reviso is a Claude Code plugin that reviews your changes before the PR exists.
+Reviso is a Claude Code and Codex plugin that reviews your changes before the PR exists.
 This is what an agent should know before touching this repo.
 
 ## Invariants
 
-- **Report-only.** Reviso never edits a user's files. Anything that writes is a
+- **Report-only.** Reviso only writes a report when explicitly requested with `--out`.
+  Any other repository write is a
   bug, and a security one — see [SECURITY.md](SECURITY.md).
 - **Precision over recall.** A false positive costs more than a miss. An
   uncertain finding doesn't ship.
@@ -37,8 +38,8 @@ Actions in `.github/workflows/` are pinned to commit SHAs. Keep them pinned —
 `permissions: contents: read` and the pins are deliberate, for the reasons
 SECURITY.md gives.
 
-## Scope
+## Layout
 
-The plugin itself — `.claude-plugin/`, `commands/`, `skills/`, `agents/`, and
-the `eval/` corpus — is not here yet. Grep for `TODO(plugin)` to see what's
-waiting on it.
+Claude wrappers live in `commands/` and `agents/`; shared instructions and
+scripts live in `skills/reviso/`. Keep host-specific permissions and models
+in wrappers. `.claude-plugin/` and `.codex-plugin/` package the same skill.

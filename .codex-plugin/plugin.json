@@ -1,0 +1,32 @@
+{
+  "name": "reviso",
+  "description": "Local, pre-PR code review: /review-grade findings plus an anti-slop lens, report-only, on your own subscription.",
+  "version": "0.14.0",
+  "author": {
+    "name": "Vyttle",
+    "url": "https://github.com/Vyttle-LLC"
+  },
+  "homepage": "https://github.com/Vyttle-LLC/reviso",
+  "license": "Apache-2.0",
+  "keywords": [
+    "code-review",
+    "review",
+    "anti-slop",
+    "pre-pr",
+    "report-only"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Reviso",
+    "shortDescription": "Review changes before opening a pull request",
+    "longDescription": "Report-only correctness and style reviews for local Git changes. Includes a deeper audit with independent review roles.",
+    "developerName": "Vyttle",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Use $reviso review to review my changes.",
+      "Use $reviso style to check style and duplication.",
+      "Use $reviso audit for a deeper review."
+    ]
+  }
+}

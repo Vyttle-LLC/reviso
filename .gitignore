@@ -9,3 +9,4 @@ dist/
 eval/.cache/
 eval/runs/private/
 eval/reference/private/
+__pycache__/
