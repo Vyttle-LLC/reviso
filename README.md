@@ -57,8 +57,42 @@ The intended rhythm: code → `review` → fix → a few more commits →
 clean?" rather than "is this correct?" — a fresh AI-written change, a
 refactor you suspect got verbose, a branch you're about to hand off.
 
-It runs on the Claude subscription you already pay for. There is no account, no
-signup, and no telemetry.
+It runs in Claude Code or Codex using your host account. There is no separate
+Reviso account, signup, or telemetry. Claude quality and cost measurements do
+not establish Codex parity; Codex calibration is still pending.
+
+## Codex installation
+
+Reviso includes both Claude and Codex plugin manifests. With a Codex CLI
+that supports `codex plugin`:
+
+```sh
+codex plugin marketplace add https://github.com/Vyttle-LLC/reviso
+codex plugin add reviso@reviso
+```
+
+Start a new Codex session, then invoke the Reviso skill:
+
+```text
+$reviso review
+$reviso style --base origin/main --explain
+$reviso audit
+```
+
+The default mode is review. Options match the Claude commands: `--base`,
+`--out`, `--explain`, and style's `--web`. Audit uses available agent capacity;
+if delegation is unavailable it explicitly falls back to single-pass review.
+The Claude install instructions below and `/reviso:*` commands still work.
+
+For a local development checkout, replace the marketplace URL with the
+absolute checkout path. The marketplace is shared by both hosts. Installation
+was smoke-tested with the Codex CLI; it does not imply a listing in the
+public plugin directory.
+
+Alternatively, copy `skills/reviso/` to `~/.agents/skills/reviso/` or symlink
+that directory there for local skill discovery. Install through only one
+route to avoid duplicate skill entries. The skill includes its runtime
+references, detectors, feedback helper, and version metadata.
 
 ## Report-only, always
 

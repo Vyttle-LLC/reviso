@@ -188,3 +188,38 @@ the candidate is *this plugin*, and results reproduce on any machine.
 Project context (the target repo's own CLAUDE.md, lint configs) stays in —
 reading it is part of the review under test. Runs made without this
 isolation are smoke tests, not eval results.
+
+## Codex candidate runner
+
+`runners/candidate-codex.py` evaluates the shared skill in Codex without
+invoking Claude for extraction. Requires Python 3 with `jsonschema`, Git,
+and an authenticated Codex CLI supporting the flags shown by `codex exec --help`.
+Prepare a disposable corpus checkout at the desired head first; the runner
+never fetches or checks out commits and preserves deliberate dirty fixtures.
+Use a new artifact directory outside that checkout:
+
+```sh
+python3 eval/runners/candidate-codex.py /tmp/corpus-checkout BASE_SHA HEAD_SHA \
+  /tmp/reviso-codex-result --tier review --model MODEL_ID --effort high
+```
+
+Model and reasoning effort are explicit to keep comparisons interpretable.
+The runner requests a read-only sandbox, ignores user config and execution
+rules, and writes the final report, structured findings, coverage, raw events,
+and metadata. Auth still comes from the user's Codex home; project instructions
+remain part of the corpus. This is not complete isolation from host behavior.
+The raw events preserve usage data exposed by the CLI. Metadata labels the
+model as requested, not resolved, and does not fabricate dollar cost.
+
+Timeouts, invalid structured output, and repository mutations fail the run.
+Missing coverage is retained rather than interpreted as clean. These artifacts
+are deliberately separate from the Claude parity/cost judge: a successful
+Codex run is not evidence of cross-host parity.
+
+Before calibration, exercise review and style on clean and dirty fixtures,
+including a committed defect repaired in the working tree, missing `gh`, a
+failing detector, and whitespace-containing install paths. Exercise audit
+with constrained agent capacity and no delegation. Verify `--out` produces
+only the requested report, feedback never sends without consent, and `--web`
+never uses repository identifiers in searches. Compare the same corpus and
+report precision, recall, coverage, latency, and measured usage per host.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Reviso"
+  short_description: "Review local changes for bugs and style"
+  default_prompt: "Use $reviso review to review my current changes."

@@ -1,35 +1,31 @@
 ---
 name: reviso
-description: Shared harness material for Reviso's review pipeline — the finding schema, the confidence rubric, the false-positive exclusion list, and the deterministic detector suite. Used by /reviso:review and its subagents; not meant for direct invocation.
+description: Review local Git changes before a PR with Reviso. Use for correctness review, style and duplication review, or a deeper multi-agent audit. Report findings without applying fixes.
 ---
 
-# Reviso harness
+# Reviso
 
-Shared, single-source material for both review tiers. `commands/review.md`
-is the single-pass inner-loop review; `commands/audit.md` orchestrates the
-multi-agent pipeline over the agents in `agents/`. Everything here exists so
-the commands and agents cite one copy instead of drifting apart.
+Review the final state of a branch, including uncommitted and untracked
+changes. Default to `review`; use `style` for style-only requests and `audit`
+when the user requests the deeper multi-agent pass.
 
-- `references/finding-schema.md` — the one finding format every stage speaks.
-- `references/confidence-rubric.md` — the 0–100 verification rubric
-  `/reviso:review` and `/reviso:audit` score on (forked from the official
-  code-review plugin, Apache-2.0; see `eval/reference/` for the dated
-  snapshot).
-- `references/style-confidence-rubric.md` — `/reviso:style`'s own 0–100
-  rubric: evidence quality only, no importance axis. The shared rubric's
-  bands measure impact, which a style finding never has.
-- `references/false-positives.md` — the exclusion list: what is never a
-  finding, no matter how plausible it looks.
-- `references/history-bound.md` — the reachability rule for every lens that
-  reads git history: only the change's own past is admissible evidence.
-- `detectors/` — the zero-token Stage 1 suite. `run.sh <base-ref>` runs every
-  detector; each is FP-free by construction or it does not ship
-  (`detectors/DISCOVERY.md` records what was evaluated and why).
-- `feedback/` — the deterministic false-positive payload builder
-  (`build-payload.sh`). The only thing in the plugin permitted to make a
-  network write, and only to the Reviso issue tracker with the user's
-  explicit approval; `docs/feedback.md` is the contract it implements.
+In Codex, examples are `$reviso review --base main`, `$reviso style --explain`,
+and `$reviso audit`. Claude Code also retains `/reviso:review`,
+`/reviso:style`, and `/reviso:audit`.
 
-Invariant, stated once more because every piece of this plugin inherits it:
-**report-only**. Nothing in this skill, the command, or the agents may
-create, modify, or delete files in the user's repository.
+Resolve `REVISO_SKILL_ROOT` to the absolute directory containing this
+`SKILL.md`, including when installed through a symlink. It is a notation
+for paths in these instructions, not an environment variable supplied by
+the host. Substitute the resolved, shell-quoted path when running helpers.
+Keep the command working directory in the repository being reviewed.
+
+Read [execution](references/execution.md), then only the selected workflow:
+
+- [Review](references/workflows/review.md): single-pass correctness and style.
+- [Style](references/workflows/style.md): single-pass style, optional `--web`.
+- [Audit](references/workflows/audit.md): independent finders and evidence.
+
+Parse `--base`, `--out`, `--explain`, and style's `--web` from the user's
+invocation, including ordinary language equivalents. Follow the selected
+workflow's schema, evidence gates, and coverage reporting. Load its linked
+references as needed; do not load every mode or agent in advance.

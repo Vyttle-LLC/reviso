@@ -43,7 +43,7 @@ fi
 # plugin root — outside the workdir, and denied without it (two of the
 # thirteen verifiers in the 2026-08-13 hand run scored without the rubric
 # for exactly that reason). Nothing here can write.
-ALLOWED="Bash(sh $PLUGIN_DIR/skills/reviso/detectors/run.sh:*)"
+ALLOWED="Bash(sh \"$PLUGIN_DIR/skills/reviso/detectors/run.sh\":*),Bash(sh $PLUGIN_DIR/skills/reviso/detectors/run.sh:*)"
 if [ "$REVIEW_TIER" = "audit" ]; then
   ALLOWED="Task,Agent,Read,$ALLOWED"
 fi
