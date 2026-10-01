@@ -1,0 +1,16 @@
+{
+  "case": "slop-test-unexecuted-001",
+  "origin": "synthetic",
+  "imported": "2026-10-01",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "tests/test_subject.py",
+      "line": 7,
+      "title": "Unexecuted test evidence misrepresents coverage",
+      "severity": "high",
+      "category": "slop",
+      "description": "Lines 6\u20137 construct and check the same fixture rather than call receipt. There are no hooks or helpers executing the subject. A receipt that always returns total 0 and paid False still passes."
+    }
+  ]
+}

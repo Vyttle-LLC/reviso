@@ -1,0 +1,16 @@
+{
+  "case": "slop-test-swallowed-001",
+  "origin": "synthetic",
+  "imported": "2026-10-01",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "tests/test_subject.py",
+      "line": 7,
+      "title": "Swallowed test evidence misrepresents coverage",
+      "severity": "high",
+      "category": "slop",
+      "description": "The assertion at line 7 fails when is_valid always returns False, but lines 8\u20139 consume AssertionError and the complete test passes."
+    }
+  ]
+}

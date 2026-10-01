@@ -1,0 +1,27 @@
+{
+  "id": "slop-tautological-clean-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add pricing tests",
+    "description": "Exercise circular test oracles and meaningful look-alikes."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "src/pricing.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,3 @@\n+export function finalPrice(base: number, taxRate: number): number {\n+  return Math.round(base * (1 + taxRate) * 100) / 100;\n+}"
+    },
+    {
+      "filename": "tests/pricing.test.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,25 @@\n+import { finalPrice } from \"../src/pricing\";\n+import { loadItem } from \"../src/loader\";\n+\n+it(\"rounds a tax-inclusive price to cents\", () => {\n+  expect(finalPrice(19.99, 0.075)).toBe(21.49);\n+});\n+\n+it(\"preserves a zero-tax price\", () => {\n+  const base = 19.99;\n+  expect(finalPrice(base, 0)).toBe(base);\n+});\n+\n+it(\"preserves the identity of a stored value\", () => {\n+  const cache = new Map<string, object>();\n+  const value = { id: 1 };\n+  cache.set(\"item\", value);\n+  expect(cache.get(\"item\")).toBe(value);\n+});\n+\n+it(\"forwards a dependency result\", () => {\n+  const load = jest.fn().mockReturnValue({ id: 1 });\n+  const actual = loadItem(load);\n+  expect(actual).toEqual({ id: 1 });\n+  expect(load).toHaveBeenCalledWith(\"item\");\n+});"
+    },
+    {
+      "filename": "src/loader.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,3 @@\n+export function loadItem(load: (key: string) => object): object {\n+  return load(\"item\");\n+}"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "slop-test-conditional-001",
+  "language": "python",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add conditional test coverage",
+    "description": "Tests run with python3 -m unittest discover -s tests; default unittest warning handling, no configured lint rules."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,2 @@\n+def eligible_items():\n+    return [1, 2]"
+    },
+    {
+      "filename": "tests/test_subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,7 @@\n+import unittest\n+from subject import eligible_items\n+\n+class EligibilityTests(unittest.TestCase):\n+    def test_returns_two_positive_items(self):\n+        for item in eligible_items():\n+            self.assertGreater(item, 0)"
+    }
+  ]
+}

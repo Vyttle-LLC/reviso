@@ -1,0 +1,16 @@
+{
+  "case": "slop-tautological-001",
+  "origin": "synthetic",
+  "imported": "2026-10-01",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "tests/pricing.test.ts",
+      "line": 6,
+      "title": "Circular test oracles misrepresent pricing coverage",
+      "severity": "high",
+      "category": "slop",
+      "description": "Line 6 compares the actual result to its alias; line 11 calls the subject again for the expected value; lines 17\u201318 copy the production calculation as the oracle. A deterministic finalPrice returning 0 passes the first two; an incorrect tax rule copied into production and the oracle passes the third. Consolidate the circular-oracle findings and replace them with independent expected prices."
+    }
+  ]
+}

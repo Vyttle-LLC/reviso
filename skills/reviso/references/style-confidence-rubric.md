@@ -16,8 +16,9 @@ Four things, each checkable against the code:
    same-language `file:line` examples of the established pattern (drift,
    naming, error handling, type slop, over-engineering's absence
    citation), the comparable units and their sizes (length), the tell
-   quoted verbatim (AI tells), the assertion quoted (test slop), the
-   search performed and its result (dead weight, surface area), every
+   quoted verbatim (AI tells), the assertion and traced circle or bypass
+   (or wait) quoted (test slop), the search performed and its result
+   (dead weight, surface area), every
    lockstep write site quoted (derived state), the contradicted sentence
    quoted (stale docs), the existing utility cited (reuse).
 2. **Holds** — re-examined against the real code, the cited examples show
@@ -70,7 +71,9 @@ The gate re-deciding any of them is what empties the report.
 - **90–100** — 80–89 plus evidence the reader checks without judgment: a
   written convention or lint rule quoted with its `file:line`, an
   existing helper the change reimplements cited by `file:line`, the
-  tell or the can't-fail assertion quoted verbatim, the lockstep
+  tell or the circular/bypassed assertion and its supporting evidence
+  quoted verbatim,
+  the lockstep
   assignment quoted at every write site, the contradicted doc sentence
   quoted. Deterministic detector findings are 100 by definition.
 

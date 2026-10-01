@@ -1,0 +1,16 @@
+{
+  "case": "slop-test-conditional-001",
+  "origin": "synthetic",
+  "imported": "2026-10-01",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "tests/test_subject.py",
+      "line": 7,
+      "title": "Conditional test evidence misrepresents coverage",
+      "severity": "high",
+      "category": "slop",
+      "description": "The loop at line 6 executes no assertions when eligible_items returns [], although the test claims two positive items. There is no collection-size or assertion-execution check."
+    }
+  ]
+}

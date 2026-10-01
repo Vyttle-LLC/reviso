@@ -15,10 +15,11 @@ The cardinal rule of every lens here: **style is relative to this
 codebase's own norms, never to your taste or to absolute thresholds.** A
 deliberate, established style in this repo is never a finding. When the
 repo itself is verbose, verbose new code matches its norms. The rule has
-exactly three named exceptions, defined in their lens entries: the comments
+exactly four named exceptions, defined in their lens entries: the comments
 lens's earn-its-place bar (only a written convention overrides it),
-placeholder text in the AI-tells lens (nothing overrides it), and the
-opt-in best-practices lens, which is measured against the ecosystem's
+placeholder text in the AI-tells lens (nothing overrides it), circular
+or bypassed test evidence in the test-slop lens (nothing overrides it),
+and the opt-in best-practices lens, which is measured against the ecosystem's
 own documentation rather than this repo's norms. Everything
 else yields to the repo.
 
@@ -185,13 +186,73 @@ is the only trace a noticed bug leaves.
   string-keyed dispatch, DI registration) near the definition before
   trusting an empty result. `evidence` states what you searched and that
   it came back empty — no recorded search, no finding.
-- **Test slop** — tests that cannot fail: tautological assertions,
-  asserting the value a mock was just configured to return, mocking the
-  subject under test; also sleep-based waits where the repo demonstrates
-  a deterministic waiting idiom (cite it). Quote the assertion (or the
-  wait) in `evidence` and state concretely why it cannot fail or what it
-  actually exercises instead of the subject. `suggested_fix` sketches
-  the test as it should be written, or its deletion.
+- **Test slop** — circular or bypassed test evidence is an absolute finding, even
+  when existing tests or written conventions use the same pattern. Trace
+  the actual and expected values through setup, helpers, mocks, and the
+  subject before deciding. In scope:
+  - self-comparison, including aliases of the same result;
+  - expected values obtained by calling the subject again, or derived
+    from the actual result under assertion;
+  - a test-local copy of the implementation's rule used as the oracle,
+    repeating the same calculation or branches so the same rule error
+    passes on both sides;
+  - configuring and directly calling a mock in place of the subject,
+    then asserting its configured return value or the call the test
+    itself just made.
+
+  Quote the assertion and the setup/helper/implementation that closes
+  the circle, with `file:line`, in `evidence`. State the claimed behavior
+  and a concrete wrong implementation that would still pass, or show
+  that no production subject is exercised. "Cannot fail" means cannot
+  detect the claimed regression, not that execution can never throw.
+  No traced circle, no finding; shared syntax alone is not evidence.
+  `suggested_fix` sketches a test calling the real subject with an
+  independently specified expected result, or deletion of a redundant
+  assertion. These findings are P1 because they misrepresent coverage.
+
+  Also check for assertions bypassed by test control flow:
+  - **Swallowed failures** — a catch/exception handler consumes a subject
+    failure or an assertion failure and lets the test complete successfully.
+    An expected-error test with a checked error and an explicit fail when
+    no error occurs is legitimate.
+  - **Conditional assertions** — an if, loop, or callback can execute no
+    assertions on a concrete wrong result, without an unconditional check
+    of the branch, collection size, callback execution, or assertion count.
+    Parameterized cases with guaranteed execution are legitimate.
+  - **Unobserved async assertions** — neither await, return, nor the
+    framework's completion mechanism connects the assertion to the test's
+    outcome. Confirm the framework/runtime semantics from local runner
+    configuration or code: a missing await alone is insufficient evidence,
+    and an unhandled rejection that fails the run is not a silent pass.
+  - **Unexecuted subject** — the claimed production behavior is checked
+    only against fixture data or manually constructed output; neither the
+    test nor its hooks/helpers execute the subject. Fixture validation and
+    explicit API smoke tests are legitimate when that is their stated job.
+
+  For these four patterns, quote the assertion (or stand-in output) and
+  the handler, branch, async call, or setup that bypasses verification,
+  with `file:line`. Trace hooks/helpers and the runner's failure handling.
+  Give a concrete broken subject or execution path that still passes the
+  complete test, accounting for its other assertions. No proven passing
+  path, no finding. Propose the specific unconditional assertion, awaited
+  result, checked error, or real subject call that closes the gap. These
+  findings are also P1 and cannot be cleared by repo precedent. Read the
+  lint configuration first; omit mechanical cases a configured rule
+  already covers (for example, floating promises), and honor explicit
+  inline suppressions. Do not turn missing coverage, broad matchers,
+  snapshot size, or implementation-detail assertions into absolute findings.
+
+  Do not flag a literal expected value merely because it matches a mock's
+  configured return: calling a real subject with a mocked dependency can
+  test forwarding, transformation, or orchestration. Nor are identity
+  contracts (`expect(cache.get(key)).toBe(value)`), independent reference
+  implementations, round-trip/property tests, or explicit API smoke tests
+  tautologies just because they share inputs or helpers. Check whether
+  the subject could violate the asserted contract and make the test fail.
+  A missing edge case or an assertion that is merely weak is not circular
+  evidence. Sleep-based waits remain convention-relative: flag only
+  where the repo demonstrates a deterministic waiting idiom (cite it),
+  quote the wait, and sketch its replacement.
 - **AI tells** — text artifacts of machine generation, quoted verbatim
   in `evidence`: temporal or comparative naming (`newHelper`,
   `enhancedFoo`, `utils2`), changelog-style comments ("// Fixed bug
@@ -339,11 +400,12 @@ once. The style rubric is this command's own — not the shared
 impact. Its bands measure how well the evidence supports the finding,
 and nothing else. For every candidate from Step 3:
 
-1. Exclusion list first — a match scores 0–25, with two carve-outs. The
+1. Exclusion list first — a match scores 0–25, with three carve-outs. The
    deliberate-style entry ("a codebase's deliberate, established style is
    never slop") does not apply to comments-lens candidates or to
-   placeholder text. Those two bars are absolute here; for a comments
-   candidate, only the lens's written-convention override clears it — and
+   placeholder text or circular/bypassed test evidence. Those three bars are
+   absolute here; for a comments candidate, only the lens's
+   written-convention override clears it — and
    a candidate whose comment shape a written convention actually demands
    scores 0. A type-slop candidate on a line with an inline lint
    suppression is the explicitly-silenced entry and scores 0. A
@@ -373,6 +435,9 @@ and nothing else. For every candidate from Step 3:
    or surface-area candidate whose evidence doesn't state the search
    performed and its result also scores 0. A stale-docs candidate whose
    evidence doesn't quote the contradicted sentence scores 0. A
+   test-slop candidate alleging circular or bypassed evidence without
+   the required quotes and a traced circle or proven passing path scores
+   0 (`no-quote`). A
    best-practices candidate with no fetched URL or no quoted passage —
    a URL absent from this run's recorded fetches counts as unfetched —
    scores 0 the same way; the web is not re-consulted here.

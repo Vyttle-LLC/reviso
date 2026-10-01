@@ -1,0 +1,7 @@
+{
+  "case": "slop-tautological-clean-001",
+  "origin": "synthetic",
+  "imported": "2026-10-01",
+  "expected_clean": true,
+  "findings": []
+}

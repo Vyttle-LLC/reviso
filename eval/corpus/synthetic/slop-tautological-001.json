@@ -1,0 +1,22 @@
+{
+  "id": "slop-tautological-001",
+  "language": "typescript",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add pricing tests",
+    "description": "Exercise circular test oracles and meaningful look-alikes."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "src/pricing.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,3 @@\n+export function finalPrice(base: number, taxRate: number): number {\n+  return Math.round(base * (1 + taxRate) * 100) / 100;\n+}"
+    },
+    {
+      "filename": "tests/pricing.test.ts",
+      "status": "added",
+      "patch": "@@ -0,0 +1,19 @@\n+import { finalPrice } from \"../src/pricing\";\n+\n+it(\"applies tax\", () => {\n+  const actual = finalPrice(100, 0.1);\n+  const expected = actual;\n+  expect(actual).toBe(expected);\n+});\n+\n+it(\"rounds the final price\", () => {\n+  const actual = finalPrice(19.99, 0.075);\n+  expect(actual).toBe(finalPrice(19.99, 0.075));\n+});\n+\n+it(\"calculates the tax-inclusive price\", () => {\n+  const base = 19.99;\n+  const rate = 0.075;\n+  const expected = Math.round(base * (1 + rate) * 100) / 100;\n+  expect(finalPrice(base, rate)).toBe(expected);\n+});"
+    }
+  ]
+}
