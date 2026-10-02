@@ -1,0 +1,30 @@
+{"id": "sample-001", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-002", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-003", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-004", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-005", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-006", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-007", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-008", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-009", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-010", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-011", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-012", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-013", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-014", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-015", "label": "match", "observed": "match", "trap": false, "agrees": true, "matches": [{"a_idx": 0, "b_idx": 0}]}
+{"id": "sample-016", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-017", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-018", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-019", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-020", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-021", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-022", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-023", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-024", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-025", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-026", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-027", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-028", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-029", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}
+{"id": "sample-030", "label": "no-match", "observed": "no-match", "trap": true, "agrees": true, "matches": []}

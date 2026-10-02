@@ -26,17 +26,31 @@ Return ONLY a JSON array (no prose, no code fences): [{\"a_idx\": 0, \"b_idx\": 
 
 # Pinned to sonnet by default: matching is judgment, but doesn't need the top
 # tier. Calibration (eval/calibration/) validates whatever model is set here.
-RES=$(claude -p "$PROMPT" --model "${JUDGE_MODEL:-sonnet}" --output-format json --setting-sources project,local ${MATCH_CLAUDE_FLAGS:-} | jq -r '.result')
+case "${MATCH_HOST:-claude}" in
+  claude)
+    RAW=$(claude -p "$PROMPT" --model "${JUDGE_MODEL:-sonnet}" --output-format json --setting-sources project,local ${MATCH_CLAUDE_FLAGS:-})
+    if printf '%s\n' "$RAW" | jq -e '.is_error == true' >/dev/null; then
+      printf '%s\n' "$RAW" | jq -r '.result' >&2
+      exit 1
+    fi
+    RES=$(printf '%s\n' "$RAW" | jq -r '.result') ;;
+  codex)
+    HERE=$(cd "$(dirname "$0")" && pwd)
+    RES=$(python3 "$HERE/match-codex.py" "$PROMPT") ;;
+  *) echo "match.sh: unknown MATCH_HOST '${MATCH_HOST}' (claude|codex)" >&2; exit 1 ;;
+esac
 CLEAN=$(printf '%s\n' "$RES" | sed -e 's/^```json$//' -e 's/^```$//')
 
 LA=$(jq 'length' "$A"); LB=$(jq 'length' "$B")
 if ! printf '%s\n' "$CLEAN" | jq -e --argjson la "$LA" --argjson lb "$LB" '
     type == "array"
     and all(.[]; has("a_idx") and has("b_idx")
+                 and (.a_idx | type == "number" and floor == .)
+                 and (.b_idx | type == "number" and floor == .)
                  and .a_idx >= 0 and .a_idx < $la
                  and .b_idx >= 0 and .b_idx < $lb)
-    and (map(.a_idx) | unique | length == length)
-    and (map(.b_idx) | unique | length == length)
+    and ((map(.a_idx) | unique | length) == length)
+    and ((map(.b_idx) | unique | length) == length)
   ' >/dev/null 2>&1; then
   echo "match.sh: model output is not a valid match array (shape, range, or duplicate index)" >&2
   printf '%s\n' "$RES" >&2

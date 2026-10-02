@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-02",
+  "host": "codex",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "cli_version": "codex-cli 0.160.0",
+  "matcher_sha256": "73baf9b492518ac471021fe3731c41b095d2e5335680aa425f48c805ca620f01",
+  "labels_sha256": "0c9bba96455970b1e85cb12a0bf03ca97b0a4f2d5d8213af2bb4337eae59afff",
+  "pairs": 30,
+  "agreement": 30,
+  "agreement_pct": 100.0,
+  "traps": 15,
+  "trap_false_matches": 0,
+  "trap_false_match_pct": 0.0,
+  "passed": true
+}
