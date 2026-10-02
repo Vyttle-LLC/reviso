@@ -1,0 +1,14 @@
+{
+  "status": "blocked",
+  "scored_cases": 0,
+  "planned_cases": 10,
+  "host": "codex",
+  "model": "gpt-6.1-sol",
+  "effort": "medium",
+  "cli_version": "0.160.0",
+  "blockers": [
+    "Partial-clone historical blobs unavailable inside read-only sandbox. Diff hydration permits current-source inspection but not every historical query.",
+    "Audit cannot launch every independent finder and verifier because host agent-thread capacity cannot be released in this environment."
+  ],
+  "metrics": null
+}

@@ -33,7 +33,14 @@ CORPUS_FILE="${CORPUS_FILE:-$CORPUS_DIR/public.jsonl}"
 # so this is a no-op there.
 CORPUS_BASE=$(cd "$(dirname "$CORPUS_FILE")" && pwd)
 CACHE="$(cd "$HERE/.." && pwd)/.cache/clones"
-mkdir -p "$OUT" "$CACHE"
+mkdir -p "$CACHE"
+case "${CANDIDATE_HOST:-claude}" in
+  claude) mkdir -p "$OUT" ;;
+  codex)
+    : "${CANDIDATE_CODEX_MODEL:?CANDIDATE_CODEX_MODEL is required}"
+    : "${CANDIDATE_CODEX_EFFORT:?CANDIDATE_CODEX_EFFORT is required}" ;;
+  *) echo "gold.sh: unknown CANDIDATE_HOST '${CANDIDATE_HOST}' (claude|codex)" >&2; exit 1 ;;
+esac
 
 ENTRY=$(jq -c --arg id "$CASE" 'select(.id == $id)' "$CORPUS_FILE")
 [ -n "$ENTRY" ] || { echo "gold.sh: case '$CASE' not in $CORPUS_FILE" >&2; exit 1; }
@@ -90,16 +97,34 @@ else
   if [ ! -d "$CDIR" ]; then
     git clone -q --filter=blob:none "$CLONE_URL" "$CDIR"
   fi
-  git -C "$CDIR" fetch -q origin "$BASE" "$HEAD_SHA"
+  git -C "$CDIR" fetch -q --no-write-fetch-head origin "$BASE" "$HEAD_SHA"
   # A worktree (not a shared clone) so the cache's promisor config still
   # serves lazy blob fetches for the blobless clone during checkout.
   RWD="$WD/repo"
   git -C "$CDIR" worktree add -q --detach "$RWD" "$HEAD_SHA"
+  if [ "${CANDIDATE_HOST:-claude}" = "codex" ]; then
+    # The read-only candidate cannot lazy-fetch missing blobs. Materialize
+    # the reviewed diff and its bounded history before entering the sandbox.
+    DIFF_BASE=$(git -C "$RWD" merge-base "$BASE" "$HEAD_SHA")
+    git -C "$RWD" diff --no-ext-diff "$DIFF_BASE" "$HEAD_SHA" >/dev/null
+    git -C "$RWD" rev-list --objects --no-object-names "$DIFF_BASE..$HEAD_SHA" \
+      | git -C "$RWD" cat-file --batch >/dev/null
+  fi
 fi
 
 # Tier named explicitly at the call site — never left to whatever the
 # environment happened to carry in.
-REVISO_TIER="$REVIEW_TIER" sh "$HERE/candidate.sh" "$RWD" "$BASE" "$HEAD_SHA" "$OUT"
+if [ "${CANDIDATE_HOST:-claude}" = "codex" ]; then
+  "${REVISO_PYTHON:-python3}" "$HERE/candidate-codex.py" "$RWD" "$BASE" "$HEAD_SHA" "$OUT" \
+    --tier "$REVIEW_TIER" --model "$CANDIDATE_CODEX_MODEL" --effort "$CANDIDATE_CODEX_EFFORT" \
+    --timeout "${CANDIDATE_TIMEOUT:-900}"
+  if [ "$(jq -r '.status' "$OUT/meta.json")" != "returned" ]; then
+    echo "gold.sh: incomplete Codex coverage — not scored" >&2
+    exit 1
+  fi
+else
+  REVISO_TIER="$REVIEW_TIER" sh "$HERE/candidate.sh" "$RWD" "$BASE" "$HEAD_SHA" "$OUT"
+fi
 
 # Judge against the labels (tiering + metrics live in gold-judge.sh so a
 # recorded run can be re-judged when calibration moves).

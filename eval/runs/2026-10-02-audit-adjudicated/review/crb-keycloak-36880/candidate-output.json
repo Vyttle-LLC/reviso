@@ -1,0 +1,59 @@
+{
+  "report": "## Reviso review — detached HEAD (1950a51102) vs b8c1cd410f4499c77a8b372decfe1718b80ccfd2 (1 commit, 10 files)\nBase: b8c1cd410f4499c77a8b372decfe1718b80ccfd2 via flag — merge-base b7b84d75d1\n\nFound 2 issues:\n\n1. [P1][conf 95] All-clients view grants bypass client-specific denies — services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java:87\n   Failure: Grant VIEW for all clients and deny VIEW for one client. Both direct retrieval and listing still expose that client because global canView() bypasses its permission evaluation.\n   Fix: Reserve unconditional visibility for admin roles, evaluate fine-grained visibility per client, and separately authorize entry to the list endpoint.\n   (bugs)\n\n2. [P2][conf 95] Manage permission cannot list the client scopes it authorizes — services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java:121\n   Failure: Grant only MANAGE for all clients. Individual client scopes can be read and managed, but listing scopes returns 403 without QUERY_CLIENTS, or an empty list with that role.\n   Fix: Override canListClientScopes() and canViewClientScopes() to recognize the all-clients MANAGE grant alongside VIEW.\n   (bugs)\n\nChecked: bugs, conventions, comments, slop, deterministic.\nNot checked: history (no result: historical patch blobs are missing from the partial clone and unavailable offline).\nSkipped: nothing.\n\n--- explain: pipeline diagnostics (not review findings) ---\nLenses: bugs 2, conventions 0, history no result, comments 0, slop 0, deterministic 0.\nCandidates before the gate (2):\n  [bugs] services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java:87 score 95 reported\n  [bugs] services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java:121 score 95 reported\nValidation used source inspection and read-only detectors; repository code was not executed. No files were written, feedback sent, or web lookups performed.\n\nWrong about something? Say which finding — I can file feedback (metadata-only by default).",
+  "findings": [
+    {
+      "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java",
+      "line": 87,
+      "severity": "P1",
+      "dimension": "bugs",
+      "title": "All-clients view grants bypass client-specific denies",
+      "failure_scenario": "Grant an administrator VIEW on all Clients, then attach a denying VIEW permission to one client. The administrator can still retrieve and list that client because the global grant bypasses client-specific evaluation.",
+      "suggested_fix": "Keep unconditional canView() limited to admin roles, evaluate fine-grained VIEW per client in canView(ClientModel), and separately allow list access for administrators with an all-clients VIEW grant so ClientsResource filters each result.",
+      "evidence": "ClientPermissionsV2.java:87 treats the all-clients VIEW grant as unconditional visibility; ClientPermissionsV2.java:78 and ClientsResource.java:148 consequently skip client-specific evaluation. UserResourceTypeEvaluationTest.java:203 demonstrates the existing contract that an object-specific deny overrides an all-resource VIEW grant.",
+      "confidence": 95
+    },
+    {
+      "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java",
+      "line": 121,
+      "severity": "P2",
+      "dimension": "bugs",
+      "title": "Manage permission cannot list the client scopes it authorizes",
+      "failure_scenario": "An administrator with only an all-clients MANAGE grant can create, update, and directly read client scopes, but GET /client-scopes returns 403 without QUERY_CLIENTS. Adding QUERY_CLIENTS allows the request but still yields an empty list.",
+      "suggested_fix": "Override canListClientScopes() and canViewClientScopes() in ClientPermissionsV2 to accept all-clients MANAGE as well as VIEW, while preserving the existing admin-role checks.",
+      "evidence": "ClientPermissionsV2.java:109 and :121 recognize MANAGE for managing and reading individual client scopes, but :87 recognizes only VIEW for global visibility. Inherited ClientPermissions.java:259 and :490 use that global visibility result, and ClientScopesResource.java:91 gates listing before :93 returns an empty stream when it is false.",
+      "confidence": 95
+    }
+  ],
+  "coverage": [
+    {
+      "lens": "bugs",
+      "outcome": "returned",
+      "reason": "Reviewed all 10 changed files and traced authorization guards, evaluator, callers, and tests; 2 candidates, both shipped."
+    },
+    {
+      "lens": "conventions",
+      "outcome": "returned",
+      "reason": "Checked supplied guidance, applicable configuration, established permission classes, and commit intent; 0 candidates."
+    },
+    {
+      "lens": "history",
+      "outcome": "no result",
+      "reason": "Ancestor commit summaries were available, but historical patch blobs were missing from this partial clone; patch inspection failed offline."
+    },
+    {
+      "lens": "comments",
+      "outcome": "returned",
+      "reason": "Checked added Javadocs, fallback comments, and changed test comments against implementations; 0 consequential candidates."
+    },
+    {
+      "lens": "slop",
+      "outcome": "returned",
+      "reason": "Searched distinctive added identifiers and literals for existing implementations and checked duplication against established patterns; 0 candidates."
+    },
+    {
+      "lens": "deterministic",
+      "outcome": "returned",
+      "reason": "Read-only detector suite completed against the merge-base and returned an empty findings array."
+    }
+  ]
+}

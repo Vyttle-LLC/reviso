@@ -100,10 +100,15 @@ def main():
         "--output-schema", str(here / "codex-output.schema.json"),
         "--output-last-message", str(out / "candidate-output.json"), prompt,
     ]
+    if args.tier == "audit":
+        command[2:2] = ["--enable", "multi_agent"]
     before = snapshot(workdir)
     started = time.monotonic()
     meta = {"host": "codex", "tier": args.tier, "base_sha": base, "head_sha": head,
+            "effective_base_sha": git(workdir, "merge-base", base, head).decode().strip(),
             "requested_model": args.model, "reasoning_effort": args.effort,
+            "plugin_revision": git(here.parents[1], "rev-parse", "HEAD").decode().strip(),
+            "plugin_version": (here.parents[1] / "skills/reviso/VERSION").read_text().strip(),
             "cli_version": subprocess.check_output(["codex", "--version"], text=True).strip(),
             "status": "failed"}
     try:
