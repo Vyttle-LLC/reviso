@@ -28,8 +28,34 @@ trap pairs: same file + similar topic but different root cause). Aim for
 
 | date | model | pairs | agreement | trap false-match | notes |
 | --- | --- | --- | --- | --- | --- |
-| _pending — task 5.5_ | – | – | – | – | – |
 | 2026-08-06 | sonnet | 5 (spot-check) | 5/5 | 0/1 | Private-corpus `sagechat-15` cross-run pairs (4 true pairs + 1 contradictory-root-cause trap, authentic per-run wordings). Spot-check only — the ~30-pair sample above is still owed. |
+| 2026-10-02 | Codex `gpt-6.1-sol`, medium | 30 | **30/30** | **0/15** | Authentic CRB gold/candidate pairs from the first sweep; 15 same-root-cause pairs and 15 same-topic traps. [Recorded judgments](results/2026-10-02-codex/judgments.jsonl), [run identity](results/2026-10-02-codex/summary.json). |
+
+The sample now lives in [labels.jsonl](labels.jsonl). Each pair preserves
+the authentic finding text and points to its source artifact and index;
+the hand label and rationale were fixed before the first model call.
+The sample includes null-file/zero-line gold anchors, adjacent defects in
+the same file, and similar symptoms with different causes. One trap is a
+false match from the original sweep: process-randomized cache keys are not
+the same defect as added network latency or stale TTL eligibility.
+
+Run one independent matcher call per pair:
+
+```sh
+MATCH_HOST=codex MATCH_CODEX_MODEL=gpt-6.1-sol MATCH_CODEX_EFFORT=medium \
+  python3 eval/calibration/run.py eval/calibration/labels.jsonl <new-outdir>
+```
+
+For Claude, omit `MATCH_HOST` and pin `JUDGE_MODEL`. The runner requires at
+least 30 pairs and 10 traps and passes at ≥90% agreement with zero trap
+false matches. It records the CLI version, requested model/effort, and
+hashes of the matcher and labels. Codex uses the same matching prompt in
+an isolated, read-only session; its settings are required, never implicit.
+
+**This result calibrates the named Codex configuration only.** Claude was
+unavailable for this session; its historical five-pair spot-check remains
+its only measurement. Do not retroactively treat old Claude judgments as
+validated or transfer this result across models, hosts, or prompt changes.
 
 ## Tier calibration (judge P0 scope)
 
