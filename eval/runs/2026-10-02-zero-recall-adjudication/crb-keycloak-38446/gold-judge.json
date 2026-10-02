@@ -1,0 +1,81 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "excluded_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "Unsafe raw List deserialization without type safety. Calling Optional.get() directly on the Optional returned by Recover",
+      "severity": "medium",
+      "category": "security",
+      "crb_category": "security",
+      "description": "Unsafe raw List deserialization without type safety. Calling Optional.get() directly on the Optional returned by RecoveryAuthnCodesUtils.getCredential(user) without checking isPresent() can lead to a NoSuchElementException if the Optional is empty.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "pre-existing",
+        "why": "The login bean previously called findFirst().get() without a guard. This patch replaces the lookup with one that also checks federated credentials. The raw-list type-safety concern is compiler/linter territory and does not establish the claimed new absent-credential failure.",
+        "evidence": [
+          "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/services/src/main/java/org/keycloak/forms/login/freemarker/model/RecoveryAuthnCodeInputLoginBean.java#L34",
+          "https://github.com/keycloak/keycloak/compare/85737f52b59aa2e3403c9b8e48acf71ccc5bfae3...ce2dcc537b4b1f98a335e88cfe8e0b804483252a"
+        ]
+      },
+      "policy_excluded": true,
+      "tier": "excluded"
+    }
+  ],
+  "excluded_recorded_matches": [],
+  "matched": [],
+  "missed_correctness_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "After creating the RecoveryAuthnCodesCredentialModel, consider setting its id from the stored credential (e.g., myUser.r",
+      "severity": "low",
+      "category": "security",
+      "crb_category": "security",
+      "description": "After creating the RecoveryAuthnCodesCredentialModel, consider setting its id from the stored credential (e.g., myUser.recoveryCodes.getId()); otherwise getId() will be null and downstream removal by id (e.g., removeStoredCredentialById in the authenticator flow) may not work.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "real-miss",
+        "reason": "cross-file",
+        "why": "The new user-storage getCredentials path creates a recovery model without copying the stored ID. AccountCredentialResource returns these credentials, and CredentialDeleteHelper resolves federated deletion by ID. The missing ID makes the returned credential unaddressable. The label’s authenticator example is not the demonstrated path: this provider reconstructs unconsumed codes on each read.",
+        "evidence": [
+          "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java#L239",
+          "https://github.com/keycloak/keycloak/compare/85737f52b59aa2e3403c9b8e48acf71ccc5bfae3...ce2dcc537b4b1f98a335e88cfe8e0b804483252a",
+          "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/services/src/main/java/org/keycloak/services/resources/account/AccountCredentialResource.java#L184",
+          "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/services/src/main/java/org/keycloak/authentication/requiredactions/util/CredentialDeleteHelper.java#L64"
+        ]
+      },
+      "tier": "correctness"
+    }
+  ],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java",
+      "line": 115,
+      "title": "Recovery codes written to user storage lose one-time-use, hashing, and metadata",
+      "severity": "P0",
+      "category": "bugs",
+      "description": "createRecoveryCodesCredential flattens RecoveryAuthnCodesCredentialModel into a bare UserCredentialModel, dropping hashing, per-code ordinal, remaining-count, and metadata. Storage boundary discards the model; provider update logic never runs, so used codes are never consumed and any leaked code becomes a permanent second-factor bypass."
+    },
+    {
+      "file": "testsuite/integration-arquillian/tests/base/src/test/java/org/keycloak/testsuite/federation/storage/BackwardsCompatibilityUserStorageTest.java",
+      "line": 123,
+      "title": "Test helpers copied verbatim from RecoveryAuthnCodesAuthenticatorTest, typo and dead config included",
+      "severity": "P2",
+      "category": "slop",
+      "description": "configureBrowserFlowWithRecoveryAuthnCodes and enterRecoveryCodes are duplicated from shared test, carrying over a 'delayed-suthenticator-config' typo and unused delayed-authenticator execution (delay=0). Dead code dependency causes unrelated failures if provider changes; copies drift independently."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 1,
+    "candidate_count": 2,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": 0,
+    "precision_proxy_pct": 0
+  }
+}

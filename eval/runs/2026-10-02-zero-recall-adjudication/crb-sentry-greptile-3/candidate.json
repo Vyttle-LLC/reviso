@@ -1,0 +1,42 @@
+[
+  {
+    "file": "src/sentry/search/events/datasets/discover.py",
+    "line": 1048,
+    "title": "`upsampled_count()` drops the `ifNull` default, silently reverting defensive logic",
+    "severity": "P0",
+    "category": "bugs",
+    "description": "commit `6ad6fe38` changes `sum(ifNull(sample_weight, 1))` → `sum(sample_weight)`, silently reverting the defensive default. Events without `sample_weight` count as zero instead of one, causing projects to report count() == 0 for all historical error volume."
+  },
+  {
+    "file": "sentry-repo",
+    "line": 1,
+    "title": "Stray `sentry-repo` gitlink committed with no `.gitmodules`",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`6ad6fe38` adds mode 160000 entry `sentry-repo` without `.gitmodules`, causing every fresh clone to get an empty directory and `git submodule update --init` to fail."
+  },
+  {
+    "file": "src/sentry/api/helpers/error_upsampling.py",
+    "line": 27,
+    "title": "60s eligibility cache is slower than original and cannot be invalidated",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Cache swaps local dict read for network cache round-trip on every request, making it slower. Functionally non-revertible: when projects are removed from allowlist, endpoint keeps returning upsampled counts for up to 60s per distinct project-subset."
+  },
+  {
+    "file": "src/sentry/api/helpers/error_upsampling.py",
+    "line": 137,
+    "title": "Negated `!event.type:error` queries misclassified as error-focused",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "`_is_error_focused_query` does substring test, so `!event.type:error` (negation) is incorrectly classified as error-focused, causing non-error rows without `sample_weight` to report count as 0."
+  },
+  {
+    "file": "src/sentry/api/endpoints/organization_events_stats.py",
+    "line": 218,
+    "title": "Endpoint refactor triples line count with no behavior change",
+    "severity": "P2",
+    "category": "slop",
+    "description": "Replaces two lines with an inert alias and three identical copies of the same `if`/transform in each return branch, creating three places to keep in sync."
+  }
+]

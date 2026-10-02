@@ -1,0 +1,70 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "excluded_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The ContextualLoggerMiddleware methods (QueryData, CallResource, CheckHealth, CollectMetrics) panic when a nil request i",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The ContextualLoggerMiddleware methods (QueryData, CallResource, CheckHealth, CollectMetrics) panic when a nil request is received. This occurs because they directly access req.PluginContext (via the instrumentContext function) without first checking if req is nil. This is a regression, as previous middleware layers gracefully handled nil requests.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "pre-existing",
+        "why": "The default middleware stack already dereferences nil requests in InstrumentationMiddleware before LoggerMiddleware. The new middleware does not introduce the claimed nil-request regression.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/58ba11ecbd60863e2bfc6e32f0399ed4feb3927a/pkg/services/pluginsintegration/clientmiddleware/instrumentation_middleware.go#L161",
+          "https://github.com/grafana/grafana/compare/58ba11ecbd60863e2bfc6e32f0399ed4feb3927a...303cdc2caf256aa5df660611120c2e3f7392365d"
+        ]
+      },
+      "policy_excluded": true,
+      "tier": "excluded"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "The traceID is no longer logged for plugin requests. During a refactoring, the tracing import and the logic to extract a",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The traceID is no longer logged for plugin requests. During a refactoring, the tracing import and the logic to extract and add traceID from the context to log parameters were removed from the LoggerMiddleware. The newly introduced ContextualLoggerMiddleware does not add this information, resulting in missing traceID in plugin request logs and impacting debugging and request tracing capabilities.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "label-wrong",
+        "reason": "refuted",
+        "why": "Tracing registers a contextual log provider that supplies traceID, and the changed logger calls FromContext. Removing the explicit argument does not remove the logged field.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/303cdc2caf256aa5df660611120c2e3f7392365d/pkg/infra/tracing/tracing.go#L91",
+          "https://github.com/grafana/grafana/compare/58ba11ecbd60863e2bfc6e32f0399ed4feb3927a...303cdc2caf256aa5df660611120c2e3f7392365d"
+        ]
+      },
+      "tier": "excluded"
+    }
+  ],
+  "excluded_recorded_matches": [],
+  "matched": [],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "pkg/services/pluginsintegration/clientmiddleware/contextual_logger_middleware.go",
+      "line": 12,
+      "title": "Middleware-ordering invariant was deleted, not carried over",
+      "severity": "P2",
+      "category": "configuration",
+      "description": "Middleware-ordering constraint was removed during refactoring. LoggerMiddleware now depends on context attributes set by NewContextualLoggerMiddleware, but without documented ordering requirement. Reordering the middleware stack would silently lose log fields (pluginId, endpoint, dsName, dsUID, uname) with no compile error or test failure."
+    }
+  ],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 0,
+    "candidate_count": 1,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": null,
+    "precision_proxy_pct": 0
+  }
+}

@@ -101,6 +101,23 @@ tiers are not measured against the `slop-*` cases.
 
 ## Imported gold cases (CRB)
 
+The 15 zero-correctness-recall cases from the first sweep were adjudicated
+on 2026-10-02. Their finding text remains intact; `adjudication` records a
+disposition, reason, and pinned source evidence. `policy-excluded` and
+`label-wrong` findings are excluded from gold matching and the correctness
+denominator, but retained in the judge's `excluded_gold` array. A case whose
+gold is entirely excluded is **unscored**, not expected-clean: unmatched
+candidate findings remain promotion candidates, not proven false positives.
+One imported category was corrected explicitly: Grafana's unlocked cache
+iteration can panic, so it is correctness rather than efficiency; the
+original category is retained in `imported_category`.
+
+The [adjudication manifest](../calibration/adjudication-2026-10-02.json)
+indexes all 35 rulings. The
+[historical re-judge](../runs/2026-10-02-zero-recall-adjudication/summary.json)
+uses the original candidate outputs and original match indices; it does
+not retroactively rerun the old model or claim current-release recall.
+
 50 entries came from `withmartian/code-review-benchmark` via
 `import-crb.sh <fixtures-dir>` (re-run is idempotent): real PRs in
 calcom/cal.com (ts), grafana/grafana (go), keycloak/keycloak (java),

@@ -1,0 +1,50 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "excluded_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used ",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used in the corresponding test setup.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "test-coverage",
+        "why": "This label only says the test setup omits the third argument; it gives no behavior defect. Coverage omissions are excluded. The candidate double-interpolation finding is a different root cause.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/1cab4143d443c33079566f6ca36931eb8468159f/public/app/plugins/datasource/loki/shardQuerySplitting.test.ts#L53",
+          "https://github.com/grafana/grafana/compare/d9a8253640464014aa3662c91131278990cfb828...1cab4143d443c33079566f6ca36931eb8468159f"
+        ]
+      },
+      "policy_excluded": true,
+      "tier": "excluded"
+    }
+  ],
+  "excluded_recorded_matches": [],
+  "matched": [],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [
+    {
+      "file": "public/app/plugins/datasource/loki/querySplitting.ts",
+      "line": 299,
+      "title": "Ad hoc filters are now applied twice (three times under shard splitting), duplicating label filters",
+      "severity": "P1",
+      "category": "bugs",
+      "description": "applyTemplateVariables is not idempotent when request.filters is non-empty; it is called multiple times through the call chain (runSplitQuery → runSplitGroupedQueries → datasource.runQuery → DataSourceWithBackend.query), causing duplicate label filters in the final Loki query. With shardQuerySplitting enabled, this occurs three times. Fix: interpolate for split decisions without re-interpolating in downstream layers, either by keeping request.targets raw or by passing a skipTemplateVariables marker."
+    }
+  ],
+  "metrics": {
+    "gold_count": 1,
+    "gold_correctness_count": 0,
+    "candidate_count": 1,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": null,
+    "precision_proxy_pct": 0
+  }
+}

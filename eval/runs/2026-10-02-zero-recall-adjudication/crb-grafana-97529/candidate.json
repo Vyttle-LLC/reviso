@@ -1,0 +1,18 @@
+[
+  {
+    "file": "pkg/storage/unified/resource/search.go",
+    "line": 216,
+    "title": "Unsynchronized read of the bleve index cache",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "TotalDocs() ranges over b.cache without taking cacheMu.RLock(), while BuildIndex writes under lock. Concurrent map read and write can cause fatal error, killing process. Also reachable from BleveIndexMetrics.Collect on every /metrics scrape. Fix: guard the reader with RLock/RUnlock."
+  },
+  {
+    "file": "pkg/server/module_server_test.go",
+    "line": 36,
+    "title": "Postgres skip papers over a startup-latency regression this PR introduces",
+    "severity": "P2",
+    "category": "history; conventions",
+    "description": "NewResourceServer runs s.Init(ctx) synchronously, executing DB work before module reports running. Test has fixed 500ms sleep before checking /metrics, but on postgres in Drone this exceeds 500ms. Skip was disabled rather than fixed. Fix: replace fixed sleep with poll using require.Eventually."
+  }
+]

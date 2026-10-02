@@ -1,0 +1,10 @@
+{
+  "cli_version": "2.1.224",
+  "models": [
+    "claude-opus-5"
+  ],
+  "operation": "rejudge",
+  "source_artifacts": "eval/runs/2026-08-07-gold-sweep-v0/crb-grafana-103633",
+  "adjudication_date": "2026-10-02",
+  "tier": "unrecorded"
+}

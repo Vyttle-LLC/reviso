@@ -1,0 +1,10 @@
+[
+  {
+    "file": "public/app/plugins/datasource/loki/querySplitting.ts",
+    "line": 299,
+    "title": "Ad hoc filters are now applied twice (three times under shard splitting), duplicating label filters",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "applyTemplateVariables is not idempotent when request.filters is non-empty; it is called multiple times through the call chain (runSplitQuery → runSplitGroupedQueries → datasource.runQuery → DataSourceWithBackend.query), causing duplicate label filters in the final Loki query. With shardQuerySplitting enabled, this occurs three times. Fix: interpolate for split decisions without re-interpolating in downstream layers, either by keeping request.targets raw or by passing a skipTemplateVariables marker."
+  }
+]
