@@ -1,0 +1,22 @@
+{
+  "id": "slop-test-async-001",
+  "language": "python",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add async test coverage",
+    "description": "Tests run with python3 -m unittest discover -s tests; default unittest warning handling, no configured lint rules."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,2 @@\n+async def load_name():\n+    return \"Michael\""
+    },
+    {
+      "filename": "tests/test_subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,9 @@\n+import unittest\n+from subject import load_name\n+\n+class NameTests(unittest.TestCase):\n+    async def assert_loaded_name(self):\n+        self.assertEqual(await load_name(), \"Michael\")\n+\n+    def test_loads_name(self):\n+        self.assert_loaded_name()"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "slop-test-swallowed-clean-001",
+  "language": "python",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add swallowed test coverage",
+    "description": "Tests run with python3 -m unittest discover -s tests; default unittest warning handling, no configured lint rules."
+  },
+  "expected_clean": true,
+  "files": [
+    {
+      "filename": "subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,2 @@\n+def is_valid(value):\n+    return value > 0"
+    },
+    {
+      "filename": "tests/test_subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,6 @@\n+import unittest\n+from subject import is_valid\n+\n+class ValidationTests(unittest.TestCase):\n+    def test_accepts_positive_values(self):\n+        self.assertTrue(is_valid(1))"
+    }
+  ]
+}

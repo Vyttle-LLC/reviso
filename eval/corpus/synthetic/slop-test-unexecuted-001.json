@@ -1,0 +1,22 @@
+{
+  "id": "slop-test-unexecuted-001",
+  "language": "python",
+  "difficulty": "medium",
+  "pr": {
+    "title": "Add unexecuted test coverage",
+    "description": "Tests run with python3 -m unittest discover -s tests; default unittest warning handling, no configured lint rules."
+  },
+  "expected_clean": false,
+  "files": [
+    {
+      "filename": "subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,2 @@\n+def receipt(total):\n+    return {\"total\": total, \"paid\": True}"
+    },
+    {
+      "filename": "tests/test_subject.py",
+      "status": "added",
+      "patch": "@@ -0,0 +1,7 @@\n+import unittest\n+from subject import receipt\n+\n+class ReceiptTests(unittest.TestCase):\n+    def test_receipt_marks_total_paid(self):\n+        actual = {\"total\": 100, \"paid\": True}\n+        self.assertEqual(actual, {\"total\": 100, \"paid\": True})"
+    }
+  ]
+}

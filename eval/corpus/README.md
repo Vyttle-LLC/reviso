@@ -37,7 +37,7 @@ informationally.
 
 ## Style-lens gold cases (synthetic)
 
-The `slop-*` cases (23) measure `/reviso:style`'s sixteen lenses: eleven
+The `slop-*` cases (33) measure `/reviso:style`'s sixteen lenses: eleven
 true-positive / expected-clean pairs, one per lens added since 0.6.0 —
 over-engineering, dead weight, comments, test slop, AI tells (authored
 2026-08-19), derived state, naming, error handling, stale docs, surface
@@ -50,6 +50,19 @@ misses count against `gold_recall_correctness`); each clean look-alike
 guards the matching lens's precision (a mocked *dependency* vs a mocked
 subject, a genuinely nullable value vs a dead defense, a repo that
 really does name its services `*Manager`, and so on).
+
+The `slop-tautological-001` / `slop-tautological-clean-001` pair isolates
+circular test oracles: result aliases, repeated subject calls, and copied
+production calculations, versus independent expected prices, identity
+contracts, and real behavior using a mocked dependency.
+
+Four additional Python pairs (`slop-test-swallowed`, `slop-test-conditional`,
+`slop-test-async`, and `slop-test-unexecuted`, each with a `-001` suffix
+and a `-clean-001` counterpart) exercise swallowed assertion failures,
+zero-iteration assertions, unawaited assertion helpers, and fixture-only
+coverage. Each clean counterpart makes the claimed regression fail under
+standard-library unittest. The async pair uses default warning handling;
+a warning-as-error configuration can change whether the dirty test passes.
 
 Fixture files carry a `status`: `added` files are the change under
 review; `context` files are committed into the throwaway repo's base

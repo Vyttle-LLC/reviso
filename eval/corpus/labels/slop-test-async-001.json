@@ -1,0 +1,16 @@
+{
+  "case": "slop-test-async-001",
+  "origin": "synthetic",
+  "imported": "2026-10-01",
+  "expected_clean": false,
+  "findings": [
+    {
+      "file": "tests/test_subject.py",
+      "line": 9,
+      "title": "Async test evidence misrepresents coverage",
+      "severity": "high",
+      "category": "slop",
+      "description": "The synchronous unittest.TestCase method creates but never awaits the helper coroutine at line 9. unittest reports an unawaited-coroutine warning, not a failed assertion; the assertion at line 6 and load_name never run. Returning \"wrong\" therefore still passes."
+    }
+  ]
+}
