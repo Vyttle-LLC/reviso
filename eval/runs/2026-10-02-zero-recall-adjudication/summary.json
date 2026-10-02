@@ -95,13 +95,13 @@
     {
       "case": "crb-keycloak-36880",
       "gold_count": 3,
-      "gold_correctness_count": 3,
+      "gold_correctness_count": 1,
       "candidate_count": 4,
       "matched_count": 0,
       "matched_correctness_count": 0,
       "gold_recall_correctness": 0,
       "precision_proxy_pct": 0,
-      "excluded_count": 0
+      "excluded_count": 2
     },
     {
       "case": "crb-keycloak-36882",
@@ -170,7 +170,7 @@
       "excluded_count": 2
     }
   ],
-  "eligible_correctness_total": 11,
+  "eligible_correctness_total": 9,
   "matched_correctness_total": 1,
-  "excluded_total": 24
+  "excluded_total": 26
 }

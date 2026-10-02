@@ -39,10 +39,12 @@
         "date": "2026-10-02",
         "status": "real-miss",
         "reason": "cross-file",
-        "why": "The new user-storage getCredentials path creates a recovery model with createFromValues but never transfers the stored ID. createFromValues does not set an ID, while the authenticator later passes getId to removal.",
+        "why": "The new user-storage getCredentials path creates a recovery model without copying the stored ID. AccountCredentialResource returns these credentials, and CredentialDeleteHelper resolves federated deletion by ID. The missing ID makes the returned credential unaddressable. The label’s authenticator example is not the demonstrated path: this provider reconstructs unconsumed codes on each read.",
         "evidence": [
           "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java#L239",
-          "https://github.com/keycloak/keycloak/compare/85737f52b59aa2e3403c9b8e48acf71ccc5bfae3...ce2dcc537b4b1f98a335e88cfe8e0b804483252a"
+          "https://github.com/keycloak/keycloak/compare/85737f52b59aa2e3403c9b8e48acf71ccc5bfae3...ce2dcc537b4b1f98a335e88cfe8e0b804483252a",
+          "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/services/src/main/java/org/keycloak/services/resources/account/AccountCredentialResource.java#L184",
+          "https://github.com/keycloak/keycloak/blob/ce2dcc537b4b1f98a335e88cfe8e0b804483252a/services/src/main/java/org/keycloak/authentication/requiredactions/util/CredentialDeleteHelper.java#L64"
         ]
       },
       "tier": "correctness"

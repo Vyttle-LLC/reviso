@@ -103,11 +103,11 @@
         },
         {
           "finding_index": 1,
-          "status": "real-miss"
+          "status": "label-wrong"
         },
         {
           "finding_index": 2,
-          "status": "real-miss"
+          "status": "policy-excluded"
         }
       ]
     },
@@ -233,8 +233,8 @@
     }
   ],
   "counts": {
-    "policy-excluded": 16,
-    "label-wrong": 8,
-    "real-miss": 11
+    "policy-excluded": 17,
+    "label-wrong": 9,
+    "real-miss": 9
   }
 }

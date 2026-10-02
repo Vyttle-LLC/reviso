@@ -223,9 +223,9 @@ artifacts document case by case:
 ## Runs (audit tier)
 
 The first sweep's 15 zero-correctness-recall CRB cases were adjudicated on
-2026-10-02: 35 labels became 11 eligible correctness defects, 16
-policy-excluded findings, and 8 wrong or insufficiently specified labels.
-The unchanged historical candidate already matched one of the 11; its
+2026-10-02: 35 labels became 9 eligible correctness defects, 17
+policy-excluded findings, and 9 wrong or insufficiently specified labels.
+The unchanged historical candidate already matched one of the 9; its
 map-race label had been incorrectly tiered as efficiency. See the
 [rulings and historical re-judge](../eval/runs/2026-10-02-zero-recall-adjudication/README.md).
 This selected cluster is not a new full-corpus recall result. The new

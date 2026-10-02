@@ -8,14 +8,14 @@ intact. The machine-readable index is
 
 | Disposition | Findings |
 | --- | --- |
-| Eligible correctness defects | 11 |
-| Policy-excluded | 16 |
-| Label-wrong / insufficiently specified | 8 |
+| Eligible correctness defects | 9 |
+| Policy-excluded | 17 |
+| Label-wrong / insufficiently specified | 9 |
 
 The historical outputs are re-judged here, without rerunning either the
 candidate or matcher. The original sweep remains untouched. After the
 exclusions and one category correction, the recorded candidate matched
-**1 of 11 eligible correctness findings** in this deliberately selected
+**1 of 9 eligible correctness findings** in this deliberately selected
 zero-recall cluster. This is not full-corpus recall, a current-release
 result, or a validation of the old Claude matcher.
 
@@ -35,6 +35,11 @@ read/write panic `efficiency`. Its normalized category is now correctness;
 - Grafana 90939 and Sentry 80528: the cache-error assignment and wrong
   returned config predate the changes. A latent defect moved unchanged
   is excluded by Reviso's changed-behavior policy.
+- Keycloak 36880: resource-server and client IDs are equal in the pinned
+  adapter. The cited role-mapping consumer runs only with V1 enabled,
+  while the new implementation runs under mutually exclusive V2. These
+  labels do not establish reachable regressions. The cleanup flag remains
+  eligible.
 - Sentry 95633: `.python-version` pins 3.13.1, which has `Queue.shutdown`.
   Test constants and documentation cleanup do not become correctness
   defects merely because the importer mapped them to `bug`.
@@ -63,7 +68,7 @@ matches. Entirely excluded cases are unscored, not expected-clean:
 candidate-only findings still require verification before being called
 wins or false positives. The judge rejects unknown adjudication statuses.
 
-The 11 eligible findings are a starting point for the audit comparison,
+The 9 eligible findings are a starting point for the audit comparison,
 not evidence that the current workflow still misses them. Measure both
 tiers on the same pinned changes before deciding whether deeper review or
 new detection angles are needed.
