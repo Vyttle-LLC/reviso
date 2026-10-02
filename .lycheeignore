@@ -19,3 +19,7 @@ security/advisories/new
 # verbatim; not our links to maintain.
 ^https://github\.com/anthropics/claude-cli-internal
 ^https://github\.com/anthropics/claude-code/blob
+
+# Vendored recipe link; Cloudflare returns a browser challenge (403) to
+# automated clients. Keep the snapshot intact and exclude only this URL.
+^https://claude\.ai/code/?$
