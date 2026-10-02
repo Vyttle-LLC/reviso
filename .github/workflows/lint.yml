@@ -24,6 +24,7 @@ jobs:
         run: |
           python3 eval/runners/test_match.py
           python3 eval/runners/test_gold_judge.py
+          python3 eval/runners/test_gold_codex.py
       - name: Check internal links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2
         with:

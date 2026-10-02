@@ -1,0 +1,70 @@
+{
+  "report": "## Reviso review — detached HEAD ce2dcc537b vs 85737f52b5 (1 commit, 8 files)\nBase: 85737f52b59aa2e3403c9b8e48acf71ccc5bfae3 via flag — merge-base 85737f52b5\n\nFound 3 issues:\n\n1. [P1][conf 95] Remove old local recovery codes after creating federated replacements — server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java:126\n   Failure: Regenerating codes into user storage leaves an existing local set valid; credential validation still falls back to that old set.\n   Fix: After successful user-storage creation, remove existing locally stored recovery-code credentials.\n   (bugs)\n\n2. [P2][conf 100] Consume recovery codes after successful validation — testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java:340\n   Failure: The test provider accepts every generated code repeatedly and always presents the first code; exhaustion never triggers regeneration.\n   Fix: Validate the next unused code and persist its consumption before returning success.\n   (bugs)\n\n3. [P2][conf 95] Preserve recovery credential IDs and support removal — testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java:242\n   Failure: Account REST receives a recovery credential with no ID, preventing removal; the provider also lacks recovery-code disabling.\n   Fix: Copy the stored credential ID into the returned model and implement recovery-code disabling and its advertised disableable type.\n   (bugs)\n\nChecked: bugs, conventions, comments, slop, deterministic.\nNot checked: history (no result: commit logs were available, but blame required an unavailable promisor object).\nSkipped: nothing.\n\n--- explain: pipeline diagnostics (not review findings) ---\nLenses: bugs 3, conventions 0, history no result (0 candidates), comments 0, slop 0, deterministic 0.\nCandidates before the gate (3):\n  [bugs] CredentialHelper.java:126 score 95 reported\n  [bugs] BackwardsCompatibilityUserStorage.java:340 score 100 reported\n  [bugs] BackwardsCompatibilityUserStorage.java:242 score 95 reported\n\nWrong about something? Say which finding — I can file feedback (metadata-only by default).",
+  "findings": [
+    {
+      "file": "server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java",
+      "line": 126,
+      "severity": "P1",
+      "dimension": "bugs",
+      "title": "Remove old local recovery codes after creating federated replacements",
+      "failure_scenario": "A federated user with locally stored recovery codes regenerates them after the storage provider gains recovery-code support. The new set is stored externally, but an old local code still authenticates through local validation fallback.",
+      "suggested_fix": "After updateCredential succeeds, remove the user's existing locally stored recovery-authn-codes credentials so regeneration invalidates the previous set.",
+      "evidence": "CredentialHelper.java:125-129 bypasses RecoveryAuthnCodesCredentialProvider.createCredential, whose services/src/main/java/org/keycloak/credential/RecoveryAuthnCodesCredentialProvider.java:39-42 removes the previous stored credential. model/storage/src/main/java/org/keycloak/credential/UserCredentialManager.java:66-78 still invokes local validators when external validation fails.",
+      "confidence": 95
+    },
+    {
+      "file": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java",
+      "line": 340,
+      "severity": "P2",
+      "dimension": "bugs",
+      "title": "Consume recovery codes after successful validation",
+      "failure_scenario": "After a successful recovery-code login through the test provider, the same code authenticates again indefinitely. Subsequent challenges still request the first code, and exhausting the set never triggers regeneration.",
+      "suggested_fix": "Validate the next unused recovery code and persist its removal before returning true; retain code numbering and remaining-code state when returning the credential.",
+      "evidence": "BackwardsCompatibilityUserStorage.java:334-340 checks membership without updating storedRecoveryKeys, while :237-241 reconstructs the full original set on every read. The local implementation in services/src/main/java/org/keycloak/credential/RecoveryAuthnCodesCredentialProvider.java:118-119 explicitly removes and persists the consumed code.",
+      "confidence": 100
+    },
+    {
+      "file": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java",
+      "line": 242,
+      "severity": "P2",
+      "dimension": "bugs",
+      "title": "Preserve recovery credential IDs and support removal",
+      "failure_scenario": "A user requests recovery credentials through Account REST and receives a model with a null ID, so the credential cannot be addressed for deletion. Even deletion through the legacy type placeholder leaves the recovery codes configured because the provider only disables OTP.",
+      "suggested_fix": "Set the returned model's ID from myUser.recoveryCodes, clear recoveryCodes in disableCredentialType for this type, and include it in getDisableableCredentialTypesStream.",
+      "evidence": "BackwardsCompatibilityUserStorage.java:195 assigns a stored ID, but :237-242 returns a freshly constructed model without copying it; :215-222 only implements OTP disabling. services/src/main/java/org/keycloak/authentication/requiredactions/util/CredentialDeleteHelper.java:64-69 resolves federated credentials by ID and then invokes disableCredentialType.",
+      "confidence": 95
+    }
+  ],
+  "coverage": [
+    {
+      "lens": "bugs",
+      "outcome": "returned",
+      "reason": "Reviewed all eight changed files and relevant credential callers; 3 candidates, all shipped."
+    },
+    {
+      "lens": "conventions",
+      "outcome": "returned",
+      "reason": "Checked applicable supplied guidance and repository conventions; no repository AGENTS.md or CLAUDE.md found; 0 candidates."
+    },
+    {
+      "lens": "history",
+      "outcome": "no result",
+      "reason": "Read ancestor commit logs, but blame failed because a required promisor object was unavailable; historical verification remained incomplete."
+    },
+    {
+      "lens": "comments",
+      "outcome": "returned",
+      "reason": "Checked code comments and invariant notes around the changed hunks; 0 candidates."
+    },
+    {
+      "lens": "slop",
+      "outcome": "returned",
+      "reason": "Checked added logic against existing utilities and searched distinctive identifiers and literals for duplication; 0 qualifying candidates."
+    },
+    {
+      "lens": "deterministic",
+      "outcome": "returned",
+      "reason": "The detector suite completed successfully and returned an empty findings array."
+    }
+  ]
+}

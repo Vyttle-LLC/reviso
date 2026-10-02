@@ -1,0 +1,14 @@
+{
+  "host": "codex",
+  "tier": "audit",
+  "base_sha": "b8c1cd410f4499c77a8b372decfe1718b80ccfd2",
+  "head_sha": "1950a511026d520a7329c7b6b9ee60a4af8f8b55",
+  "requested_model": "gpt-6.1-sol",
+  "reasoning_effort": "medium",
+  "plugin_revision": "2a41361b9aac174a18e47c0498efd53edcd6453e",
+  "plugin_version": "0.14.0",
+  "cli_version": "codex-cli 0.160.0",
+  "status": "incomplete",
+  "duration_ms": 327407,
+  "repository_unchanged": true
+}

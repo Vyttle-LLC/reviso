@@ -1,0 +1,69 @@
+{
+  "report": "## Reviso review — detached HEAD ce2dcc537b vs 85737f52b59aa2e3403c9b8e48acf71ccc5bfae3 (1 commit, 8 files)\nBase: 85737f52b59aa2e3403c9b8e48acf71ccc5bfae3 via flag — merge-base 85737f52b5\nAudit unavailable: independent agent delegation failed. This is the required single-pass review fallback.\n\nFound 2 issues:\n\n1. [P1][conf 95] Invalidate local recovery codes after external regeneration — server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java:126\n   Failure: A federated user regenerates previously local recovery codes into external storage. The old local codes remain valid through validation fallback.\n   Fix: Remove existing local recovery credentials after successful external creation.\n   (bugs)\n\n2. [P2][conf 100] Consume recovery codes when the test provider validates them — testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java:340\n   Failure: The provider accepts the same recovery code repeatedly, and every subsequent login still requests the first code.\n   Fix: Validate the next unused code and persist its consumption; return the remaining credential state.\n   (bugs)\n\nChecked: bugs, conventions, comments, slop, deterministic.\nNot checked: history (missing Git object prevented completing inspection), prior-reviews (unavailable audit agent; feedback not retrieved), best-practices (no --web).\nSkipped: nothing.\n\n--- explain: pipeline diagnostics (not review findings) ---\nLenses: bugs 2, conventions 0, history no result, comments 0, slop 0, prior-reviews no result, deterministic 0, best-practices skipped (no --web).\nIndependent triage, finders, and evidence agents did not run; candidates were self-verified in the review fallback.\nCandidates before the gate (2):\n  [bugs] server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java:126 score 95 reported\n  [bugs] testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java:340 score 100 reported",
+  "findings": [
+    {
+      "file": "server-spi-private/src/main/java/org/keycloak/utils/CredentialHelper.java",
+      "line": 126,
+      "severity": "P1",
+      "dimension": "bugs",
+      "title": "Invalidate local recovery codes after external regeneration",
+      "failure_scenario": "A federated user with existing local recovery codes regenerates them after their storage provider gains recovery-code support. Successful external creation leaves the local credential intact, so an old code rejected by external storage still authenticates through the local validator.",
+      "suggested_fix": "After successful external creation, remove existing locally stored recovery-code credentials so regeneration invalidates the previous set.",
+      "evidence": "CredentialHelper.java:125-129 bypasses RecoveryAuthnCodesCredentialProvider.createCredential, whose lines 39-42 remove the previous local credential. UserCredentialManager.java:70-80 retains externally rejected inputs for local validation, and RecoveryAuthnCodesCredentialProvider.java:105-118 accepts matching old local codes.",
+      "confidence": 95
+    },
+    {
+      "file": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/src/main/java/org/keycloak/testsuite/federation/BackwardsCompatibilityUserStorage.java",
+      "line": 340,
+      "severity": "P2",
+      "dimension": "bugs",
+      "title": "Consume recovery codes when the test provider validates them",
+      "failure_scenario": "After a successful federated recovery-code login, the provider retains every code and accepts the same code on subsequent logins. Its credential enumeration reconstructs the original full list, so the browser keeps requesting the first code and exhaustion never triggers regeneration.",
+      "suggested_fix": "Validate only the next unused recovery code, persist its consumption, and expose the remaining credential state from getCredentials.",
+      "evidence": "BackwardsCompatibilityUserStorage.java:340 returns an anyMatch result without updating stored codes, while lines 237-241 reconstruct all original codes on every read. The local provider at RecoveryAuthnCodesCredentialProvider.java:111-118 validates the next code, removes it, and persists the updated credential.",
+      "confidence": 100
+    }
+  ],
+  "coverage": [
+    {
+      "lens": "bugs",
+      "outcome": "returned",
+      "reason": "Single-pass review fallback completed; 2 candidates."
+    },
+    {
+      "lens": "conventions",
+      "outcome": "returned",
+      "reason": "Single-pass review fallback completed; 0 candidates; no repository AGENTS.md or CLAUDE.md found."
+    },
+    {
+      "lens": "history",
+      "outcome": "no result",
+      "reason": "Inspection incomplete: blame required a missing promisor object and retrieval failed; independent audit agent unavailable."
+    },
+    {
+      "lens": "comments",
+      "outcome": "returned",
+      "reason": "Code-comment lens completed in single-pass review fallback; 0 candidates."
+    },
+    {
+      "lens": "slop",
+      "outcome": "returned",
+      "reason": "Anti-slop and identifier duplication checks completed in single-pass review fallback; 0 candidates."
+    },
+    {
+      "lens": "prior-reviews",
+      "outcome": "no result",
+      "reason": "Independent audit agent unavailable; prior PR feedback was not retrieved."
+    },
+    {
+      "lens": "deterministic",
+      "outcome": "returned",
+      "reason": "Detector suite returned an empty findings array; 0 findings."
+    },
+    {
+      "lens": "best-practices",
+      "outcome": "skipped",
+      "reason": "no --web"
+    }
+  ]
+}

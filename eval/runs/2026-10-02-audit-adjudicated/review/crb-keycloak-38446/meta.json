@@ -1,0 +1,15 @@
+{
+  "host": "codex",
+  "tier": "review",
+  "base_sha": "85737f52b59aa2e3403c9b8e48acf71ccc5bfae3",
+  "head_sha": "ce2dcc537b4b1f98a335e88cfe8e0b804483252a",
+  "effective_base_sha": "85737f52b59aa2e3403c9b8e48acf71ccc5bfae3",
+  "requested_model": "gpt-6.1-sol",
+  "reasoning_effort": "medium",
+  "plugin_revision": "2a41361b9aac174a18e47c0498efd53edcd6453e",
+  "plugin_version": "0.14.0",
+  "cli_version": "codex-cli 0.160.0",
+  "status": "incomplete",
+  "duration_ms": 203221,
+  "repository_unchanged": true
+}

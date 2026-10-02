@@ -1,0 +1,46 @@
+{
+  "report": "## Reviso audit — detached HEAD vs 50f4e78a39914711d0d231a501ba215becf17ebc (5 commits, 11 files)\nBase: 50f4e78a39914711d0d231a501ba215becf17ebc via flag — merge-base 7ddcd0c961\n\nAudit unavailable: missing Git objects prevented reading every changed-file diff. No findings could be verified; this is not a clean audit.\n\nChecked: none.\nNot checked: bugs, conventions, history, comments, slop, prior-reviews (required diff unavailable); deterministic (Git diff failed); best-practices (no --web).\nSkipped: skip-tier files could not be determined because triage was unavailable.\n\n--- explain: pipeline diagnostics (not review findings) ---\nFinders: bugs no result, conventions no result, history no result, comments no result, slop no result, prior-reviews no result.\nDeterministic: no result. The detector emitted [] after Git failed; that output does not establish a clean pass.\nTriage, independent finders, evidence gathering, and scoring did not run because context assembly failed.\nCandidates before the gate: unavailable.\nNo files were written, feedback sent, or web lookups performed.",
+  "findings": [],
+  "coverage": [
+    {
+      "lens": "bugs",
+      "outcome": "no result",
+      "reason": "Missing Git objects prevented assembling the diff; independent finder did not run."
+    },
+    {
+      "lens": "conventions",
+      "outcome": "no result",
+      "reason": "Missing Git objects prevented assembling the diff; independent finder did not run."
+    },
+    {
+      "lens": "history",
+      "outcome": "no result",
+      "reason": "Commit metadata was available, but required diff objects were missing; independent finder did not run."
+    },
+    {
+      "lens": "comments",
+      "outcome": "no result",
+      "reason": "Missing Git objects prevented assembling the diff; code-comment finder did not run."
+    },
+    {
+      "lens": "slop",
+      "outcome": "no result",
+      "reason": "Missing Git objects prevented assembling the diff; anti-slop finder did not run."
+    },
+    {
+      "lens": "prior-reviews",
+      "outcome": "no result",
+      "reason": "Required diff unavailable; prior-review finder and lookup did not run."
+    },
+    {
+      "lens": "deterministic",
+      "outcome": "no result",
+      "reason": "Detector invocation encountered a Git diff failure from missing objects; its empty array was unusable."
+    },
+    {
+      "lens": "best-practices",
+      "outcome": "skipped",
+      "reason": "no --web"
+    }
+  ]
+}

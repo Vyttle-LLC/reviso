@@ -1,0 +1,16 @@
+{
+  "name": "audit-adjudicated",
+  "rationale": "Seven adjudicated cases with eligible defects, two previously matched controls, and one entirely excluded Ruby case. All eligible findings in the original zero-recall cluster are covered. Not a full-corpus or expected-clean sweep.",
+  "case_ids": [
+    "crb-grafana-79265",
+    "crb-grafana-97529",
+    "crb-keycloak-36880",
+    "crb-keycloak-38446",
+    "crb-sentry-greptile-3",
+    "crb-sentry-greptile-5",
+    "crb-cal.com-14943",
+    "crb-grafana-94942",
+    "crb-sentry-67876",
+    "crb-discourse-graphite-9"
+  ]
+}

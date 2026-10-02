@@ -1,0 +1,14 @@
+{
+  "host": "codex",
+  "tier": "review",
+  "base_sha": "50f4e78a39914711d0d231a501ba215becf17ebc",
+  "head_sha": "bbd8c507cdf56f6b884373809e0b24abd4a2353d",
+  "requested_model": "gpt-6.1-sol",
+  "reasoning_effort": "medium",
+  "plugin_revision": "2a41361b9aac174a18e47c0498efd53edcd6453e",
+  "plugin_version": "0.14.0",
+  "cli_version": "codex-cli 0.160.0",
+  "status": "incomplete",
+  "duration_ms": 143860,
+  "repository_unchanged": true
+}

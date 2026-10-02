@@ -1,0 +1,64 @@
+{
+  "report": "## Reviso audit — detached HEAD 1950a51102 vs b8c1cd410f4499c77a8b372decfe1718b80ccfd2 (1 commit, 10 files)\nBase: b8c1cd410f4499c77a8b372decfe1718b80ccfd2 via flag — merge-base b7b84d75d1\n\nFound 2 issues:\n\n1. [P1][conf 95] Global view permission bypasses client-specific denials — services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java:78\n   Failure: An all-clients VIEW grant causes canView(client) to return true before evaluating an explicit denial for that client. Collection listing also bypasses individual checks when global canView() succeeds.\n   Fix: Reserve unconditional view shortcuts for built-in roles; evaluate client-specific permissions before global fallback and preserve that precedence in list filtering.\n   (bugs; corroborated by history)\n\n2. [P1][conf 90] Global manage permission fails inherited list and view checks — services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java:87\n   Failure: An administrator granted only all-clients MANAGE can create clients and client scopes but receives 403 when listing them without query roles. With query-clients, the client-scope list is empty.\n   Fix: Include MANAGE in the global view decision while preserving client-specific permission precedence.\n   (bugs)\n\nChecked: bugs, conventions, history, deterministic.\nNot checked: comments, slop, prior-reviews (host agent-thread limit).\nSkipped: nothing.\n\n--- explain: pipeline diagnostics (not review findings) ---\nFinders: conventions 1, bugs 4, history 1, prior-reviews no result, comments no result, slop no result. Deterministic: 0.\nCandidates before the gate (6):\n  [conventions] AdminPermissionsSchema.java:68 — score 50, dropped: rubric-score; documentation impact insufficiently established for this experimental feature.\n  [bugs] ClientPermissionsV2.java:78 — score 95, reported.\n  [bugs] ClientPermissionsV2.java:87 — score 90, reported.\n  [bugs] ClientPermissionsV2.java:138 — score 50, dropped: rubric-score; the sole repository consumer is gated to V1.\n  [bugs] ClientPermissionsV2.java:140 — score 50, dropped: rubric-score; the sole repository consumer is gated to V1.\n  [history] ClientPermissionsV2.java:76 — score 95, reported; merged with the bugs finding at line 78.\n\nAudit coverage is incomplete: remaining finders and separate evidence agents could not be launched after the host rejected another agent with 'agent thread limit reached'. Candidate evidence was checked directly by the orchestrator. History returned a findings array, but missing promisor blobs prevented full blame and historical diff inspection; available reachable history was used. No repository code was executed, files written, web lookups performed, or feedback sent.\n\nWrong about something? Say which finding — I can file feedback (metadata-only by default).",
+  "findings": [
+    {
+      "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java",
+      "line": 78,
+      "severity": "P1",
+      "dimension": "bugs",
+      "title": "Global view permission bypasses client-specific denials",
+      "failure_scenario": "An administrator has an all-clients VIEW grant and an explicit VIEW denial on a sensitive client. canView(client) accepts the global grant before evaluating the client-specific resource, exposing the denied client.",
+      "suggested_fix": "Short-circuit only for built-in administrative roles, evaluate client-specific permissions before global fallback, and make collection filtering respect those individual decisions.",
+      "evidence": "ClientPermissionsV2.java:78 accepts global canView() before the specific-resource evaluation at lines 214–224; ClientsResource.java:153 likewise bypasses individual checks when global view succeeds. UserResourceTypeEvaluationTest.java:203–212 and reachable commit bf355f83d3 establish that an individual denial takes precedence over an all-resource grant.",
+      "confidence": 95
+    },
+    {
+      "file": "services/src/main/java/org/keycloak/services/resources/admin/permissions/ClientPermissionsV2.java",
+      "line": 87,
+      "severity": "P1",
+      "dimension": "bugs",
+      "title": "Global manage permission fails inherited list and view checks",
+      "failure_scenario": "An administrator granted only all-clients MANAGE can create clients and client scopes but receives 403 when listing either collection without query roles. Adding query-clients permits the client-scope request but returns an empty list.",
+      "suggested_fix": "Include the all-clients MANAGE scope in the global view decision while preserving client-specific permission precedence.",
+      "evidence": "ClientPermissionsV2.java:73 and :109 accept global MANAGE, but :87 checks only VIEW; inherited ClientPermissions.java:241–259 and :489 derive collection access from canView(). ClientScopesResource.java:91–95 requires list permission and returns an empty stream when canViewClientScopes() is false.",
+      "confidence": 90
+    }
+  ],
+  "coverage": [
+    {
+      "lens": "bugs",
+      "outcome": "returned",
+      "reason": "Independent finder returned 4 candidates."
+    },
+    {
+      "lens": "conventions",
+      "outcome": "returned",
+      "reason": "Independent finder returned 1 candidate."
+    },
+    {
+      "lens": "history",
+      "outcome": "returned",
+      "reason": "Independent finder returned 1 candidate using reachable local history; missing promisor blobs limited blame and historical diffs."
+    },
+    {
+      "lens": "comments",
+      "outcome": "no result",
+      "reason": "Finder launch failed with host agent-thread limit reached."
+    },
+    {
+      "lens": "slop",
+      "outcome": "no result",
+      "reason": "No agent capacity remained to launch the anti-slop finder."
+    },
+    {
+      "lens": "prior-reviews",
+      "outcome": "no result",
+      "reason": "No agent capacity remained to launch the prior-reviews finder."
+    },
+    {
+      "lens": "deterministic",
+      "outcome": "returned",
+      "reason": "Read-only detector suite completed and returned 0 findings."
+    }
+  ]
+}
