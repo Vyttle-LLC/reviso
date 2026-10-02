@@ -1,0 +1,18 @@
+[
+  {
+    "file": "packages/features/ee/workflows/api/scheduleSMSReminders.ts",
+    "line": 190,
+    "title": "Retry-count bump inside `catch` can throw and abort the whole cron run",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Row can be deleted during batch processing, causing the retry-count update at line 190 to throw P2025. Since this throw occurs inside a catch block, it escapes the loop and skips all remaining reminders, causing the endpoint to 500."
+  },
+  {
+    "file": "packages/features/ee/workflows/api/scheduleSMSReminders.ts",
+    "line": 178,
+    "title": "SMS-lock is counted as a retryable failure, permanently deleting pending reminders",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "SMS-lock state from twilio.scheduleSMS is treated as a retryable failure and incremented at line 178. Reminders with retryCount > 1 are hard-deleted, so teams locked for ~45 minutes permanently lose all pending reminders in the 7-day window with no logging."
+  }
+]

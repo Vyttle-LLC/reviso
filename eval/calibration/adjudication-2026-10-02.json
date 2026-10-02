@@ -1,0 +1,240 @@
+{
+  "date": "2026-10-02",
+  "cases": [
+    {
+      "case": "crb-grafana-76186",
+      "labels": "eval/corpus/labels/crb-grafana-76186.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 1,
+          "status": "label-wrong"
+        }
+      ]
+    },
+    {
+      "case": "crb-grafana-79265",
+      "labels": "eval/corpus/labels/crb-grafana-79265.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "real-miss"
+        },
+        {
+          "finding_index": 1,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 2,
+          "status": "label-wrong"
+        },
+        {
+          "finding_index": 3,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 4,
+          "status": "label-wrong"
+        }
+      ]
+    },
+    {
+      "case": "crb-grafana-90939",
+      "labels": "eval/corpus/labels/crb-grafana-90939.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 1,
+          "status": "policy-excluded"
+        }
+      ]
+    },
+    {
+      "case": "crb-grafana-97529",
+      "labels": "eval/corpus/labels/crb-grafana-97529.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 1,
+          "status": "real-miss"
+        }
+      ]
+    },
+    {
+      "case": "crb-grafana-103633",
+      "labels": "eval/corpus/labels/crb-grafana-103633.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 1,
+          "status": "policy-excluded"
+        }
+      ]
+    },
+    {
+      "case": "crb-grafana-107534",
+      "labels": "eval/corpus/labels/crb-grafana-107534.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        }
+      ]
+    },
+    {
+      "case": "crb-keycloak-36880",
+      "labels": "eval/corpus/labels/crb-keycloak-36880.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "real-miss"
+        },
+        {
+          "finding_index": 1,
+          "status": "real-miss"
+        },
+        {
+          "finding_index": 2,
+          "status": "real-miss"
+        }
+      ]
+    },
+    {
+      "case": "crb-keycloak-36882",
+      "labels": "eval/corpus/labels/crb-keycloak-36882.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        }
+      ]
+    },
+    {
+      "case": "crb-keycloak-38446",
+      "labels": "eval/corpus/labels/crb-keycloak-38446.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 1,
+          "status": "real-miss"
+        }
+      ]
+    },
+    {
+      "case": "crb-sentry-80528",
+      "labels": "eval/corpus/labels/crb-sentry-80528.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 1,
+          "status": "policy-excluded"
+        }
+      ]
+    },
+    {
+      "case": "crb-sentry-95633",
+      "labels": "eval/corpus/labels/crb-sentry-95633.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "label-wrong"
+        },
+        {
+          "finding_index": 1,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 2,
+          "status": "policy-excluded"
+        }
+      ]
+    },
+    {
+      "case": "crb-sentry-greptile-3",
+      "labels": "eval/corpus/labels/crb-sentry-greptile-3.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "real-miss"
+        },
+        {
+          "finding_index": 1,
+          "status": "label-wrong"
+        },
+        {
+          "finding_index": 2,
+          "status": "real-miss"
+        }
+      ]
+    },
+    {
+      "case": "crb-sentry-greptile-5",
+      "labels": "eval/corpus/labels/crb-sentry-greptile-5.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "label-wrong"
+        },
+        {
+          "finding_index": 1,
+          "status": "policy-excluded"
+        },
+        {
+          "finding_index": 2,
+          "status": "real-miss"
+        }
+      ]
+    },
+    {
+      "case": "crb-cal.com-14943",
+      "labels": "eval/corpus/labels/crb-cal.com-14943.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "real-miss"
+        },
+        {
+          "finding_index": 1,
+          "status": "real-miss"
+        }
+      ]
+    },
+    {
+      "case": "crb-discourse-graphite-9",
+      "labels": "eval/corpus/labels/crb-discourse-graphite-9.json",
+      "dispositions": [
+        {
+          "finding_index": 0,
+          "status": "label-wrong"
+        },
+        {
+          "finding_index": 1,
+          "status": "label-wrong"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "policy-excluded": 16,
+    "label-wrong": 8,
+    "real-miss": 11
+  }
+}

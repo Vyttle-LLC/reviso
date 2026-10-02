@@ -19,6 +19,12 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 mkdir -p "$OUT"
 . "$HERE/tiers.sh"
 
+if ! jq -e 'all(.findings[]?; (.adjudication.status // "unreviewed") as $s |
+    (["unreviewed", "real-miss", "policy-excluded", "label-wrong"] | index($s)) != null)' "$LABELS" >/dev/null; then
+  echo "gold-judge.sh: unknown adjudication status" >&2
+  exit 1
+fi
+
 # Expected-clean short-circuits: any candidate finding is a false positive,
 # no matcher call needed (gold-eval spec).
 if [ "$(jq -r '.expected_clean // false' "$LABELS")" = "true" ]; then
@@ -34,19 +40,33 @@ jq '.findings' "$LABELS" > "$OUT/gold-labels.json"
 if [ -f "$OUT/match-gc.json" ]; then
   echo "gold-judge.sh: reusing recorded match-gc.json (re-judge)" >&2
 else
-  sh "$HERE/match.sh" "$OUT/gold-labels.json" "$CANDIDATE" > "$OUT/match-gc.json"
+  # Keep original indices so archived matches remain replayable. New model
+  # calls see only eligible gold, then map their indices back to that array.
+  jq 'to_entries | map(select(.value.policy_excluded != true and
+      .value.adjudication.status != "policy-excluded" and
+      .value.adjudication.status != "label-wrong"))' \
+    "$OUT/gold-labels.json" > "$OUT/gold-active-entries.json"
+  jq 'map(.value)' "$OUT/gold-active-entries.json" > "$OUT/gold-active-labels.json"
+  sh "$HERE/match.sh" "$OUT/gold-active-labels.json" "$CANDIDATE" \
+    | jq --slurpfile g "$OUT/gold-active-entries.json" \
+      'map(.a_idx = $g[0][.a_idx].key)' > "$OUT/match-gc.json"
 fi
 
 jq -n --arg re "$CLEANUP_RE" \
   --slurpfile g "$OUT/gold-labels.json" \
   --slurpfile c "$CANDIDATE" \
   --slurpfile m "$OUT/match-gc.json" '
-  ($g[0] | map(. + {tier: (if (.category // "" | test($re)) then "cleanup" else "correctness" end)})) as $g |
-  ($c[0]) as $c | ($m[0]) as $m |
+  ($g[0] | map(. + {tier: (if .policy_excluded == true or
+      .adjudication.status == "policy-excluded" or .adjudication.status == "label-wrong"
+      then "excluded" elif (.category // "" | test($re)) then "cleanup" else "correctness" end)})) as $g |
+  ($c[0]) as $c | ($m[0]) as $recorded |
+  ($recorded | map(select($g[.a_idx].tier != "excluded"))) as $m |
   ($m | map(.a_idx)) as $gm | ($m | map(.b_idx)) as $cm |
   ($g | to_entries | map(select(.value.tier == "correctness"))) as $gcorr |
   {
     mode: "gold", expected_clean: false,
+    excluded_gold: [ $g[] | select(.tier == "excluded") ],
+    excluded_recorded_matches: [ $recorded[] | select($g[.a_idx].tier == "excluded") ],
     matched: [ $m[] | {gold: $g[.a_idx], candidate: $c[.b_idx]} ],
     missed_correctness_gold: [ $g | to_entries[]
       | select(.value.tier == "correctness" and ((.key as $i | $gm | index($i)) == null)) | .value ],

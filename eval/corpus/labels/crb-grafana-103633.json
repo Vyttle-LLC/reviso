@@ -12,7 +12,18 @@
       "severity": "high",
       "category": "security",
       "crb_category": "security",
-      "description": "The Check operation exhibits asymmetric cache trust logic: cached permission grants are trusted and returned immediately, but cached denials from the same permission cache are ignored, leading to a fresh database lookup. This allows stale cached grants to provide access to revoked resources, posing a security risk. "
+      "description": "The Check operation exhibits asymmetric cache trust logic: cached permission grants are trusted and returned immediately, but cached denials from the same permission cache are ignored, leading to a fresh database lookup. This allows stale cached grants to provide access to revoked resources, posing a security risk. ",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "pre-existing",
+        "why": "Cached grants were already trusted in getUserPermissions/getAnonymousPermissions. The new path refreshes a denial from the permission map, while the separate permission-denial cache explicitly short-circuits to false; the label does not establish a new stale-grant regression.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/5634ca44f799a82161f0401dadc286452f3bdbf8/pkg/services/authz/rbac/service.go#L316",
+          "https://github.com/grafana/grafana/compare/5634ca44f799a82161f0401dadc286452f3bdbf8...7562f37880367411a62304bcdcdc178bced23906"
+        ]
+      },
+      "policy_excluded": true
     },
     {
       "file": "pkg/services/authz/rbac/service.go",
@@ -21,7 +32,18 @@
       "severity": "low",
       "category": "efficiency",
       "crb_category": "performance",
-      "description": "The test comment says the cached permissions 'allow access', but the map stores false for dashboards:uid:dash1, so checkPermission will still treat this scope as not allowed."
+      "description": "The test comment says the cached permissions 'allow access', but the map stores false for dashboards:uid:dash1, so checkPermission will still treat this scope as not allowed.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "test-coverage",
+        "why": "The false-valued test seed does not exercise the intended cached-grant override. This is a coverage-only gold item, not a production behavior defect; review excludes missing test coverage. The old candidate did surface it.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/7562f37880367411a62304bcdcdc178bced23906/pkg/services/authz/rbac/service_test.go#L982",
+          "https://github.com/grafana/grafana/compare/5634ca44f799a82161f0401dadc286452f3bdbf8...7562f37880367411a62304bcdcdc178bced23906"
+        ]
+      },
+      "policy_excluded": true
     }
   ]
 }

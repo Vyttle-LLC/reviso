@@ -12,7 +12,17 @@
       "severity": "low",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "Thread-safety issue with lazy @loaded_locales"
+      "description": "Thread-safety issue with lazy @loaded_locales",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "label-wrong",
+        "reason": "refuted",
+        "why": "load_locale already holds LOAD_MUTEX and rechecks membership inside the lock. The label supplies no unsynchronized write or reproducible new duplicate-load race for normally initialized locale state.",
+        "evidence": [
+          "https://github.com/ai-code-review-evaluation/discourse-graphite/blob/ecfa17b5a79dfdc91e7a4d50b42ae78a35d0a293/lib/freedom_patches/translate_accelerator.rb#L45",
+          "https://github.com/ai-code-review-evaluation/discourse-graphite/compare/728845d008f06828630a632e5c7d67e11bf15deb...ecfa17b5a79dfdc91e7a4d50b42ae78a35d0a293"
+        ]
+      }
     },
     {
       "file": null,
@@ -21,7 +31,17 @@
       "severity": "low",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "Consider normalizing the input locale (e.g., to a symbol) when checking/loading here to avoid double-loading if the same locale is passed as a String vs Symbol (also applies to other locations in the PR)."
+      "description": "Consider normalizing the input locale (e.g., to a symbol) when checking/loading here to avoid double-loading if the same locale is passed as a String vs Symbol (also applies to other locations in the PR).",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "label-wrong",
+        "reason": "unreachable-input",
+        "why": "The new caller supplies I18n.locale and symbol-valued fallback locales; it does not introduce a caller passing a string. Existing locale loading already used the same array. No new mixed-string/symbol loading path is established.",
+        "evidence": [
+          "https://github.com/ai-code-review-evaluation/discourse-graphite/blob/ecfa17b5a79dfdc91e7a4d50b42ae78a35d0a293/config/initializers/i18n.rb#L6",
+          "https://github.com/ai-code-review-evaluation/discourse-graphite/compare/728845d008f06828630a632e5c7d67e11bf15deb...ecfa17b5a79dfdc91e7a4d50b42ae78a35d0a293"
+        ]
+      }
     }
   ]
 }

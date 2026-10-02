@@ -1,0 +1,60 @@
+[
+  {
+    "file": null,
+    "line": 0,
+    "title": "Breaking changes in error response format",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Breaking changes in error response format",
+    "adjudication": {
+      "date": "2026-10-02",
+      "status": "label-wrong",
+      "reason": "underspecified",
+      "why": "The label names no endpoint, old/new format, affected caller, or compatibility requirement. The collector intentionally adds structured validation errors. A format change alone cannot serve as a reproducible correctness gold label.",
+      "evidence": [
+        "https://github.com/ai-code-review-evaluation/sentry-greptile/blob/ea188e2d736fd6ed27c1dba8aae63b7268e2a7a9/src/sentry/issues/endpoints/browser_reporting_collector.py#L120",
+        "https://github.com/ai-code-review-evaluation/sentry-greptile/compare/49a275847631e231672d01b5dcd66558c069d25b...ea188e2d736fd6ed27c1dba8aae63b7268e2a7a9"
+      ]
+    }
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Detector validator uses wrong key when updating type",
+    "severity": "medium",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Detector validator uses wrong key when updating type",
+    "adjudication": {
+      "date": "2026-10-02",
+      "status": "policy-excluded",
+      "reason": "pre-existing",
+      "why": "validated_data.get(\"detector_type\", instance.group_type) is unchanged context in the owner-field patch, not an introduced line or behavior.",
+      "evidence": [
+        "https://github.com/ai-code-review-evaluation/sentry-greptile/blob/ea188e2d736fd6ed27c1dba8aae63b7268e2a7a9/src/sentry/workflow_engine/endpoints/validators/base/detector.py#L63",
+        "https://github.com/ai-code-review-evaluation/sentry-greptile/compare/49a275847631e231672d01b5dcd66558c069d25b...ea188e2d736fd6ed27c1dba8aae63b7268e2a7a9"
+      ]
+    },
+    "policy_excluded": true
+  },
+  {
+    "file": null,
+    "line": 0,
+    "title": "Using zip(error_ids, events.values()) assumes the get_multi result preserves the input order; dict value order is not gu",
+    "severity": "low",
+    "category": "correctness",
+    "crb_category": "bug",
+    "description": "Using zip(error_ids, events.values()) assumes the get_multi result preserves the input order; dict value order is not guaranteed to match error_ids, so event data can be paired with the wrong ID (missing nodes also shift alignment).",
+    "adjudication": {
+      "date": "2026-10-02",
+      "status": "real-miss",
+      "reason": "cross-file",
+      "why": "NodeStorage.get_multi appends cached entries after uncached entries, so partial cache hits can reorder its values. Zipping those values with input error IDs assigns another event payload to an ID.",
+      "evidence": [
+        "https://github.com/ai-code-review-evaluation/sentry-greptile/blob/ea188e2d736fd6ed27c1dba8aae63b7268e2a7a9/src/sentry/nodestore/base.py#L184",
+        "https://github.com/ai-code-review-evaluation/sentry-greptile/compare/49a275847631e231672d01b5dcd66558c069d25b...ea188e2d736fd6ed27c1dba8aae63b7268e2a7a9"
+      ]
+    }
+  }
+]

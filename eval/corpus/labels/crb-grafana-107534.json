@@ -12,7 +12,18 @@
       "severity": "low",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used in the corresponding test setup."
+      "description": "The applyTemplateVariables method is called with request.filters as the third parameter, but this parameter is not used in the corresponding test setup.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "test-coverage",
+        "why": "This label only says the test setup omits the third argument; it gives no behavior defect. Coverage omissions are excluded. The candidate double-interpolation finding is a different root cause.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/1cab4143d443c33079566f6ca36931eb8468159f/public/app/plugins/datasource/loki/shardQuerySplitting.test.ts#L53",
+          "https://github.com/grafana/grafana/compare/d9a8253640464014aa3662c91131278990cfb828...1cab4143d443c33079566f6ca36931eb8468159f"
+        ]
+      },
+      "policy_excluded": true
     }
   ]
 }

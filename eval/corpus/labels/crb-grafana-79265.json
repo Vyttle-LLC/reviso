@@ -12,7 +12,17 @@
       "severity": "high",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "Race condition: Multiple concurrent requests could pass the device count check simultaneously and create devices beyond the limit. Consider using a database transaction or lock."
+      "description": "Race condition: Multiple concurrent requests could pass the device count check simultaneously and create devices beyond the limit. Consider using a database transaction or lock.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "real-miss",
+        "reason": "concurrency",
+        "why": "CountDevices and the insert/upsert run in separate sessions without a transaction or shared lock. Two uncached device requests can both observe capacity and insert beyond the configured limit.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/bbd8c507cdf56f6b884373809e0b24abd4a2353d/pkg/services/anonymous/anonimpl/anonstore/database.go#L112",
+          "https://github.com/grafana/grafana/compare/50f4e78a39914711d0d231a501ba215becf17ebc...bbd8c507cdf56f6b884373809e0b24abd4a2353d"
+        ]
+      }
     },
     {
       "file": "pkg/services/anonymous/anonimpl/client.go",
@@ -21,7 +31,18 @@
       "severity": "medium",
       "category": "security",
       "crb_category": "security",
-      "description": "Anonymous authentication now fails entirely if anonDeviceService.TagDevice returns ErrDeviceLimitReached. Previously, device tagging was asynchronous and non-blocking. This change prevents anonymous users from authenticating when the device limit is reached."
+      "description": "Anonymous authentication now fails entirely if anonDeviceService.TagDevice returns ErrDeviceLimitReached. Previously, device tagging was asynchronous and non-blocking. This change prevents anonymous users from authenticating when the device limit is reached.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "intentional",
+        "why": "Rejecting anonymous authentication at the configured device limit is the purpose of this change; TagDevice now returns the store error and the anonymous client explicitly handles ErrDeviceLimitReached.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/bbd8c507cdf56f6b884373809e0b24abd4a2353d/pkg/services/anonymous/anonimpl/client.go#L44",
+          "https://github.com/grafana/grafana/compare/50f4e78a39914711d0d231a501ba215becf17ebc...bbd8c507cdf56f6b884373809e0b24abd4a2353d"
+        ]
+      },
+      "policy_excluded": true
     },
     {
       "file": "pkg/services/anonymous/anonimpl/anonstore/database.go",
@@ -30,7 +51,17 @@
       "severity": "medium",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "This call won’t compile: dbSession.Exec(args...) is given a []interface{} where the first element is the query, but Exec’s signature requires a first parameter of type string (not an interface{} splat)."
+      "description": "This call won’t compile: dbSession.Exec(args...) is given a []interface{} where the first element is the query, but Exec’s signature requires a first parameter of type string (not an interface{} splat).",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "label-wrong",
+        "reason": "wrong-api",
+        "why": "DBSession embeds the vendored Xorm Session. Its Exec signature is Exec(sqlOrArgs ...any), not Exec(query string, args ...any); the interface-slice splat is valid.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/bbd8c507cdf56f6b884373809e0b24abd4a2353d/pkg/util/xorm/session_raw.go#L208",
+          "https://github.com/grafana/grafana/compare/50f4e78a39914711d0d231a501ba215becf17ebc...bbd8c507cdf56f6b884373809e0b24abd4a2353d"
+        ]
+      }
     },
     {
       "file": null,
@@ -39,7 +70,18 @@
       "severity": "low",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "Returning ErrDeviceLimitReached when no rows were updated is misleading; the device might not exist."
+      "description": "Returning ErrDeviceLimitReached when no rows were updated is misleading; the device might not exist.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "intentional",
+        "why": "At capacity, an existing recent device may be updated and a missing/expired device must not be inserted. Returning ErrDeviceLimitReached when the update finds no eligible row implements that policy.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/bbd8c507cdf56f6b884373809e0b24abd4a2353d/pkg/services/anonymous/anonimpl/anonstore/database.go#L73",
+          "https://github.com/grafana/grafana/compare/50f4e78a39914711d0d231a501ba215becf17ebc...bbd8c507cdf56f6b884373809e0b24abd4a2353d"
+        ]
+      },
+      "policy_excluded": true
     },
     {
       "file": null,
@@ -48,7 +90,17 @@
       "severity": "low",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "Time window calculation inconsistency: Using device.UpdatedAt.UTC().Add(-anonymousDeviceExpiration) as the lower bound but device.UpdatedAt as the current time may not match the intended logic. Consider using time.Now().UTC() consistently."
+      "description": "Time window calculation inconsistency: Using device.UpdatedAt.UTC().Add(-anonymousDeviceExpiration) as the lower bound but device.UpdatedAt as the current time may not match the intended logic. Consider using time.Now().UTC() consistently.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "label-wrong",
+        "reason": "wrong-premise",
+        "why": "Both time bounds use device.UpdatedAt.UTC(); the upper bound includes one minute. The label describes a mixed-UTC expression that is not present, and UTC conversion preserves the instant.",
+        "evidence": [
+          "https://github.com/grafana/grafana/blob/bbd8c507cdf56f6b884373809e0b24abd4a2353d/pkg/services/anonymous/anonimpl/anonstore/database.go#L81",
+          "https://github.com/grafana/grafana/compare/50f4e78a39914711d0d231a501ba215becf17ebc...bbd8c507cdf56f6b884373809e0b24abd4a2353d"
+        ]
+      }
     }
   ]
 }

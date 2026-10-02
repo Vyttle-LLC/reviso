@@ -1,0 +1,26 @@
+[
+  {
+    "file": "src/sentry/hybridcloud/tasks/deliver_webhooks.py",
+    "line": 239,
+    "title": "drain_mailbox_parallel processing deadline (120s) shorter than runtime budget (180s)",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "drain_mailbox_parallel has a 120s processing deadline but budgets 180s for itself (BATCH_SCHEDULE_OFFSET). Taskworker hard-kills at 120s before the graceful break runs at 180s, preventing delivery_deadline log/metric emission and aborting the in-flight batch mid-delivery. drain_mailbox in the same commit got 300s (with headroom), creating inconsistency."
+  },
+  {
+    "file": "src/sentry/replays/endpoints/project_replay_summarize_breadcrumbs.py",
+    "line": 153,
+    "title": "Replay summary interleaves error timestamps (epoch seconds) with rrweb timestamps (epoch ms)",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "ErrorEvent timestamps are epoch seconds; rrweb timestamps are epoch milliseconds. Since epoch seconds (~1.75e9) < epoch ms (~1.75e12), the comparison guard always sorts all errors before all breadcrumbs, breaking chronological ordering. Seer receives mis-ordered logs and produces summaries with wrong causality."
+  },
+  {
+    "file": "static/app/views/dashboards/widgetCard/chart.tsx",
+    "line": 165,
+    "title": "Dashboard table path renders hardcoded empty data, discarding result",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "use-table-widget-visualization branch passes empty columns and hardcoded empty tableData instead of result.data/result.meta. Empty columns won't trigger fallback, so GridEditable renders zero columns. Any org with the flag on sees blank tables for every table widget. Flag isn't yet registered, but breaks when someone registers it."
+  }
+]

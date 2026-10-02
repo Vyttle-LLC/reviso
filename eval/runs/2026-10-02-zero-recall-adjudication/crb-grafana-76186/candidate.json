@@ -1,0 +1,10 @@
+[
+  {
+    "file": "pkg/services/pluginsintegration/clientmiddleware/contextual_logger_middleware.go",
+    "line": 12,
+    "title": "Middleware-ordering invariant was deleted, not carried over",
+    "severity": "P2",
+    "category": "configuration",
+    "description": "Middleware-ordering constraint was removed during refactoring. LoggerMiddleware now depends on context attributes set by NewContextualLoggerMiddleware, but without documented ordering requirement. Reordering the middleware stack would silently lose log fields (pluginId, endpoint, dsName, dsUID, uname) with no compile error or test failure."
+  }
+]

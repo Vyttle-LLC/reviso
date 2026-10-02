@@ -1,0 +1,26 @@
+[
+  {
+    "file": "pkg/services/authz/rbac/cache.go",
+    "line": 30,
+    "title": "Denial cache key omits identity type — anonymous:0 and render:0 collide",
+    "severity": "P1",
+    "category": "bugs",
+    "description": "Denial cache key lacks identity type field. Anonymous users and render service both get identifier \"0\", causing cache collisions. Anonymous denied dashboards:read poisons render service's read check within 30s, breaking image rendering for restricted dashboards; reverse also holds for write."
+  },
+  {
+    "file": "pkg/services/authz/rbac/service_test.go",
+    "line": 982,
+    "title": "Should deny on explicit cache deny entry passes with the denial cache removed",
+    "severity": "P2",
+    "category": "bugs",
+    "description": "Test seeded scope map has false values that grant nothing, not the true values needed to test the cache deny short-circuit. Test passes even with denial cache removed, so Check's denial cache short-circuit at service.go:117 is untested."
+  },
+  {
+    "file": "pkg/services/authz/rbac/service_test.go",
+    "line": 337,
+    "title": "Dead cacheHit scaffolding left in TestService_getUserPermissions",
+    "severity": "P2",
+    "category": "slop",
+    "description": "cacheHit field is false in both remaining test cases; seeding block (lines 367–369) and assertion (lines 388–390) are unreachable. Cached path is no longer tested but future readers will assume it is."
+  }
+]

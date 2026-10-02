@@ -12,7 +12,17 @@
       "severity": "low",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "sample_rate = 0.0 is falsy and skipped"
+      "description": "sample_rate = 0.0 is falsy and skipped",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "real-miss",
+        "reason": "falsy-zero",
+        "why": "The new factory helper uses if client_sample_rate, so a valid 0.0 is not copied into normalized_data. This changes the fixture data rather than merely omitting a test.",
+        "evidence": [
+          "https://github.com/ai-code-review-evaluation/sentry-greptile/blob/6ad6fe3899f630ccf922ce7ac681147dc7987435/src/sentry/testutils/factories.py#L345",
+          "https://github.com/ai-code-review-evaluation/sentry-greptile/compare/a5d290951def84afdcc4c88d2f1f20023fc36e2a...6ad6fe3899f630ccf922ce7ac681147dc7987435"
+        ]
+      }
     },
     {
       "file": null,
@@ -21,7 +31,17 @@
       "severity": "low",
       "category": "efficiency",
       "crb_category": "performance",
-      "description": "Using Python’s built-in hash() to build cache keys is non-deterministic across processes (hash randomization), so keys won’t match across workers and invalidate_upsampling_cache may fail to delete them. Use a deterministic serialization of project_ids for the cache key."
+      "description": "Using Python’s built-in hash() to build cache keys is non-deterministic across processes (hash randomization), so keys won’t match across workers and invalidate_upsampling_cache may fail to delete them. Use a deterministic serialization of project_ids for the cache key.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "label-wrong",
+        "reason": "wrong-premise",
+        "why": "The hashed value is a sorted tuple of integer project IDs, not strings. Python hash randomization does not randomize integer tuple hashes across processes; both creation and invalidation use the same expression.",
+        "evidence": [
+          "https://github.com/ai-code-review-evaluation/sentry-greptile/blob/6ad6fe3899f630ccf922ce7ac681147dc7987435/src/sentry/api/helpers/error_upsampling.py#L27",
+          "https://github.com/ai-code-review-evaluation/sentry-greptile/compare/a5d290951def84afdcc4c88d2f1f20023fc36e2a...6ad6fe3899f630ccf922ce7ac681147dc7987435"
+        ]
+      }
     },
     {
       "file": "src/sentry/api/endpoints/organization_events_stats.py",
@@ -30,7 +50,17 @@
       "severity": "medium",
       "category": "correctness",
       "crb_category": "bug",
-      "description": "The upsampling eligibility check passes the outer dataset instead of the actual dataset used by scoped_dataset. In paths where the query ultimately runs against discover (e.g., dashboard split) while the original dataset is metrics, upsampling may be skipped even when all projects are allowlisted."
+      "description": "The upsampling eligibility check passes the outer dataset instead of the actual dataset used by scoped_dataset. In paths where the query ultimately runs against discover (e.g., dashboard split) while the original dataset is metrics, upsampling may be skipped even when all projects are allowlisted.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "real-miss",
+        "reason": "cross-file",
+        "why": "The new eligibility call passes the outer dataset even when _get_event_stats receives a different scoped_dataset for a discover dashboard split. The helper gates transformations on that dataset argument.",
+        "evidence": [
+          "https://github.com/ai-code-review-evaluation/sentry-greptile/blob/6ad6fe3899f630ccf922ce7ac681147dc7987435/src/sentry/api/endpoints/organization_events_stats.py#L220",
+          "https://github.com/ai-code-review-evaluation/sentry-greptile/compare/a5d290951def84afdcc4c88d2f1f20023fc36e2a...6ad6fe3899f630ccf922ce7ac681147dc7987435"
+        ]
+      }
     }
   ]
 }

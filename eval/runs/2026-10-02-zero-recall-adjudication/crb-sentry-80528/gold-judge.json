@@ -1,0 +1,62 @@
+{
+  "mode": "gold",
+  "expected_clean": false,
+  "excluded_gold": [
+    {
+      "file": null,
+      "line": 0,
+      "title": "The function modifies the config variable to include display values but then returns the original monitor.config instead",
+      "severity": "high",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The function modifies the config variable to include display values but then returns the original monitor.config instead of the modified version.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "pre-existing",
+        "why": "The copy-and-return-original-config bug exists verbatim in base mark_failed.py and is moved into incident_occurrence.py. It is a real latent bug but not introduced by this PR.",
+        "evidence": [
+          "https://github.com/getsentry/sentry/blob/0cfc28e76ddc986d2d89dd9b9f63ee916a18a5f9/src/sentry/monitors/logic/mark_failed.py#L327",
+          "https://github.com/getsentry/sentry/compare/0cfc28e76ddc986d2d89dd9b9f63ee916a18a5f9...dcdcadb771128e79259cc9eff9c70c38fc597976"
+        ]
+      },
+      "policy_excluded": true,
+      "tier": "excluded"
+    },
+    {
+      "file": null,
+      "line": 0,
+      "title": "The code fetches MonitorCheckIn objects by ID when the required data already exists in previous_checkins. This creates a",
+      "severity": "low",
+      "category": "correctness",
+      "crb_category": "bug",
+      "description": "The code fetches MonitorCheckIn objects by ID when the required data already exists in previous_checkins. This creates an unnecessary database query.",
+      "adjudication": {
+        "date": "2026-10-02",
+        "status": "policy-excluded",
+        "reason": "pre-existing",
+        "why": "The MonitorCheckIn query already appears in base mark_failed_threshold and moves unchanged to try_incident_threshold. It also retrieves full model instances where previous_checkins has only ID/date/status; the label supplies no new unnecessary-query regression.",
+        "evidence": [
+          "https://github.com/getsentry/sentry/blob/0cfc28e76ddc986d2d89dd9b9f63ee916a18a5f9/src/sentry/monitors/logic/mark_failed.py#L178",
+          "https://github.com/getsentry/sentry/compare/0cfc28e76ddc986d2d89dd9b9f63ee916a18a5f9...dcdcadb771128e79259cc9eff9c70c38fc597976"
+        ]
+      },
+      "policy_excluded": true,
+      "tier": "excluded"
+    }
+  ],
+  "excluded_recorded_matches": [],
+  "matched": [],
+  "missed_correctness_gold": [],
+  "missed_cleanup_gold_informational": [],
+  "promotion_candidates": [],
+  "metrics": {
+    "gold_count": 2,
+    "gold_correctness_count": 0,
+    "candidate_count": 0,
+    "matched_count": 0,
+    "matched_correctness_count": 0,
+    "gold_recall_correctness": null,
+    "precision_proxy_pct": null
+  }
+}
