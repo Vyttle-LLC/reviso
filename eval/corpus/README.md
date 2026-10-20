@@ -159,3 +159,10 @@ report with code becomes a corpus entry directly; a tier-1 metadata report
 can't (no code), but recurring ones tell us which lens or detector needs a
 seeded case. Close the issue with a pointer to the entry it became, or to
 the calibration change it motivated.
+
+Feedback issues are deleted after a year, or sooner on request (see the
+[retention policy](../../skills/reviso/references/contracts/feedback.md#retention)),
+and entries derived from one go with it. When an issue becomes an entry,
+record the issue URL in the entry's `notes`. When the issue is deleted,
+remove every entry whose `notes` cite it, in the public corpus and in the
+private one.
