@@ -76,6 +76,17 @@ Belt and braces on top of the allowlist, all in the deterministic script:
 - A hard length cap a code snippet can't fit under
 - The exact payload is printed before the send, every time
 
+## Retention
+
+Feedback issues are public, so how long they stay is part of the contract:
+
+- They stay open until we have looked at them, then they are closed.
+- We delete them a year after they are filed.
+- To have one deleted sooner, email <privacy@vyttle.com> with a link to
+  the issue and we will delete it.
+- Copies made before deletion, such as search-engine caches or GitHub
+  notification emails, may remain outside our control.
+
 ## What this buys
 
 Tier 1 flows freely because it can't hurt you, so calibration data arrives
