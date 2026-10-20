@@ -159,9 +159,7 @@ claude --plugin-dir /path/to/reviso
 
 One caveat worth stating plainly: **run automation on an API key, not on a
 personal subscription.** Subscriptions are licensed for interactive personal
-use. If you want a hosted, supported, one-click version of this on your PRs,
-that's [Reviso Cloud](https://reviso.dev) — which is how the open source gets
-funded.
+use.
 
 ## Status
 

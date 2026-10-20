@@ -8,8 +8,7 @@ guess.
 
 One thing to get right before you do: **use an API key, not a personal
 subscription.** Claude subscriptions are licensed for interactive personal use;
-automation belongs on an API key. If you want a hosted, supported version that
-runs on your PRs without you wiring any of this up, that's Reviso Cloud.
+automation belongs on an API key.
 
 This page will cover:
 

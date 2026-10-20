@@ -3,9 +3,6 @@
 issues/new
 security/advisories/new
 
-# TODO(launch): remove once reviso.dev has DNS.
-^https://reviso\.dev
-
 # Both of these answer fine from a laptop and reset or time out from a GitHub
 # runner — the usual datacenter-IP throttling. Excluded from the weekly
 # external sweep too, so it doesn't file an issue every Monday about a link
