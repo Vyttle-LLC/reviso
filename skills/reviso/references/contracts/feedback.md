@@ -84,6 +84,10 @@ Feedback issues are public, so how long they stay is part of the contract:
 - We delete them a year after they are filed.
 - To have one deleted sooner, email <privacy@vyttle.com> with a link to
   the issue and we will delete it.
+- Eval cases derived from an issue are deleted with it, from the public
+  corpus and the private Vyttle corpus alike.
+- Removing an entry from `eval/corpus/` does not rewrite the repository's git
+  history, so earlier commits still contain it.
 - Copies made before deletion, such as search-engine caches or GitHub
   notification emails, may remain outside our control.
 
@@ -92,4 +96,5 @@ Feedback issues are public, so how long they stay is part of the contract:
 Tier 1 flows freely because it can't hurt you, so calibration data arrives
 at volume. Tier 2 carries the insight, and arrives only through a human's
 deliberate act. Both land labelled `eval-candidate` — the pipeline that
-turns them into eval cases is described in [evals.md](https://github.com/Vyttle-LLC/reviso/blob/main/docs/evals.md).
+turns them into eval cases is described in the corpus
+[intake notes](https://github.com/Vyttle-LLC/reviso/blob/main/eval/corpus/README.md#intake).
